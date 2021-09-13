@@ -1,12 +1,12 @@
-# ArduMcController
-Arduino Motorcycle Controller Unit Software
+# ArduMcController - Arduino Motorcycle Controller Software
 
-Project is initiated by KI Hestad: https://youtube.com/kihestad
-If you want to contribute, please PM me on [Instagram]https://www.instagram.com/k.i.hestad/ 
+This project is created by KI Hestad: https://youtube.com/kihestad
 
-Is this project of any interest, or you just want to support me, please subscribe to my [YouTube channel]https://youtube.com/kihestad
+Do you want to contribute? Please PM me on [Instagram](https://www.instagram.com/k.i.hestad/)
 
-## Project Descrtiption
+Do you want to support this project? It's easy, just subscribe to my [YouTube channel](https://youtube.com/kihestad)
+
+## Project Description
 
 This is a project in early stages, the idea is to:
 
@@ -19,7 +19,7 @@ This is a project in early stages, the idea is to:
 * Use standard Arduino board and Arduino supported add-on hardware
 * Provide a budget friendly solution as an alternative to  expensive commercial products
 
-[KI Hestad](https://yt3.ggpht.com/AfyL2EHtMX016A8ZaWLlamQa3Sf620mSN4ExcduQDDz8GaEvZFqzoQ110UnK4ACII9boa6SMsw=s88-c-k-c0x00ffffff-no-rj)
+![KI Hestad](https://yt3.ggpht.com/AfyL2EHtMX016A8ZaWLlamQa3Sf620mSN4ExcduQDDz8GaEvZFqzoQ110UnK4ACII9boa6SMsw=s88-c-k-c0x00ffffff-no-rj)
 
 
 

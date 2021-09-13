@@ -21,11 +21,11 @@ A case for the controller will be 3D printed.
 ## Handlebar Control Switches
 
 Handlebar control swithes will be made using water proof buttons and 3D printed case
-* [Waterproof Momentary ON-OFF Push Button Round SPST Switch]https://www.ebay.com/itm/401560101338
+* [Waterproof Momentary ON-OFF Push Button Round SPST Switch](https://www.ebay.com/itm/401560101338)
 
 Here some options for prebuilt Handlebar control swithes:
-* [Motorcycle 3-Button 1" Handlebar Control Momentary Switch]https://www.ebay.com/itm/284179253202
-* [motogadget mo.switch basic]https://www.motogadget.com/shop/en/mo-switch-basic.html
+* [Motorcycle 3-Button 1" Handlebar Control Momentary Switch](https://www.ebay.com/itm/284179253202)
+* [motogadget mo.switch basic](https://www.motogadget.com/shop/en/mo-switch-basic.html)
 
 To avoid using to many pins on the Arduino, the buttons will have to be wired in series with a resistor in between.
 Using an analog input port on the Arduiono can detect what switch is pressed. 
