@@ -25,13 +25,13 @@ Some of the benefits the system (hopefully) will give:
 
 * Reliability: Individial relays controls positive or negative lead per component
 * Simplify wiring: Only one wire to handlebar switches for controlling multiple features, separate outputs per motorcycle component
-* Providing customization: Decide yourself how 
-* Adding new features: Examples: 
+* Providing customization: Custom handlebar buttons layout, setting parameters in code to adjust features
+* Adding new features to the motorcycle (optional): 
   * Touch buttons instead of traditional handlebar switches
-  * Keyless ignition
+  * Keyless ignition using bluetooth/RF-ID, "password" pressing button switch combination
   * OLED display instead of traditional warning lights
   * Smart functions, ex: auto turn off indicator lights, not possible to trigger start motor when engine is running
-* Use standard Arduino board and add-ons
+* Use standard open source components based on Arduino board and Arduino add-on boards
 * Provide a budget friendly solution as an alternative to  expensive commercial products
 
 ![KI Hestad](https://yt3.ggpht.com/AfyL2EHtMX016A8ZaWLlamQa3Sf620mSN4ExcduQDDz8GaEvZFqzoQ110UnK4ACII9boa6SMsw=s88-c-k-c0x00ffffff-no-rj)
