@@ -8,18 +8,31 @@ Do you want to support this project? It's easy, just subscribe to my [YouTube ch
 
 ## Project Description
 
-This is a project in early stages, the idea is to:
+This project is in early stages, the idea is to:
 
-* Create a motorcycle electronic unit for controlling all electrical components on a classic motorcycle
-* Possibility to add new features to the motorcycle, ex: 
+* Create an Arduino based motorcycle electronic unit for controlling electrical components for a 'classic' (=older) motorcycle
+  * The project do not aim to replace or modify the motorcycle engine ignition system
+  * This system will typically "start" after the generator/alternator and rectifier/regulator on the motorcyle has done it's job
+* Provide software and instructions free of charge
+* Create a community for motorcycle- and Arduino enthusiasts that want to contribute
+* Make the solution universal and configurable, it should be suitable for as many motorcycle brands and models as possible
+
+Long term goals, depending on the success of the project:
+* Provide a DIY kit with all parts needed
+* Provide a completely built solution ready to be installed on the bike
+
+Some of the benefits the system (hopefully) will give:
+
+* Reliability: Individial relays controls positive or negative lead per component
+* Simplify wiring: Only one wire to handlebar switches for controlling multiple features, separate outputs per motorcycle component
+* Providing customization: Decide yourself how 
+* Adding new features: Examples: 
   * Touch buttons instead of traditional handlebar switches
   * Keyless ignition
   * OLED display instead of traditional warning lights
   * Smart functions, ex: auto turn off indicator lights, not possible to trigger start motor when engine is running
-* Use standard Arduino board and Arduino supported add-on hardware
+* Use standard Arduino board and add-ons
 * Provide a budget friendly solution as an alternative to  expensive commercial products
 
 ![KI Hestad](https://yt3.ggpht.com/AfyL2EHtMX016A8ZaWLlamQa3Sf620mSN4ExcduQDDz8GaEvZFqzoQ110UnK4ACII9boa6SMsw=s88-c-k-c0x00ffffff-no-rj)
-
-
 
