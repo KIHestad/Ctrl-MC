@@ -1,4 +1,4 @@
-# ArduMcController - Arduino Motorcycle Controller Software
+# Ctrl-MC - Arduino Motorcycle Controller Software
 
 This project is created by KI Hestad: https://youtube.com/kihestad
 
