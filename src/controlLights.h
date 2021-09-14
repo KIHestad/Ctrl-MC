@@ -10,15 +10,14 @@ class ControlLights {
    */ 
 
     private:
-        Config config = Config();
-        ButtonActon buttonAction = ButtonActon();
+        Button button = Button();
         bool waitForRelease = false; // flag indicating that indicator switch has been pressed
         bool highbeamFlash = false; // flag indicating to flash with high beam
 
     public:
         BikeStatus action(BikeStatus bikeStatus) {
             // Check for high beam / low beam toggle
-            ButtonStatusRead buttonHiLo = buttonAction.readAnalog(config.inHandlebarButtonArray, config.handlebarButtonSignal_Lights_HiLo);
+            ButtonStatusRead buttonHiLo = button.read(LIGHTS_LOW_HIGHT_SWITCH_INPUT_PIN);
             if (waitForRelease) {
                 if (!buttonHiLo.pressed) {
                     // Released

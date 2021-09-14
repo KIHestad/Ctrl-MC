@@ -4,51 +4,57 @@
 
 class OnBoardLed {
     
-    private:
-        
-        Config config = Config();
-    
     public:
         
         void blink(size_t count) {
             for (size_t i = 0; i < count; i++)
             {
-                digitalWrite(config.onBoardLed, HIGH);
+                digitalWrite(ONBOARD_LED_PIN, HIGH);
                 delay(100);
-                digitalWrite(config.onBoardLed, LOW);
+                digitalWrite(ONBOARD_LED_PIN, LOW);
                 delay(100);
             }
         }
 
         void on() {
-            digitalWrite(config.onBoardLed, HIGH);
+            digitalWrite(ONBOARD_LED_PIN, HIGH);
         }
 
         void off() {
-            digitalWrite(config.onBoardLed, LOW);
+            digitalWrite(ONBOARD_LED_PIN, LOW);
         }
 };
 
-class ButtonActon {
+class Button {
 
     public:
 
-        ButtonStatusRead readDigital(int pin) {
-            int digitalReadValue = digitalRead(pin);
-            ButtonStatusRead newButtonStatus = ButtonStatusRead();
-            newButtonStatus.pressed = (digitalReadValue == 0) ? true : false;
-            newButtonStatus.timeStamp = millis();
-            return newButtonStatus;
-        };
-
-        ButtonStatusRead readAnalog(int pin, int valueInterval[]) {
-            int analogReadValue = analogRead(pin);
-            Serial.print("ANALOG READ: ");
-            Serial.println(analogReadValue);
-            ButtonStatusRead newButtonStatus = ButtonStatusRead();
-            newButtonStatus.pressed = (analogReadValue >= valueInterval[0] && analogReadValue <= valueInterval[1]) ? true : false;
-            newButtonStatus.timeStamp = millis();
-            return newButtonStatus;
+        ButtonStatusRead read(int inputPin[]) {
+            // Prepare return model
+            int pin = inputPin[0];
+            ButtonStatusRead buttonStatus = ButtonStatusRead();
+            buttonStatus.timeStamp = millis();
+            // Check if enabled
+            if (pin == -1)
+                return buttonStatus;
+            // Check if analog or digiral read
+            if (inputPin[1] == digitalPin) {
+                int digitalReadValue = digitalRead(pin);
+                buttonStatus.pressed = (digitalReadValue == 0) ? true : false;
+                Serial.print("DIGITAL READ: ");
+                Serial.print(digitalReadValue);
+            }
+            else if (inputPin[1] == analogPin) {
+                int analogReadValue = analogRead(pin);
+                Serial.print("ANALOG READ: ");
+                Serial.print(analogReadValue);
+                buttonStatus.pressed = (analogReadValue >= inputPin[2] && analogReadValue <= inputPin[3]) ? true : false;
+            }
+            if (buttonStatus.pressed)
+                Serial.print(" -> DETECTED BUTTON PRESSED");
+            else
+                Serial.print(" -> DETECTED BUTTON RELEASED");
+            return buttonStatus;
         };
 
 };

@@ -10,7 +10,7 @@
 // It is possible to map several features to same pin, ex: park and low_beam lights can use same pin
 // Set pin to -1 if feature is not to be used
 // Digital pin 0 and 1 are not safe to use with relay modules, these are used when booting the Arduino causes relay to be triggered
-// Some analog pins can on most Arduinos also be used as a digital pin, A0 (fist analog pin) can normally be referred to as pin 14 when used as digital pin
+// Some analog pins can on most Arduinos also be used as a digital pin, A1 (fist analog pin) can normally be referred to as pin 14 when used as digital pin
 
 int MAIN_IGNITION_POSITIVE_OUTPUT_PIN   = 2;
 int MAIN_IGNITION_GROUD_OUTPUT_PIN      = 3;
@@ -22,7 +22,6 @@ int LIGHTS_BRAKE_OUTPUT_PIN             = 8;
 int SIGNAL_HORN_OUTPUT_PIN              = 9;
 int INDICATOR_LEFT_OUTPUT_PIN           = 10;
 int INDICATOR_RIGHT_OUTPUT_PIN          = 11;
-int AUX_OUTPUT_PIN                      = 12;
 
 // Pin to arduino onboard led
 int ONBOARD_LED_PIN                     = 13;
@@ -36,27 +35,27 @@ int DISPLAY_SCL_OUTPUT_PIN              = A5;
 // *************************************
 // Map the controllers features to input pins that needs to be connected to buttons/switches, levers/pedals or sensors
 // It is possible to map several features to same pin, ex: handlebar buttons connected in series using a resistors between each button delivers different values per button back to the analog input pin
-// Some analog pins can on most Arduinos also be used as a digital pin, A0 (fist analog pin) can normally be referred to as pin 14 when used as digital pin
+// Some analog pins can on most Arduinos also be used as a digital pin, A1 (fist analog pin) can normally be referred to as pin 14 when used as digital pin
 // For each feature set input pin configuration like this: { pin_number, pin_read_type, analog_value_minimum, analog_value_maximum }
 // Examples
 // - Value for disabled feature: { -1 };
 // - Value for digial read:      { 14, digitalPin };
 // - Value for analog read:      { A1, analogPin, 190, 210 };
 
-int MAIN_IGNITION_SWITCH_INPUT_PIN[]        = { 14, digitalPin };
-int START_MOTOR_SWITCH_INPUT_PIN[]          = { A1, analogPin, 190, 210 };
-int LIGHTS_MAIN_SWITCH_INPUT_PIN[]          = { -1 };
-int LIGHTS_LOW_HIGHT_SWITCH_INPUT_PIN[]     = { A1, analogPin, 190, 210 };
-int LIGHTS_HIGH_BEAM_OUTPUT_PIN[]           = { A1, analogPin, 190, 210 };
-int LIGHTS_BRAKE_SWITCH_INPUT_PIN[]         = { A1, analogPin, 190, 210 };
-int SIGNAL_HORN_SWITCH_INPUT_PIN[]          = { A1, analogPin, 190, 210 };
-int INDICATOR_LEFT_SWITCH_INPUT_PIN[]       = { A1, analogPin, 190, 210 };
-int INDICATOR_RIGHT_SWITCH_INPUT_PIN[]      = { A1, analogPin, 190, 210 };
-int OIL_SENSOR[]                            = { -1 };
-int NEUTRAL_SWITCH[]                        = { -1 };
-int CLUTCH_SWITCH[]                         = { -1 };
-int BRAKE_SWITCH[]                          = { -1 };
-
+int MAIN_IGNITION_SWITCH_INPUT_PIN[4]        = { 12, digitalPin };
+int START_MOTOR_SWITCH_INPUT_PIN[4]          = { 14, digitalPin }; 
+int LIGHTS_MAIN_SWITCH_INPUT_PIN[4]          = { -1 };
+int LIGHTS_LOW_HIGHT_SWITCH_INPUT_PIN[4]     = { A1, analogPin, 190, 210 };
+int LIGHTS_HIGH_BEAM_INPUT_PIN[4]            = { A1, analogPin, 190, 210 };
+int LIGHTS_BRAKE_SWITCH_INPUT_PIN[4]         = { A1, analogPin, 190, 210 };
+int SIGNAL_HORN_SWITCH_INPUT_PIN[4]          = { A1, analogPin, 190, 210 };
+int INDICATOR_LEFT_SWITCH_INPUT_PIN[4]       = { A1, analogPin, 190, 210 };
+int INDICATOR_RIGHT_SWITCH_INPUT_PIN[4]      = { A1, analogPin, 190, 210 };
+int CLUTCH_SWITCH_INPUT_PIN[4]               = { A1, analogPin, 190, 210 };
+int BRAKE_SWITCH_INPUT_PIN[4]                = { A1, analogPin, 190, 210 };
+int OIL_SENSOR_INPUT_PIN[4]                  = { -1 };
+int NEUTRAL_SWITCH_INPUT_PIN[4]              = { -1 };
+int ENGINE_RUNNING_SENSOR[4]                 = { -1 };
 
 // *************************************
 //   Main Ignition

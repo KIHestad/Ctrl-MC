@@ -5,23 +5,20 @@
 class ControlIndicators {
     
     private:
-        Config config = Config();
-        ButtonActon buttonAction = ButtonActon();
+        Button button = Button();
         Relay relay = Relay();
         bool waitForRelease = false; // flag indicating that indicator switch has been pressed
         long buttonPressTimestamp = 0; // timestamp for when indicator button was pressed, either start or stop, used with blinkAutoShutDownSec and for ignore bad signal from switch
         long longPressTimestamp = 0; // hazard has a delay, timestamp for when it was initiated
         long blinkTimestamp = 0; // timestamp for previous blink
-        long blinkInterval = config.indicatorsBlinkIntervalSpeed; // speed on turn signal blinks in ms
         bool blinkOn = false; // flag indicating if turn signal is currently on or off
-        int blinkAutoShutOffSec = config.indicatorsAutoShutOff; // atomaticly turn off indicators after number of seconds
 
     public:
 
         BikeStatus action(BikeStatus bikeStatus) {
             // Identify if any of indicator buttons are pressed or released by comparing to previous value
-            ButtonStatusRead buttonLeft = buttonAction.readAnalog(config.inHandlebarButtonArray, config.handlebarButtonSignal_Indicator_Left);
-            ButtonStatusRead buttonRight = buttonAction.readAnalog(config.inHandlebarButtonArray, config.handlebarButtonSignal_Indicator_Right);
+            ButtonStatusRead buttonLeft = button.read(INDICATOR_LEFT_SWITCH_INPUT_PIN);
+            ButtonStatusRead buttonRight = button.read(INDICATOR_RIGHT_SWITCH_INPUT_PIN);
             if (waitForRelease) {
                 if (!buttonRight.pressed && !buttonLeft.pressed) {
                     // Released
@@ -29,13 +26,13 @@ class ControlIndicators {
                 }
                 else {
                     // if hazard activated check for longpress
-                    if (config.hazardActivateLongPressDelay > -1) {
+                    if (INDICATORS_HAZARD_LONG_PRESS_ENABLE > -1) {
                         long newTimestamp = millis();
-                        if (newTimestamp - longPressTimestamp > config.hazardActivateLongPressDelay)
+                        if (newTimestamp - longPressTimestamp > INDICATORS_HAZARD_LONG_PRESS_ENABLE)
                         {
                             bikeStatus.indicators = hazard;
                             Serial.println("HAZARD ON");
-                            blinkTimestamp = millis() - blinkInterval;;
+                            blinkTimestamp = millis() - INDICATORS_BLINK_INTERVAL_SPEED;;
                             blinkOn = true;
                             waitForRelease = true;
                         }
@@ -54,8 +51,8 @@ class ControlIndicators {
                             // Turn off
                             bikeStatus.indicators = indicatorsOff;
                             Serial.println("INDICATORS OFF");
-                            relay.off(config.outIndicatorLeft);
-                            relay.off(config.outIndicatorRight);
+                            relay.off(INDICATOR_LEFT_OUTPUT_PIN);
+                            relay.off(INDICATOR_RIGHT_OUTPUT_PIN);
                             blinkOn = false;
                         }
                         else {
@@ -71,7 +68,7 @@ class ControlIndicators {
                                 //relay.On(pin.RelayIndicatorLeft);
                             }
                             longPressTimestamp = millis();
-                            blinkTimestamp = millis() - blinkInterval;
+                            blinkTimestamp = millis() - INDICATORS_BLINK_INTERVAL_SPEED;
                             blinkOn = false;
                         }
                         waitForRelease = true;
@@ -82,32 +79,32 @@ class ControlIndicators {
             if (bikeStatus.indicators == turnLeft || bikeStatus.indicators == turnRight || bikeStatus.indicators == hazard) {
                 long newTimestamp = millis();
                 // Check for autoshutdown
-                if (blinkAutoShutOffSec > 0 && (newTimestamp - buttonPressTimestamp) > (blinkAutoShutOffSec * 1000)) {
+                if (INDICATORS_AUTO_SHUT_OFF >= -1 && (newTimestamp - buttonPressTimestamp) > (INDICATORS_AUTO_SHUT_OFF * 1000)) {
                     // Autoshutdown now
                     bikeStatus.indicators = indicatorsOff;
                     Serial.println("INDICATORS AUTO OFF ");
-                    relay.off(config.outIndicatorLeft);
-                    relay.off(config.outIndicatorRight);
+                    relay.off(INDICATOR_LEFT_OUTPUT_PIN);
+                    relay.off(INDICATOR_RIGHT_OUTPUT_PIN);
                     blinkOn = false;
                 }
-                else if (newTimestamp - blinkTimestamp > blinkInterval) {
+                else if (newTimestamp - blinkTimestamp > INDICATORS_BLINK_INTERVAL_SPEED) {
                     // Blink on/off
                     blinkOn = !blinkOn;
                     if (blinkOn) {
                         if (bikeStatus.indicators == hazard) {
-                            relay.on(config.outIndicatorLeft);
-                            relay.on(config.outIndicatorRight);
+                            relay.on(INDICATOR_LEFT_OUTPUT_PIN);
+                            relay.on(INDICATOR_RIGHT_OUTPUT_PIN);
                         }
                         else if (bikeStatus.indicators == turnLeft) {
-                            relay.on(config.outIndicatorLeft);
+                            relay.on(INDICATOR_LEFT_OUTPUT_PIN);
                         }
                         else {
-                            relay.on(config.outIndicatorRight);
+                            relay.on(INDICATOR_RIGHT_OUTPUT_PIN);
                         }
                     } 
                     else {
-                        relay.off(config.outIndicatorLeft);
-                        relay.off(config.outIndicatorRight);
+                        relay.off(INDICATOR_LEFT_OUTPUT_PIN);
+                        relay.off(INDICATOR_RIGHT_OUTPUT_PIN);
                     }
                     blinkTimestamp = newTimestamp;
                 }

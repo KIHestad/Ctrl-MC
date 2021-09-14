@@ -11,7 +11,7 @@ class ControlIgnition {
 
     private:
         PinSetup pin = PinSetup();
-        ButtonActon buttonAction = ButtonActon();
+        Button button = Button();
         OnBoardLed onBoardLed = OnBoardLed();
         long longPressTimestamp = 0;
     

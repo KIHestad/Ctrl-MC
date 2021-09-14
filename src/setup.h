@@ -48,22 +48,3 @@ class PinSetup {
         }
 };
 
-
-
-class InputProperties {
-    // Define input properties
-    public:
-        bool enabled;
-        int pin;
-        PinType pinType;
-        int analogSeriesRange[2];
-};
-
-class Input {
-    // Define available inputs to the controller, it can be a button on the handlebar controller switch or a sensor from the engine
-    // Inputs are mapped in the _config.h file
-    public:
-        InputProperties hornButton;
-        InputProperties indicatorLeftButton;
-        InputProperties indicatorRightButton;
-};
