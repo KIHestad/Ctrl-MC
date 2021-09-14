@@ -1,6 +1,8 @@
-#Getting Started with Ardu MC Controller
+# Ctrl-MC // Getting Started
 
 _document is currently in progress_
+
+Just writing down stuff that might be useful as the project moves forward.
 
 ## Electronics
 

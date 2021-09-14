@@ -1,9 +1,9 @@
 /*
- *   "Ardu MC Controller" is a Open Source Arduino project made by KI Hestad: https://youtube.com/kihestad
+ *   Ctrl-MC // An open source Arduino project made by KI Hestad: https://github.com/KIHestad/Ctrl-MC
  */
 
 class PinSetup {
-    // Define what arduino pins are used
+    // Set Arduino pins according to congig
     private:
         void setRelayPin(int pin, bool defaultOn) {
             if (pin > -1)
@@ -15,35 +15,55 @@ class PinSetup {
                     digitalWrite(pin, HIGH);
             }
         }
-        void setInputPin(int pin, int type) {
-            if (pin > -1)
+        void setInputPin(int pin[], int type) {
+            if (pin[0] > -1)
             {
-                pinMode(pin, type);
+                pinMode(pin[0], type);
             }
         }
 
     public:
         void setPinMode() {
-            Config config = Config();
             // Output pins for relay setup
-            setRelayPin(config.outMainIgnintionPositive, false);
-            setRelayPin(config.outMainIgningtonNegative, false);
-            setRelayPin(config.outStartMotor, false);
-            setRelayPin(config.outHorn, false);
-            setRelayPin(config.outIndicatorLeft, false);
-            setRelayPin(config.outIndicatorRight, false);
-            setRelayPin(config.outLightsPark, false);
-            setRelayPin(config.outLightsLow, false);
-            setRelayPin(config.outLightsHigh, false);
-            setRelayPin(config.outLightsBrake, false);
+            setRelayPin(MAIN_IGNITION_POSITIVE_OUTPUT_PIN, false);
+            setRelayPin(MAIN_IGNITION_GROUD_OUTPUT_PIN, false);
+            setRelayPin(START_MOTOR_OUTPUT_PIN, false);
+            setRelayPin(LIGHTS_PARK_OUTPUT_PIN, false);
+            setRelayPin(LIGHTS_LOW_BEAM_OUTPUT_PIN, false);
+            setRelayPin(LIGHTS_HIGH_BEAM_OUTPUT_PIN, false);
+            setRelayPin(LIGHTS_BRAKE_OUTPUT_PIN, false);
+            setRelayPin(SIGNAL_HORN_OUTPUT_PIN, false);
+            setRelayPin(INDICATOR_LEFT_OUTPUT_PIN, false);
+            setRelayPin(INDICATOR_RIGHT_OUTPUT_PIN, false);
+            setRelayPin(AUX_OUTPUT_PIN, false);
             // Onboard led
-            pinMode(config.onBoardLed, OUTPUT);
+            pinMode(ONBOARD_LED_PIN, OUTPUT);
             // Input pins for switches setup
-            setInputPin(config.inHandlebarButtonArray, INPUT_PULLUP);
-            setInputPin(config.inClutch, INPUT_PULLUP);
-            setInputPin(config.inBreakLeverAndPedal, INPUT_PULLUP);
-            setInputPin(config.inOilSensor, INPUT_PULLUP);
-            setInputPin(config.inNeutralSensor, INPUT_PULLUP);
+            setInputPin(MAIN_IGNITION_SWITCH_INPUT_PIN, INPUT_PULLUP);
+            setInputPin(START_MOTOR_SWITCH_INPUT_PIN, INPUT_PULLUP);
+            setInputPin(LIGHTS_MAIN_SWITCH_INPUT_PIN, INPUT_PULLUP);
+            setInputPin(LIGHTS_LOW_HIGHT_SWITCH_INPUT_PIN, INPUT_PULLUP);
+            setInputPin(LIGHTS_BRAKE_SWITCH_INPUT_PIN, INPUT_PULLUP);
             // Output pin for onboard led
         }
+};
+
+
+
+class InputProperties {
+    // Define input properties
+    public:
+        bool enabled;
+        int pin;
+        PinType pinType;
+        int analogSeriesRange[2];
+};
+
+class Input {
+    // Define available inputs to the controller, it can be a button on the handlebar controller switch or a sensor from the engine
+    // Inputs are mapped in the _config.h file
+    public:
+        InputProperties hornButton;
+        InputProperties indicatorLeftButton;
+        InputProperties indicatorRightButton;
 };

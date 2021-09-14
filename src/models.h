@@ -1,11 +1,12 @@
 /*
- *   "Ardu MC Controller" is a Open Source Arduino project made by KI Hestad: https://youtube.com/kihestad
+ *   Ctrl-MC // An open source Arduino project made by KI Hestad: https://github.com/KIHestad/Ctrl-MC
  */
 
 enum IgnitionStatus { ignitionOff, ignitionStandby, engineStarting, engineRunning, engineStopping };
 enum LightStatus { lightsOff, parkLights, lowBeam, highBeam };
 enum IndicatorStatus { indicatorsOff, turnLeft, turnRight, hazard };
 enum HornStatus { hornOff, hornInitiating, hornOn };
+enum PinType { digitalPin, analogPin };
 
 class ButtonStatusRead {
     public:
