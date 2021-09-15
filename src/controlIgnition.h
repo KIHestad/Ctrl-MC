@@ -12,6 +12,8 @@ class ControlIgnition {
         Button button = Button();
         OnBoardLed onBoardLed = OnBoardLed();
         BikeStatus bikeStatus_;
+        ButtonStatus waitForReleaseInputButtonStatustatus = ButtonStatus();
+        ButtonStatus buttonPasswordStart = ButtonStatus();
         bool waitForRelease = false;
         Input waitForReleaseInput;
         long passwordTimout = 0;
@@ -34,7 +36,7 @@ class ControlIgnition {
             bikeStatus_ = bikeStatus;
             // If button is pressed, wait unitil it is released unitil next read
             if (waitForRelease) {
-                ButtonStatus waitForReleaseInputButtonStatustatus = button.read(waitForReleaseInput);
+                waitForReleaseInputButtonStatustatus = button.read(waitForReleaseInput);
                 if (!waitForReleaseInputButtonStatustatus.pressed) {
                     waitForRelease = false;
                 }
@@ -46,7 +48,7 @@ class ControlIgnition {
                     // Ignition is off, only enable to turn on the bike to standby mode
                     if (IGN_PASSWORD_ENABLED) {
                         // Enable to turn on engine using password, check for password start
-                        ButtonStatus buttonPasswordStart = button.read(IGN_PASSWORD_START_INPUT);
+                        buttonPasswordStart = button.read(IGN_PASSWORD_START_INPUT);
                         if (buttonPasswordStart.pressed) {
                             resetPasswordStart();
                         }
@@ -61,7 +63,7 @@ class ControlIgnition {
                     }
                     else {
                         // Check for password reset
-                        ButtonStatus buttonPasswordStart = button.read(IGN_PASSWORD_START_INPUT);
+                        buttonPasswordStart = button.read(IGN_PASSWORD_START_INPUT);
                         if (buttonPasswordStart.pressed) 
                             resetPasswordStart();
                         else {
@@ -84,12 +86,12 @@ class ControlIgnition {
                                     Serial.print("PW CHAR: ");
                                     Serial.print(passwordPressCount);
                                     Serial.print(" - BUTTON PRESSED: ");
-                                    Serial.print(buttonStatus[i].input.name);
+                                    Serial.print(buttonStatus[i].input.displayName);
                                     // Check if press count has passed pw length
                                     if (passwordPressCount >= IGN_PASSWORD_LENGTH) 
                                         Serial.print(" -> IGNORED - TO MANY BUTTONS PRESSED ");
                                     else {
-                                        if (buttonStatus[i].input.name == IGN_PASSWORD[passwordPressCount].name) {
+                                        if (buttonStatus[i].input.shortName == IGN_PASSWORD[passwordPressCount].shortName) {
                                             Serial.print(" -> CORRECT ");
                                         }
                                         else {

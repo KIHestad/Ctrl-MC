@@ -41,31 +41,30 @@ class Button {
         ButtonStatus read(Input input) {
             // Prepare return model
             ButtonStatus buttonStatus = ButtonStatus();
-            buttonStatus.timeStamp = millis();
             buttonStatus.input = input;
-            buttonStatus.enabled = (input.pin > -1);
-            // Check if enabled
-            if (!buttonStatus.enabled)
+            // Check timeout for any button = 250ms
+            long timeStampNow = millis();
+            if (timeStampNow - buttonStatusHistory[input.pin].lastPressTimestamp < 250)
+            {
+                buttonStatus.pressed = buttonStatusHistory[input.pin].pressed;
+                buttonStatus.value = buttonStatusHistory[input.pin].value;                
                 return buttonStatus;
+            }
+            // Timeout not triggered
+            buttonStatusHistory[input.pin].lastPressTimestamp = timeStampNow;
             // Check if analog or digiral read
             if (input.pinType == digitalPin) {
                 buttonStatus.value = digitalRead(input.pin);
                 buttonStatus.pressed = (buttonStatus.value == 0) ? true : false;
-                //Serial.print("DIGITAL READ: ");
-                //Serial.print(digitalReadValue);
             }
             else if (input.pinType == analogPin) {
                 buttonStatus.value = analogRead(input.pin);
-                //Serial.print("ANALOG READ: ");
-                //Serial.print(analogReadValue);
                 int minValue = input.expectedValue - ANALOG_PIN_VALUE_VARIATION;
                 int maxValue = input.expectedValue + ANALOG_PIN_VALUE_VARIATION;
                 buttonStatus.pressed = (buttonStatus.value >= minValue && buttonStatus.value <= maxValue) ? true : false;
             }
-            //if (buttonStatus.pressed)
-                //Serial.print(" -> DETECTED BUTTON PRESSED");
-            //else
-                //Serial.print(" -> DETECTED BUTTON RELEASED");
+            // Add to history
+            buttonStatusHistory[input.pin].pressed = buttonStatus.pressed;
             return buttonStatus;
         };
 
@@ -76,11 +75,13 @@ class Relay {
   public:
 
     void on(int pin) {
-        digitalWrite(pin, LOW);
+        if (pin > -1)
+            digitalWrite(pin, LOW);
     }
     
     void off(int pin) {
-        digitalWrite(pin, HIGH);
+        if (pin > -1)
+            digitalWrite(pin, HIGH);
     }
 
 };

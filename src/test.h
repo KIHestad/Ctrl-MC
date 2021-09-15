@@ -29,9 +29,9 @@ class Test {
             for (size_t i = 0; i < 12; i++) {
                 //Read all button names and values if enabled
                 ButtonStatus btn = buttonStatus[i];
-                if (btn.enabled)
+                if (btn.input.enabled)
                 {
-                    output += btn.input.name;
+                    output += btn.input.shortName;
                     if (btn.pressed) {
                         if (btn.input.pinType == analogPin)
                         {

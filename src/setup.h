@@ -2,6 +2,8 @@
  *   Ctrl-MC // An open source Arduino project made by KI Hestad: https://github.com/KIHestad/Ctrl-MC
  */
 
+ButtonStatusHistory buttonStatusHistory[20]; // Array storing last time a button was pressed for all buttons, used to ignore dirty signal from buttons causing double-press
+
 class PinSetup {
     // Set Arduino pins according to congig
     private:

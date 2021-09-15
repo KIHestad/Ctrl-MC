@@ -9,23 +9,19 @@
 #include <controlHorn.h>
 #include <controlLights.h>
 
-PinSetup pin; // arduione pins allocation
-BikeStatus bikeStatus; // the bike properties, affected by and limits / controls how control switches works
-Test test; // 
-ControlIgnition controlIgnition; // main control for engine start/stop
-ControlIndicators controlIndicators; // manages the handlebar switch buttons for indicators
-ControlHorn controlHorn; // manages the handlebar horn switch buttons
-ControlLights controlLights; // manages the handlebar light switch buttons
+PinSetup pinSetup; // Arduione pins allocation
+Test test; // Enable testing classes
+BikeStatus bikeStatus; // The bike properties, affected by and limits / controls how control switches works
+// Features
+ControlIgnition controlIgnition; // Main control for turning on/off the iginition = enable the controllers features
+ControlHorn controlHorn; // Signal horn
+ControlIndicators controlIndicators; // Indicators / Turn signals
+ControlLights controlLights; // Lights off/park/on - high/low beam 
 
 void setup() {
-  // init
+  // Init
   Serial.begin(9600);
-  // construct classes
-  pin = PinSetup();
-  pin.setPinMode();
-  bikeStatus = BikeStatus();
-  controlIndicators = ControlIndicators();
-  controlHorn = ControlHorn();
+  pinSetup.setPinMode();
   Serial.println("Ctrl-MC Started");
 }
 

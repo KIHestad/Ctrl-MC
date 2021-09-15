@@ -5,10 +5,11 @@
 class ControlIndicators {
     
     private:
+
         Button button = Button();
         Relay relay = Relay();
         bool waitForRelease = false; // flag indicating that indicator switch has been pressed
-        long buttonPressTimestamp = 0; // timestamp for when indicator button was pressed, either start or stop, used with blinkAutoShutDownSec and for ignore bad signal from switch
+        long buttonPressTimestamp = 0; // timestamp for when indicator button was pressed, used with blinkAutoShutDownSec 
         long longPressTimestamp = 0; // hazard has a delay, timestamp for when it was initiated
         long blinkTimestamp = 0; // timestamp for previous blink
         bool blinkOn = false; // flag indicating if turn signal is currently on or off
@@ -16,33 +17,31 @@ class ControlIndicators {
     public:
 
         BikeStatus action(BikeStatus bikeStatus) {
-            // Identify if any of indicator buttons are pressed or released by comparing to previous value
-            ButtonStatus buttonLeft = button.read(INDICATOR_LEFT_SWITCH_INPUT);
-            ButtonStatus buttonRight = button.read(INDICATOR_RIGHT_SWITCH_INPUT);
-            if (waitForRelease) {
-                if (!buttonRight.pressed && !buttonLeft.pressed) {
-                    // Released
-                    waitForRelease = false;
-                }
-                else {
-                    // if hazard activated check for longpress
-                    if ((bikeStatus.indicators == turnRight && INDICATORS_HAZARD_LONG_PRESS_ENABLE > -1) || (bikeStatus.indicators == turnLeft && INDICATORS_HAZARD_LONG_PRESS_ENABLE > -1) ) {
-                        int timeStampNow = millis();
-                        if (timeStampNow - longPressTimestamp > INDICATORS_HAZARD_LONG_PRESS_ENABLE) {
-                            bikeStatus.indicators = hazard;
-                            Serial.println("HAZARD ON");
+            if (INDICATIORS_FEATURE_ENABLED && INDICATOR_LEFT_SWITCH_INPUT.enabled && INDICATOR_RIGHT_SWITCH_INPUT.enabled) {
+                // Identify if any of indicator buttons are pressed or released by comparing to previous value
+                ButtonStatus buttonLeft = button.read(INDICATOR_LEFT_SWITCH_INPUT);
+                ButtonStatus buttonRight = button.read(INDICATOR_RIGHT_SWITCH_INPUT);
+                if (waitForRelease) {
+                    if (!buttonRight.pressed && !buttonLeft.pressed) {
+                        // Released
+                        waitForRelease = false;
+                    }
+                    else {
+                        // if hazard activated check for longpress
+                        if ((bikeStatus.indicators == turnRight && INDICATORS_HAZARD_LONG_PRESS_ENABLE > -1) || (bikeStatus.indicators == turnLeft && INDICATORS_HAZARD_LONG_PRESS_ENABLE > -1) ) {
+                            int timeStampNow = millis();
+                            if (timeStampNow - longPressTimestamp > INDICATORS_HAZARD_LONG_PRESS_ENABLE) {
+                                bikeStatus.indicators = hazard;
+                                Serial.println("HAZARD ON");
+                            }
+                            else
+                                Serial.println("HAZARD INIT");
                         }
-                        else
-                            Serial.println("HAZARD INIT");
                     }
                 }
-            }
-            else {
-                // If pressed any indicator button
-                if (buttonLeft.pressed || buttonRight.pressed) {
-                    // Ignore button press first 250ms in case of bad signal from button
-                    if (millis() - buttonPressTimestamp > 250)
-                    {
+                else {
+                    // If pressed any indicator button
+                    if (buttonLeft.pressed || buttonRight.pressed) {
                         buttonPressTimestamp = millis();
                         // Check for turn off or on
                         if (bikeStatus.indicators != indicatorsOff) {
@@ -72,42 +71,41 @@ class ControlIndicators {
                         waitForRelease = true;
                     }
                 }
-            }
-            // Perform blink
-            if (bikeStatus.indicators == turnLeft || bikeStatus.indicators == turnRight || bikeStatus.indicators == hazard) {
-                long newTimestamp = millis();
-                // Check for autoshutdown
-                if (INDICATORS_AUTO_SHUT_OFF >= -1 && (newTimestamp - buttonPressTimestamp) > (INDICATORS_AUTO_SHUT_OFF * 1000)) {
-                    // Autoshutdown now
-                    bikeStatus.indicators = indicatorsOff;
-                    Serial.println("INDICATORS AUTO OFF ");
-                    relay.off(INDICATOR_LEFT_OUTPUT_PIN);
-                    relay.off(INDICATOR_RIGHT_OUTPUT_PIN);
-                    blinkOn = false;
-                }
-                else if (newTimestamp - blinkTimestamp > INDICATORS_BLINK_INTERVAL_SPEED) {
-                    // Blink on/off
-                    blinkOn = !blinkOn;
-                    if (blinkOn) {
-                        if (bikeStatus.indicators == hazard) {
-                            relay.on(INDICATOR_LEFT_OUTPUT_PIN);
-                            relay.on(INDICATOR_RIGHT_OUTPUT_PIN);
-                        }
-                        else if (bikeStatus.indicators == turnLeft) {
-                            relay.on(INDICATOR_LEFT_OUTPUT_PIN);
-                        }
-                        else {
-                            relay.on(INDICATOR_RIGHT_OUTPUT_PIN);
-                        }
-                    } 
-                    else {
+                // Perform blink
+                if (bikeStatus.indicators == turnLeft || bikeStatus.indicators == turnRight || bikeStatus.indicators == hazard) {
+                    long newTimestamp = millis();
+                    // Check for autoshutdown
+                    if (INDICATORS_AUTO_SHUT_OFF >= -1 && (newTimestamp - buttonPressTimestamp) > (INDICATORS_AUTO_SHUT_OFF * 1000)) {
+                        // Autoshutdown now
+                        bikeStatus.indicators = indicatorsOff;
+                        Serial.println("INDICATORS AUTO OFF ");
                         relay.off(INDICATOR_LEFT_OUTPUT_PIN);
                         relay.off(INDICATOR_RIGHT_OUTPUT_PIN);
+                        blinkOn = false;
                     }
-                    blinkTimestamp = newTimestamp;
+                    else if (newTimestamp - blinkTimestamp > INDICATORS_BLINK_INTERVAL_SPEED) {
+                        // Blink on/off
+                        blinkOn = !blinkOn;
+                        if (blinkOn) {
+                            if (bikeStatus.indicators == hazard) {
+                                relay.on(INDICATOR_LEFT_OUTPUT_PIN);
+                                relay.on(INDICATOR_RIGHT_OUTPUT_PIN);
+                            }
+                            else if (bikeStatus.indicators == turnLeft) {
+                                relay.on(INDICATOR_LEFT_OUTPUT_PIN);
+                            }
+                            else {
+                                relay.on(INDICATOR_RIGHT_OUTPUT_PIN);
+                            }
+                        } 
+                        else {
+                            relay.off(INDICATOR_LEFT_OUTPUT_PIN);
+                            relay.off(INDICATOR_RIGHT_OUTPUT_PIN);
+                        }
+                        blinkTimestamp = newTimestamp;
+                    }
                 }
-            }
-            
+            }              
             return bikeStatus;
         };
 };
