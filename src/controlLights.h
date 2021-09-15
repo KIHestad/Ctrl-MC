@@ -17,7 +17,7 @@ class ControlLights {
     public:
         BikeStatus action(BikeStatus bikeStatus) {
             // Check for high beam / low beam toggle
-            ButtonStatusRead buttonHiLo = button.read(LIGHTS_LOW_HIGHT_SWITCH_INPUT_PIN);
+            ButtonStatus buttonHiLo = button.read(LIGHTS_LOW_HIGHT_SWITCH_INPUT);
             if (waitForRelease) {
                 if (!buttonHiLo.pressed) {
                     // Released

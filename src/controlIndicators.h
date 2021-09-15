@@ -17,8 +17,8 @@ class ControlIndicators {
 
         BikeStatus action(BikeStatus bikeStatus) {
             // Identify if any of indicator buttons are pressed or released by comparing to previous value
-            ButtonStatusRead buttonLeft = button.read(INDICATOR_LEFT_SWITCH_INPUT_PIN);
-            ButtonStatusRead buttonRight = button.read(INDICATOR_RIGHT_SWITCH_INPUT_PIN);
+            ButtonStatus buttonLeft = button.read(INDICATOR_LEFT_SWITCH_INPUT);
+            ButtonStatus buttonRight = button.read(INDICATOR_RIGHT_SWITCH_INPUT);
             if (waitForRelease) {
                 if (!buttonRight.pressed && !buttonLeft.pressed) {
                     // Released
@@ -26,16 +26,14 @@ class ControlIndicators {
                 }
                 else {
                     // if hazard activated check for longpress
-                    if (INDICATORS_HAZARD_LONG_PRESS_ENABLE > -1) {
-                        long newTimestamp = millis();
-                        if (newTimestamp - longPressTimestamp > INDICATORS_HAZARD_LONG_PRESS_ENABLE)
-                        {
+                    if ((bikeStatus.indicators == turnRight && INDICATORS_HAZARD_LONG_PRESS_ENABLE > -1) || (bikeStatus.indicators == turnLeft && INDICATORS_HAZARD_LONG_PRESS_ENABLE > -1) ) {
+                        int timeStampNow = millis();
+                        if (timeStampNow - longPressTimestamp > INDICATORS_HAZARD_LONG_PRESS_ENABLE) {
                             bikeStatus.indicators = hazard;
                             Serial.println("HAZARD ON");
-                            blinkTimestamp = millis() - INDICATORS_BLINK_INTERVAL_SPEED;;
-                            blinkOn = true;
-                            waitForRelease = true;
                         }
+                        else
+                            Serial.println("HAZARD INIT");
                     }
                 }
             }

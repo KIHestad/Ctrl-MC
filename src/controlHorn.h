@@ -14,7 +14,7 @@ class ControlHorn {
 
         BikeStatus action(BikeStatus bikeStatus) {
             
-            ButtonStatusRead buttonHorn = button.read(SIGNAL_HORN_SWITCH_INPUT_PIN);
+            ButtonStatus buttonHorn = button.read(SIGNAL_HORN_SWITCH_INPUT);
             if (buttonHorn.enabled)
             {
                 // Start horn if initiating and switch still pressed

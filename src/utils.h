@@ -16,6 +16,15 @@ class OnBoardLed {
             }
         }
 
+        void blinkSlow(size_t count) {
+            for (size_t i = 0; i < count; i++)
+            {
+                digitalWrite(ONBOARD_LED_PIN, HIGH);
+                delay(600);
+                digitalWrite(ONBOARD_LED_PIN, LOW);
+                delay(600);
+            }
+        }
         void on() {
             digitalWrite(ONBOARD_LED_PIN, HIGH);
         }
@@ -29,31 +38,34 @@ class Button {
 
     public:
 
-        ButtonStatusRead read(int inputPin[]) {
+        ButtonStatus read(Input input) {
             // Prepare return model
-            int pin = inputPin[0];
-            ButtonStatusRead buttonStatus = ButtonStatusRead();
+            ButtonStatus buttonStatus = ButtonStatus();
             buttonStatus.timeStamp = millis();
+            buttonStatus.input = input;
+            buttonStatus.enabled = (input.pin > -1);
             // Check if enabled
-            if (pin == -1)
+            if (!buttonStatus.enabled)
                 return buttonStatus;
             // Check if analog or digiral read
-            if (inputPin[1] == digitalPin) {
-                int digitalReadValue = digitalRead(pin);
-                buttonStatus.pressed = (digitalReadValue == 0) ? true : false;
-                Serial.print("DIGITAL READ: ");
-                Serial.print(digitalReadValue);
+            if (input.pinType == digitalPin) {
+                buttonStatus.value = digitalRead(input.pin);
+                buttonStatus.pressed = (buttonStatus.value == 0) ? true : false;
+                //Serial.print("DIGITAL READ: ");
+                //Serial.print(digitalReadValue);
             }
-            else if (inputPin[1] == analogPin) {
-                int analogReadValue = analogRead(pin);
-                Serial.print("ANALOG READ: ");
-                Serial.print(analogReadValue);
-                buttonStatus.pressed = (analogReadValue >= inputPin[2] && analogReadValue <= inputPin[3]) ? true : false;
+            else if (input.pinType == analogPin) {
+                buttonStatus.value = analogRead(input.pin);
+                //Serial.print("ANALOG READ: ");
+                //Serial.print(analogReadValue);
+                int minValue = input.expectedValue - ANALOG_PIN_VALUE_VARIATION;
+                int maxValue = input.expectedValue + ANALOG_PIN_VALUE_VARIATION;
+                buttonStatus.pressed = (buttonStatus.value >= minValue && buttonStatus.value <= maxValue) ? true : false;
             }
-            if (buttonStatus.pressed)
-                Serial.print(" -> DETECTED BUTTON PRESSED");
-            else
-                Serial.print(" -> DETECTED BUTTON RELEASED");
+            //if (buttonStatus.pressed)
+                //Serial.print(" -> DETECTED BUTTON PRESSED");
+            //else
+                //Serial.print(" -> DETECTED BUTTON RELEASED");
             return buttonStatus;
         };
 

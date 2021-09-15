@@ -5,7 +5,7 @@
 class PinSetup {
     // Set Arduino pins according to congig
     private:
-        void setRelayPin(int pin, bool defaultOn) {
+        void setRelayOutputPin(int pin, bool defaultOn) {
             if (pin > -1)
             {
                 pinMode(pin, OUTPUT);
@@ -15,36 +15,48 @@ class PinSetup {
                     digitalWrite(pin, HIGH);
             }
         }
-        void setInputPin(int pin[], int type) {
-            if (pin[0] > -1)
+        void setInputPin(Input input) {
+            if (input.pin > -1)
             {
-                pinMode(pin[0], type);
+                if (input.pinType == digitalPin)
+                    pinMode(input.pin, INPUT_PULLUP);
+                else
+                    pinMode(input.pin, INPUT);
             }
         }
 
     public:
         void setPinMode() {
             // Output pins for relay setup
-            setRelayPin(MAIN_IGNITION_POSITIVE_OUTPUT_PIN, false);
-            setRelayPin(MAIN_IGNITION_GROUD_OUTPUT_PIN, false);
-            setRelayPin(START_MOTOR_OUTPUT_PIN, false);
-            setRelayPin(LIGHTS_PARK_OUTPUT_PIN, false);
-            setRelayPin(LIGHTS_LOW_BEAM_OUTPUT_PIN, false);
-            setRelayPin(LIGHTS_HIGH_BEAM_OUTPUT_PIN, false);
-            setRelayPin(LIGHTS_BRAKE_OUTPUT_PIN, false);
-            setRelayPin(SIGNAL_HORN_OUTPUT_PIN, false);
-            setRelayPin(INDICATOR_LEFT_OUTPUT_PIN, false);
-            setRelayPin(INDICATOR_RIGHT_OUTPUT_PIN, false);
-            setRelayPin(AUX_OUTPUT_PIN, false);
+            setRelayOutputPin(MAIN_IGNITION_POSITIVE_OUTPUT_PIN, false);
+            setRelayOutputPin(MAIN_IGNITION_GROUD_OUTPUT_PIN, false);
+            setRelayOutputPin(START_MOTOR_OUTPUT_PIN, false);
+            setRelayOutputPin(SIGNAL_HORN_OUTPUT_PIN, false);
+            setRelayOutputPin(LIGHTS_PARK_OUTPUT_PIN, false);
+            setRelayOutputPin(LIGHTS_LOW_BEAM_OUTPUT_PIN, false);
+            setRelayOutputPin(LIGHTS_HIGH_BEAM_OUTPUT_PIN, false);
+            setRelayOutputPin(LIGHTS_BRAKE_OUTPUT_PIN, false);
+            setRelayOutputPin(INDICATOR_LEFT_OUTPUT_PIN, false);
+            setRelayOutputPin(INDICATOR_RIGHT_OUTPUT_PIN, false);
             // Onboard led
             pinMode(ONBOARD_LED_PIN, OUTPUT);
-            // Input pins for switches setup
-            setInputPin(MAIN_IGNITION_SWITCH_INPUT_PIN, INPUT_PULLUP);
-            setInputPin(START_MOTOR_SWITCH_INPUT_PIN, INPUT_PULLUP);
-            setInputPin(LIGHTS_MAIN_SWITCH_INPUT_PIN, INPUT_PULLUP);
-            setInputPin(LIGHTS_LOW_HIGHT_SWITCH_INPUT_PIN, INPUT_PULLUP);
-            setInputPin(LIGHTS_BRAKE_SWITCH_INPUT_PIN, INPUT_PULLUP);
-            // Output pin for onboard led
+            // Display
+
+            // Input pins
+            setInputPin(MAIN_IGNITION_SWITCH_INPUT);
+            setInputPin(SIGNAL_HORN_SWITCH_INPUT);
+            setInputPin(LIGHTS_LOW_HIGHT_SWITCH_INPUT);
+            setInputPin(INDICATOR_LEFT_SWITCH_INPUT);
+            setInputPin(INDICATOR_RIGHT_SWITCH_INPUT);
+            setInputPin(LIGHTS_MAIN_SWITCH_INPUT);
+            setInputPin(START_MOTOR_SWITCH_INPUT);
+            setInputPin(DISPLAY_MENU_ITEM_NEXT_INPUT);
+            setInputPin(DISPLAY_MENU_ITEM_SELECT_INPUT);
+            setInputPin(CLUTCH_SWITCH_INPUT);
+            setInputPin(BRAKE_SWITCH_INPUT);
+            setInputPin(OIL_SENSOR_INPUT);
+            setInputPin(NEUTRAL_SWITCH_INPUT);
+            setInputPin(ENGINE_RUNNING_SENSOR_INPUT);
         }
 };
 

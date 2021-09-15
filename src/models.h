@@ -1,33 +1,39 @@
 /*
  *   Ctrl-MC // An open source Arduino project made by KI Hestad: https://github.com/KIHestad/Ctrl-MC
  */
-enum IgnitionStatus { ignitionOff, ignitionStandby, engineStarting, engineRunning, engineStopping };
+enum IgnitionStatus { ignitionOff, ignitionPasswordStart, ignitionStandby, engineStarting, engineRunning, engineStopping };
 enum LightStatus { lightsOff, parkLights, lowBeam, highBeam };
 enum IndicatorStatus { indicatorsOff, turnLeft, turnRight, hazard };
 enum HornStatus { hornOff, hornInitiating, hornOn };
+enum PinType {analogPin, digitalPin};
 
-int analogPin = 0;
-int digitalPin = 1;
+// Parameters for inputs on the arduino
+class Input {
+    public:
+        int pin;
+        String name;
+        PinType pinType;
+        int expectedValue;
+        
+};
 
-class ButtonStatusRead {
+// Return values for button read
+class ButtonStatus {
     public:
         bool enabled = false;
         bool pressed = false;
         int value = 0;
         long timeStamp;
+        Input input;
 };
 
-class ButtonStatus {
-    public:
-        bool pressed = false;
-        long pressedTime;
-        long releasedTime;
-};
-
+// Bike main status
 class BikeStatus {
     public:
-        IgnitionStatus ignitionStatus = ignitionStandby;
+        IgnitionStatus ignitionStatus = ignitionOff;
         LightStatus lights = lightsOff;
         IndicatorStatus indicators = indicatorsOff;
         HornStatus horn = hornOff; 
 };
+
+
