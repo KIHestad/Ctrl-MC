@@ -14,7 +14,6 @@ class InputGroup {
         String displayName;
 };
 
-
 // Parameters for inputs on the arduino
 class Input {
     public:
@@ -22,8 +21,8 @@ class Input {
         int pin; // What pin on the Ardiono it is connected to
         PinType pinType; 
         int expectedValue; // For analogRead only when used for button, what value is expected to be received to identify 
-        String shortName; // Used for testing/debugging to write to terminal window name of the input
-        String displayName; // Used for display to show information about input
+        char shortName[8]; // Used for testing/debugging to write to terminal window name of the input
+        char displayName[25]; // Used for display to show information about input
 };
 
 // Buttons initial and previous status, used to avoid dirty signal from button or accidently double-click 

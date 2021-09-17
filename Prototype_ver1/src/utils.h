@@ -42,15 +42,17 @@ class Button {
             // Prepare return model
             ButtonStatus buttonStatus = ButtonStatus();
             buttonStatus.input = input;
-            // Check timeout for any button = 250ms
+            if (!input.enabled)
+                return buttonStatus;
+            // Check timeout for any button, with this code any input are read each 250ms and returned same value within this time period
             long timeStampNow = millis();
             if (timeStampNow - buttonStatusHistory[input.pin].lastPressTimestamp < 250)
             {
                 buttonStatus.pressed = buttonStatusHistory[input.pin].pressed;
-                buttonStatus.value = buttonStatusHistory[input.pin].value;                
+                buttonStatus.value = buttonStatusHistory[input.pin].value;
                 return buttonStatus;
             }
-            // Timeout not triggered
+            //Timeout not triggered
             buttonStatusHistory[input.pin].lastPressTimestamp = timeStampNow;
             // Check if analog or digiral read
             if (input.pinType == digitalPin) {
@@ -64,7 +66,12 @@ class Button {
                 buttonStatus.pressed = (buttonStatus.value >= minValue && buttonStatus.value <= maxValue) ? true : false;
             }
             // Add to history
+            buttonStatusHistory[input.pin].value = buttonStatus.value;
             buttonStatusHistory[input.pin].pressed = buttonStatus.pressed;
+
+            // TODO: debugging, show pressed button
+            // if (buttonStatus.pressed)
+            //     Serial.println(input.displayName);
             return buttonStatus;
         };
 

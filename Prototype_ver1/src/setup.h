@@ -4,7 +4,7 @@
 
 ButtonStatusHistory buttonStatusHistory[20]; // Array storing last time a button was pressed for all buttons, used to ignore dirty signal from buttons causing double-press
 
-class PinSetup {
+class Setup {
     // Set Arduino pins according to congig
     private:
         void setRelayOutputPin(int pin, bool defaultOn) {
@@ -59,6 +59,17 @@ class PinSetup {
             setInputPin(OIL_SENSOR_INPUT);
             setInputPin(NEUTRAL_SWITCH_INPUT);
             setInputPin(ENGINE_RUNNING_SENSOR_INPUT);
+
+            //Done
+            Serial.println("Pin Setup Done");
         }
+
+        void initButtonStatusHisory() {
+            for (size_t i = 0; i < 20; i++)
+            {
+                buttonStatusHistory[i].lastPressTimestamp = (millis() - 1000);
+            }
+            
+        };
 };
 

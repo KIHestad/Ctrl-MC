@@ -24,25 +24,25 @@
 int ANALOG_PIN_VALUE_VARIATION = 25; // This value will be subtracted and added to the analog_value to get min- and max reading acceptance range
 // Normally only the pin number and analog_pin_expected_read_value should be edited and set according to the Arduino pin actually used and input signal according to what values returned
 // When using several buttons on one analog pin connected in series, the reccomended resistor is: 150ohm (but it can vary)
-Input MAIN_IGNITION_SWITCH_INPUT        = { false, 12, digitalPin, 0, "IGN-SW", "Ignition Switch" };
+Input MAIN_IGNITION_SWITCH_INPUT        = { false, 12, digitalPin, 0, "IGNSW", "Ignition Switch" };
 // Lever left
-Input CLUTCH_SWITCH_INPUT               = { true, A0, analogPin, 1023, "CLUTCH", "Clutch Lever" };
+Input CLUTCH_SWITCH_INPUT               = { true, A0, analogPin, 1023, "CLTCH", "Clutch Lever" };
 // Normally on left hand side handle button controls
 Input SIGNAL_HORN_SWITCH_INPUT          = { true, A0, analogPin, 145, "HORN", "Horn Button" }; // When triggered using long press it can use same pin as for ligths hi/lo
-Input LIGHTS_LOW_HIGHT_SWITCH_INPUT     = { true, A0, analogPin, 145, "HI/LO", "Lights High/Low Beam Button" }; // Triggered with short press, can be same as signal horn
-Input INDICATOR_LEFT_SWITCH_INPUT       = { true, A0, analogPin, 437, "T-LEFT", "Turn Signal Left Button" };
-Input INDICATOR_RIGHT_SWITCH_INPUT      = { true, A0, analogPin, 254, "T-RIGHT", "Turn Signal Left Button" };
+Input LIGHTS_LOW_HIGHT_SWITCH_INPUT     = { true, A0, analogPin, 145, "HI/LO", "Lights Hi/Lo Button" }; // Triggered with short press, can be same as signal horn
+Input INDICATOR_LEFT_SWITCH_INPUT       = { true, A0, analogPin, 437, "IND-L", "Indicator Left Button" };
+Input INDICATOR_RIGHT_SWITCH_INPUT      = { true, A0, analogPin, 254, "IND-R", "Indicator Left Button" };
 // Normally on right hand side handle button controls
-Input LIGHTS_MAIN_SWITCH_INPUT          = { false }; // Can be ignored if not having enough buttons, lights can be selected from display menu
-Input START_MOTOR_SWITCH_INPUT          = { true, A1, analogPin, 145, "STA/STP", "Start/Stop Button" }; // Can be safer to use separate digital pin in case series buttons has dirty signal
-Input DISPLAY_MENU_ITEM_SELECT_INPUT    = { true, A1, analogPin, 437, "D-SEL", "Display Select Item" };
-Input DISPLAY_MENU_ITEM_NEXT_INPUT      = { true, A1, analogPin, 254, "D-NEXT", "Display Goto Next" };
+Input LIGHTS_MAIN_SWITCH_INPUT          = { false, -1 , digitalPin, 0, "LIGHTS", "Lights Main Button" }; // Can be ignored if not having enough buttons, lights can be selected from display menu
+Input START_MOTOR_SWITCH_INPUT          = { false, A1, analogPin, 145, "STA/STP", "Start/Stop Button" }; // Can be safer to use separate digital pin in case series buttons has dirty signal
+Input DISPLAY_MENU_ITEM_SELECT_INPUT    = { false, A1, analogPin, 437, "DSP-SEL", "Display Select Item" };
+Input DISPLAY_MENU_ITEM_NEXT_INPUT      = { false, A1, analogPin, 254, "DSP-NXT", "Display Goto Next" };
 // Lever right
-Input BRAKE_SWITCH_INPUT                = { true, A1, analogPin, 1023, "BRAKE", "Brake Lever" };
+Input BRAKE_SWITCH_INPUT                = { false, A1, analogPin, 1023, "BRAKE", "Brake Lever" };
 // Sensors
-Input OIL_SENSOR_INPUT                  = { false };
-Input NEUTRAL_SWITCH_INPUT              = { false };
-Input ENGINE_RUNNING_SENSOR_INPUT       = { false };
+Input OIL_SENSOR_INPUT                  = { false, -1 , digitalPin, 0, "OIL", "Oil Sensor" };
+Input NEUTRAL_SWITCH_INPUT              = { false, -1 , digitalPin, 0, "NEUTRAL", "Neutral Switch" };
+Input ENGINE_RUNNING_SENSOR_INPUT       = { false, -1 , digitalPin, 0, "RUN", "Engine Running Sensor" };
 
 // Several buttons can be connected to the same pin when using analog input
 // In this section list the inputs that are connected to the same pin, it makes reading the buttons faster for the methods, as it is not needed to perform actual analogRead per input
@@ -102,7 +102,7 @@ bool TEST_READ_ENABLED_INPUTS = false;    // Display in terminal inpus set as en
 //   Feature: Main Ignition
 // *************************************************
 
-bool IGNITION_FEATURE_ENABLED = true;
+bool IGNITION_FEATURE_ENABLED = false;
 // Ignition password
 bool IGN_PASSWORD_ENABLED = true;                           // Enables to power on the motorcycle by a spesified button press combination
 Input IGN_PASSWORD_START_INPUT = CLUTCH_SWITCH_INPUT;       // Button or lever to start/restart entering password, cannot be used as part of the password
@@ -154,9 +154,13 @@ int INDICATORS_HAZARD_LONG_PRESS_ENABLE = 1500;         // Number of millisecond
 
 
 // *************************************************
-// Display Module
+//   feature: OLED Display Module
 // *************************************************
 
+bool DISPLAY_FEATURE_ENABLED = true;
+int DISPLAY_SCREEN_WIDTH = 128;
+int DISPLAY_SCREEN_HEIGHT = 64;
+int DISPLAY_OLED_RESET = -1;
 
 
 
