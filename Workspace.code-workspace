@@ -3,6 +3,10 @@
 		{
 			"name": "Ctrl-MC_HandlebarUnit",
 			"path": "Ctrl-MC_HandlebarUnit"
+		},
+		{
+			"name": "Ctrl-MC_RelayUnit",
+			"path": "Ctrl-MC_RelayUnit"
 		}
 	],
 	"settings": {}

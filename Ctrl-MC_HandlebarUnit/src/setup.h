@@ -28,8 +28,6 @@ class Setup {
             // Onboard LED pin
             pinMode(ONBOARD_LED_PIN, OUTPUT);
             digitalWrite(ONBOARD_LED_PIN, LOW);
-            //Done
-            Serial.println("Pin Setup Done");
         }
 
 };

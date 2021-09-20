@@ -19,12 +19,8 @@ class ControlIgnition {
                 // Btn pressed, remember to check for continously press
                 btnPwPreviouslyPressedPin = btn.pin;
                 // Detected button press, check if incorrect password keypress
-                if (passwordPressCount < IGN_PW_LENGTH && btn.pin != IGN_PW[passwordPressCount].pin) {
+                if (passwordPressCount < IGN_PW_LENGTH && btn.pin != IGN_PW[passwordPressCount].pin) 
                     passwordMismatch = true;
-                    Serial.println("CORRECT");
-                }
-                else
-                    Serial.println("WRONG");
                 // Check if password complete
                 passwordPressCount++;
                 Image image = Image();
@@ -33,7 +29,7 @@ class ControlIgnition {
                     bikeStatus.ignition = ignOn;
                     display.clearDisplay();
                     image.unlocked();
-                    bikeStatus.displayOffTimestamp = millis(); // initiate turn off display
+                    delay(1000);
                 }
                 else {
                     // Show button press icon
@@ -78,7 +74,6 @@ class ControlIgnition {
                         passwordTimeoutProgressStarted = false;
                         passwordTimeoutTimestamp = millis();
                         btnPwPreviouslyPressedPin = IGN_PW_START_BUTTON.pin;
-                        Serial.println("START PW");
                     }
                 }
                 else if (bikeStatus.ignition == ignPasswordMode)
@@ -109,16 +104,5 @@ class ControlIgnition {
             }
         };
 
-        void checkForTurnOff() {
-            // TEMP: TURN OFF
-            bool btnStartStopPressed = digitalRead(INPUT_START_STOP.pin) == 0;
-            if (btnStartStopPressed)
-            {
-                bikeStatus.ignition = ignOff;
-                bikeStatus.displayOffTimestamp = millis();
-                Image image = Image();
-                display.clearDisplay();
-                image.locked();
-            }
-        };
+        
 };

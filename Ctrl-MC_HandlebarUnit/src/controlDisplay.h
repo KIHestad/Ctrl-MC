@@ -25,12 +25,12 @@ class ControlDisplay {
         void init() {
             // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
             if(!display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_SCREEN_ADDRESS)) {
-                Serial.println(F("Display (SSD1306) allocation failed"));
+                // TODO, use spaker to send alarm sound signal
+                // Serial.println(F("Display (SSD1306) allocation failed"));
                 for(;;); // HALT - Don't proceed, loop forever
             }
             display.setTextSize(DISPLAY_TEXT_SIZE);
             display.setTextColor(SSD1306_WHITE);
-            Serial.println("Display OK");
             showSplash();
             bikeStatus.displayOffTimestamp = millis();
         };

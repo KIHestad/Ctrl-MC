@@ -3,13 +3,17 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <models.h>
-#include <_config.h> // To be user edited to set controllers features
+#include <codes.h>
+#include <_config.h> // To be user edited to enable/disable features and configure arduino board
 BikeStatus bikeStatus;
 #include <controlDisplay.h>
 ControlDisplay controlDisplay;
 #include <controlIgnition.h>
 ControlIgnition controlIgnition;
 #include <setup.h>
+#include <controlRealyModule.h>
+ControlRelayModule controlRelayModule;
+#include <serialCommunication.h>
 
 void setup() {
   // Init
@@ -29,7 +33,7 @@ void loop() {
   }
   else {
     // Ignition is on, allow operations
-    controlIgnition.checkForTurnOff();
+    controlRelayModule.CheckCommunication();
   }
 
 }
