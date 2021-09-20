@@ -26,7 +26,7 @@ class SerialCommunication {
 
         SerialCommunicationData read() {
             // Prepare model
-            CodeToHandlebarUnit codeSend = CodeToHandlebarUnit();
+            CodeToHandlebarUnit returnCodeToSend = CodeToHandlebarUnit();
             SerialCommunicationData data = SerialCommunicationData();
             data.retrieved = false;
             // Check for serial data retrieved
@@ -38,7 +38,7 @@ class SerialCommunication {
                 // Validate data, allow only value 0-126 as command
                 if (value > 127) {
                     // Invalid value or data/checksum bytes out of sync
-                    sendError(codeSend.errorInvalidDataValue); // Error code 0: invalid data or retrived checksum as data byte
+                    sendError(returnCodeToSend.errorInvalidDataValue); // Error code 0: invalid data or retrived checksum as data byte
                     return data;
                 }
                 // Found valid data, look for checksum - timeout if not received to avoid hang
@@ -56,20 +56,20 @@ class SerialCommunication {
                 // Validate checksum
                 if (value < 128) {
                     // Invalid checksum or data/checksum bytes out of sync
-                    sendError(codeSend.errorInvalidChecksumValue); // Error code 1: invalid checksum or retrived data as checksum byte
+                    sendError(returnCodeToSend.errorInvalidChecksumValue); // Error code 1: invalid checksum or retrived data as checksum byte
                     return data;
                 }
                 // Validate data against checksum
                 if (value != (checksum - 128)) {
                     // Invalid data according to checksum
-                    sendError(codeSend.errorInvalidChecksumValue); // Error code 2: checksum does not match data
+                    sendError(returnCodeToSend.errorInvalidChecksumValue); // Error code 2: checksum does not match data
                     return data;
                 }
                 // Validation OK, return data
                 data.codeGroup = value / 10;
                 data.code = value;
                 data.retrieved = true;
-                sendSuccess(codeSend.successSerialRead);
+                sendSuccess(returnCodeToSend.successSerialRead);
             }
             return data;
         }
