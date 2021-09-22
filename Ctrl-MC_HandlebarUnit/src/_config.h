@@ -1,6 +1,4 @@
-/*
- *   Ctrl-MC // Arduino motorcycle controller software made by KI Hestad: https://github.com/KIHestad/Ctrl-MC
- */
+/***  Ctrl-MC // An open source Motorcycle Controller Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC  ***/
 
 /*****************************************************************************
  *   Output Pins cofiguration settings   

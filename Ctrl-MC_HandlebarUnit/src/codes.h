@@ -1,8 +1,4 @@
-/*
- 
-  Ctrl-MC // An open source Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC
- 
-*/
+/***  Ctrl-MC // An open source Motorcycle Controller Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC  ***/
 
 // Code must be 8 bit int from 0-255 to be able to send it using serial communication as a char
 // Code group is just code divided on 10 to conveniant create a group of codes with the actual code to identify action
