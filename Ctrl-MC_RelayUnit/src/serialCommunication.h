@@ -6,72 +6,95 @@
 
 class SerialCommunication {
     
-    private:
-
-        void sendError(int errorCode) {
-            Serial.write(errorCode); 
-            // TODO: TEMP
-            OnBoardLed onBoardLed = OnBoardLed();
-            onBoardLed.blink(5);
-        }
-
-        void sendSuccess(int successCode) {
-            Serial.write(successCode); 
-            // TODO: TEMP
-            OnBoardLed onBoardLed = OnBoardLed();
-            onBoardLed.blinkSlow(1);
-        }
-
     public:
 
-        SerialCommunicationData read() {
+        void send(uint8_t code) {
+            // Send code as char, and include checksum to relay unit
+            Serial.write(code);
+            Serial.write(255-code);
+        }
+
+        SerialCommunicationDataReceived read() {
             // Prepare model
-            CodeToHandlebarUnit returnCodeToSend = CodeToHandlebarUnit();
-            SerialCommunicationData data = SerialCommunicationData();
-            data.retrieved = false;
-            // Check for serial data retrieved
-            if (Serial.available() > 0) {
-            int value = -1;
-            int checksum = -1;
-                // Found data in buffer
-                value = Serial.read();
-                // Validate data, allow only value 0-126 as command
-                if (value > 127) {
-                    // Invalid value or data/checksum bytes out of sync
-                    sendError(returnCodeToSend.errorInvalidDataValue); // Error code 0: invalid data or retrived checksum as data byte
-                    return data;
+            SerialCommunicationDataReceived dataReceived = SerialCommunicationDataReceived();
+            dataReceived.success = false;
+            dataReceived.received = false;
+            // Check for data in serial buffer 
+            if (Serial.available() == 0) {
+                // no data found
+                return dataReceived;
+            }
+            // Found data, read and look for CRC
+            dataReceived.received = true;
+            uint8_t code = Serial.read();
+            // Wait for CRC or timeout
+            uint8_t crc;
+            bool crcRetrived = false;
+            int timeout = 200; // milliseconds
+            unsigned long readCRCStartTimestamp = millis();
+            long timeNowTimestamp = readCRCStartTimestamp;
+            while (!crcRetrived && (timeNowTimestamp < readCRCStartTimestamp + timeout))
+            {
+                if (Serial.available() > 0) {
+                    crc = Serial.read();
+                    crcRetrived = true;
                 }
-                // Found valid data, look for checksum - timeout if not received to avoid hang
-                bool readChecksum = false;
-                int timeout = 200; // milliseconds
-                long readStartTimestamp = millis();
-                long timeNowTimestamp = readStartTimestamp;
-                while (!readChecksum && (timeNowTimestamp > readStartTimestamp + timeout)) {
-                    if (Serial.available() > 0) {
-                        checksum = Serial.read();
-                        readChecksum = true;
-                    }
-                    timeNowTimestamp = millis();
-                }
-                // Validate checksum
-                if (value < 128) {
-                    // Invalid checksum or data/checksum bytes out of sync
-                    sendError(returnCodeToSend.errorInvalidChecksumValue); // Error code 1: invalid checksum or retrived data as checksum byte
-                    return data;
-                }
-                // Validate data against checksum
-                if (value != (checksum - 128)) {
-                    // Invalid data according to checksum
-                    sendError(returnCodeToSend.errorInvalidChecksumValue); // Error code 2: checksum does not match data
-                    return data;
+                timeNowTimestamp = millis();
+            }
+            // Check if crc missing or bad
+            CodeToHandlebarUnit codeToHandlebarUnit = CodeToHandlebarUnit();
+            if (!crcRetrived || code != 255-crc) {
+                // missing crc or bad crc
+                
+                send(codeToHandlebarUnit.errorChecksumValidationFailed);
+                return dataReceived;
+            }
+            // Check for handshake
+            CodeToRelayUnit codeToRelayUnit = CodeToRelayUnit();
+            if (code == codeToRelayUnit.requestHandshake) {
+                send(codeToHandlebarUnit.successHandshake);
+                // code is processed, terminate other actions
+                return dataReceived;
+            }
+            // All fine
+            dataReceived.success = true;
+            dataReceived.code = code;
+            dataReceived.codeGroup = code / 10;
+            return dataReceived;
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            // Check for serial data sent from handlebar unit
+            if (Serial.available() >= 2) {
+                dataReceived.received = true;
+                uint8_t code = Serial.read();
+                uint8_t crc = Serial.read();
+                // Validate data
+                if (code != 255-crc) {
+                    CodeToHandlebarUnit response = CodeToHandlebarUnit();
+                    send(response.errorChecksumValidationFailed); 
+                    return dataReceived;
                 }
                 // Validation OK, return data
-                data.codeGroup = value / 10;
-                data.code = value;
-                data.retrieved = true;
-                sendSuccess(returnCodeToSend.successSerialRead);
+                dataReceived.success = true;
+                dataReceived.codeGroup = code / 10;
+                dataReceived.code = code;
             }
-            return data;
+            return dataReceived;
         }
+
 
 };

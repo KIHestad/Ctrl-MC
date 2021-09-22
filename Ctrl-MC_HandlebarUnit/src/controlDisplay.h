@@ -1,9 +1,7 @@
 
-Adafruit_SSD1306 display(DISPLAY_SCREEN_WIDTH, DISPLAY_SCREEN_HEIGHT, &Wire, DISPLAY_SCREEN_ADDRESS);
-#include <image.h>
-
 class ControlDisplay {
     private:
+
         // Get x position for centered text
         int getXposForCenterText(int textLength) {
             return (DISPLAY_SCREEN_WIDTH/2)-(textLength*DISPLAY_TEXT_CHAR_WIDTH/2);
@@ -55,37 +53,51 @@ class ControlDisplay {
             delay(500);
         };
 
-        // Write status text at bottom of display, remove any other text in that area first
-        void prepareForStatusText(int textLength) {
-            display.fillRect(0, DISPLAY_SCREEN_HEIGHT-DISPLAY_TEXT_CHAR_HEIGHT -1, DISPLAY_SCREEN_WIDTH, DISPLAY_TEXT_CHAR_HEIGHT +1, SSD1306_BLACK); 
-            display.setCursor(getXposForCenterText(textLength), DISPLAY_SCREEN_HEIGHT - DISPLAY_TEXT_CHAR_HEIGHT); 
+        void statusTextRemove() {
+            display.fillRect(0, DISPLAY_SCREEN_HEIGHT-DISPLAY_TEXT_CHAR_HEIGHT -1, DISPLAY_SCREEN_WIDTH, DISPLAY_TEXT_CHAR_HEIGHT -1, SSD1306_BLACK); 
         };
+
+        void statusTextShow(String txt) {
+            statusTextRemove();
+            int textPixelWidth = txt.length() * DISPLAY_TEXT_CHAR_WIDTH;
+            display.setCursor((DISPLAY_SCREEN_WIDTH/2) - (textPixelWidth/2) , DISPLAY_SCREEN_HEIGHT - DISPLAY_TEXT_CHAR_HEIGHT -1); 
+            display.println(txt);
+            display.println(F("")); // TODO: Unstable to pass String, does this help?
+            display.display();
+        }
 
         // Turn off display by clearing content after a timeout period, show progressbar until display off
         void displayOffProgress() {
             if (bikeStatus.displayOffTimestamp > 0) {
-                long timeElapsed = millis() - bikeStatus.displayOffTimestamp;
+                unsigned long timeElapsed = millis() - bikeStatus.displayOffTimestamp;
                 // Check for power off
                 if (timeElapsed > bikeStatus.displayOffWaitTime) {
                     // Power off now
-                    displayOffCancel();
+                    displayOffRemove();
                     display.clearDisplay();
                     display.display();
+                    bikeStatus.displayStatusTextRemoveTimeStamp = 0;
                 }
                 else {
                     // Show progress bar
-                    int y = DISPLAY_SCREEN_HEIGHT-1;
                     int xLineStart = DISPLAY_SCREEN_WIDTH * timeElapsed / bikeStatus.displayOffWaitTime / 2;
                     int xLineEnd = DISPLAY_SCREEN_WIDTH - xLineStart;
-                    display.drawLine(0, y, DISPLAY_SCREEN_WIDTH, y, SSD1306_BLACK);
-                    display.drawLine(xLineStart, y, xLineEnd + 2, y, SSD1306_WHITE);
+                    display.drawLine(0, 0, DISPLAY_SCREEN_WIDTH, 0, SSD1306_BLACK);
+                    display.drawLine(xLineStart, 0, xLineEnd + 2, 0, SSD1306_WHITE);
                     display.display();
                     bikeStatus.displayOffProgressRunning = true;
                 }
             }
+            if (bikeStatus.displayStatusTextRemoveTimeStamp > 0 ) {
+                if (millis() > bikeStatus.displayStatusTextRemoveTimeStamp) {
+                    statusTextRemove();
+                    display.display();
+                    bikeStatus.displayStatusTextRemoveTimeStamp = 0;
+                }
+            }
         };
 
-        void displayOffCancel() {
+        void displayOffRemove() {
             // Hide progress bar
             bikeStatus.displayOffTimestamp = 0;
             bikeStatus.displayOffProgressRunning = false;

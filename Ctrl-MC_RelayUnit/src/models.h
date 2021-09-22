@@ -7,10 +7,11 @@
 // Enums
 enum RelayStatus { relayOn, relayOff, relayInactive };
 
-// Used tp retrive serial communication data
-class SerialCommunicationData {
+// Model used to retrive serial communication data
+class SerialCommunicationDataReceived {
     public:
-        bool retrieved;
-        int codeGroup;
-        int code;
+        bool received;
+        bool success;
+        uint8_t codeGroup;
+        uint8_t code;
 };

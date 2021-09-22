@@ -10,8 +10,12 @@ class Setup {
         
         void init() {
             setPinMode();
+            bikeStatus = BikeStatus();
             bikeStatus.init();
+            controlDisplay = ControlDisplay();
             controlDisplay.init();
+            serialCommunication = SerialCommunication();
+            controlIgnition = ControlIgnition();
         }
         
         void setPinMode() {

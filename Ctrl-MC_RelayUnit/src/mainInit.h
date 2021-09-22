@@ -7,7 +7,7 @@
 class MainInit {
     // Set Arduino pins according to config
     private:
-        void setRelayOutputPin(int pin, bool defaultOn) {
+        void setRelayOutputPin(uint8_t pin, bool defaultOn) {
             if (pin > -1)
             {
                 pinMode(pin, OUTPUT);

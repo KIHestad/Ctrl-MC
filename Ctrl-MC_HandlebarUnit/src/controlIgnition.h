@@ -3,9 +3,9 @@ class ControlIgnition {
     private:
         int passwordPressCount = 0;
         bool passwordMismatch = false;
-        long passwordTimeoutTimestamp = 0;
+        unsigned long passwordTimeoutTimestamp = 0;
         bool passwordTimeoutProgressStarted = false;
-        int btnPwPreviouslyPressedPin = 0;
+        uint8_t btnPwPreviouslyPressedPin = 0;
 
         void CheckPW(Input btn) {
             // Check if btn is pressed
@@ -29,7 +29,7 @@ class ControlIgnition {
                     bikeStatus.ignition = ignOn;
                     display.clearDisplay();
                     image.unlocked();
-                    delay(1000);
+                    bikeStatus.displayOffTimestamp = millis();
                 }
                 else {
                     // Show button press icon
@@ -42,7 +42,7 @@ class ControlIgnition {
                     y = (y-1) / 3;
                     display.fillRect(60 + (x*14), 8 + (y*16), 12, 14, SSD1306_INVERSE);
                     if (bikeStatus.displayOffTimestamp > 0 || passwordTimeoutProgressStarted) {
-                        controlDisplay.displayOffCancel(); // Cancel running display off
+                        controlDisplay.displayOffRemove(); // Cancel running display off
                         passwordTimeoutProgressStarted = false;
                     }
                     display.display();
@@ -64,7 +64,7 @@ class ControlIgnition {
                         // Activated password feature
                         bikeStatus.ignition = ignPasswordMode;
                         // Cancel running display off
-                        controlDisplay.displayOffCancel();
+                        controlDisplay.displayOffRemove();
                         Image image = Image();
                         display.clearDisplay();
                         image.locked();

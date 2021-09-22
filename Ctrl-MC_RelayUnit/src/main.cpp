@@ -11,6 +11,9 @@
 #include <utils.h>
 #include <mainInit.h>
 #include <serialCommunication.h>
+// Relays
+#include <relayIgnition.h>
+
 MainInit mainInit;
 SerialCommunication serialCommunication;
 CodeToRelayUnit codeReceived;
@@ -24,21 +27,16 @@ void setup() {
 
 void loop() {
     // Check for incoming data from handlebar unit
-    SerialCommunicationData data = serialCommunication.read();
-    if (data.retrieved) {
-        // Data read, perform action 
+    SerialCommunicationDataReceived data = serialCommunication.read();
+    if (data.success) {
+        
         if (data.codeGroup == codeGroupReceived.ignition) {
-            RelayStatus currentIgnitionStatus = relay.getStatus(OUTPUT_PIN_MAIN_IGNITION);
-            if (currentIgnitionStatus != relayInactive)
-            {
-                RelayStatus newIgnitionStatus;
-                if (data.code == codeReceived.ignitionTurnOn)
-                    newIgnitionStatus = relayOn;
-                else if (data.code == codeReceived.ignitionTurnOff)
-                    newIgnitionStatus = relayOff;
-                if (currentIgnitionStatus != newIgnitionStatus)
-                    relay.set(OUTPUT_PIN_MAIN_IGNITION, newIgnitionStatus);
-            }
+            RelayIgnition r = RelayIgnition();
+            r.action(data);            
+        }
+        else {
+            CodeToHandlebarUnit responseCode = CodeToHandlebarUnit();
+            serialCommunication.send(responseCode.errorChecksumValidationFailed);
         }
     }
 }
