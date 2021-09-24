@@ -38,30 +38,39 @@ class ControlDisplay {
         void showSplash() {
             Image image = Image();
             image.kiHestadLogo();
-            delay(3000);
+            delay(1750);
             display.clearDisplay();
             setCursorForCenteredText(1, 7);
             display.println(F("Ctrl-MC"));
             display.display();
-            delay(500);
+            delay(250);
             setCursorForCenteredText(2, 21);
             display.println(F("Motorcycle Controller"));
             display.display();
-            delay(500);
+            delay(250);
             setCursorForCenteredText(3, 12);
             display.println(F("by KI Hestad"));
             display.display();
-            delay(500);
+            delay(250);
         };
 
         void statusTextRemove() {
             display.fillRect(0, DISPLAY_SCREEN_HEIGHT-DISPLAY_TEXT_CHAR_HEIGHT -1, DISPLAY_SCREEN_WIDTH, DISPLAY_TEXT_CHAR_HEIGHT -1, SSD1306_BLACK); 
         };
 
+        void statusTextSetCursor(uint8_t txtLength) {
+            uint8_t textPixelWidth = txtLength * DISPLAY_TEXT_CHAR_WIDTH;
+            display.setCursor((DISPLAY_SCREEN_WIDTH/2) - (textPixelWidth/2) , DISPLAY_SCREEN_HEIGHT - DISPLAY_TEXT_CHAR_HEIGHT -1); 
+        }
+
+        void statusTextPrepare(uint8_t txtLength) {
+            statusTextRemove();
+            statusTextSetCursor(txtLength);
+        }
+
         void statusTextShow(String txt) {
             statusTextRemove();
-            int textPixelWidth = txt.length() * DISPLAY_TEXT_CHAR_WIDTH;
-            display.setCursor((DISPLAY_SCREEN_WIDTH/2) - (textPixelWidth/2) , DISPLAY_SCREEN_HEIGHT - DISPLAY_TEXT_CHAR_HEIGHT -1); 
+            statusTextSetCursor(txt.length());
             display.println(txt);
             display.println(F("")); // TODO: Unstable to pass String, does this help?
             display.display();

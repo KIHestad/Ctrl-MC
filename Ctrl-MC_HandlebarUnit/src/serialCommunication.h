@@ -39,14 +39,14 @@ class SerialCommunication {
             SerialCommunicationDataReceived response = SerialCommunicationDataReceived();
             response.success = false;
             // Wait for reply or timeout
-            uint8_t responseCode;
-            uint8_t responseCRC;
+            uint8_t responseCode = 0;
+            uint8_t responseCRC = 0;
             bool responseCodeRetrieved = false;
             bool responseCRCRetrived = false;
             long timeNowTimestamp = millis();
             long timeoutTimestamp = timeNowTimestamp + 500; // milliseconds before timeout
             // Check for data in serial buffer within timeout period, read code then CRC 
-            while ((!responseCodeRetrieved && !responseCRCRetrived) || timeNowTimestamp < timeoutTimestamp)
+            while (!responseCRCRetrived && timeNowTimestamp < timeoutTimestamp)
             {
                 if (Serial.available() > 0) {
                     if (!responseCodeRetrieved) {
@@ -95,19 +95,32 @@ class SerialCommunication {
         }
 
         void handshake() {
-            if (!bikeStatus.communicationOK || millis() > bikeStatus.communicationLastPing + (RELAY_UNIT_PING_INTERVAL * 1000)) {
-                // Display message
-                controlDisplay.statusTextShow("HANDSHAKE START");
+            if (!bikeStatus.communicationOK || millis() > bikeStatus.communicationLastPing + (SYSTEM_HANDSHAKE_CHECK_INTERVAL * 1000)) {
+                // TODO: Only display message if selected
+                if (false) {
+                    controlDisplay.statusTextShow("HANDSHAKE START");
+                }
                 // Try send ping to relay module
                 CodeToRelayUnit codeToRelayUnit = CodeToRelayUnit();
                 CodeToHandlebarUnit codeToHandlebarUnit = CodeToHandlebarUnit();
-                SerialCommunicationDataReceived response = send(codeToRelayUnit.requestHandshake, codeToHandlebarUnit.successHandshake);
+                SerialCommunicationDataReceived response = send(codeToRelayUnit.requestHandshake);
                 // Check response, if comm falure or invalidg hanshake code response retry communication
-                if (!response.success || (response.success && response.code != codeToHandlebarUnit.successHandshake))
+                if (response.success && response.code == codeToHandlebarUnit.successHandshake)
                 {
+                    // Handshake OK
+                    bikeStatus.communicationOK = true;
+                    bikeStatus.communicationLastPing = millis();
+                    // TODO: Only display message if selected
+                    if (false) {
+                        // Show status text for a short time
+                        controlDisplay.statusTextShow("HANDSHAKE SUCCESS");
+                        bikeStatus.displayStatusTextRemoveTimeStamp = (millis() + DISPLAY_STATUSTEXT_OFF_WAIT_TIME);
+                    }
+                }
+                else {
                     // Handshake failed, if comm success but invalid response code, show status text message
-                    if (response.code != codeToHandlebarUnit.successHandshake) {
-                        controlDisplay.statusTextShow("INVALID HANDSHAKE");
+                    if (response.success && response.code != codeToHandlebarUnit.successHandshake) {
+                        controlDisplay.statusTextShow("HANDSHAKE FAILED");
                     }
                     // Initiate retry by setting bike status to comm failure
                     bikeStatus.communicationOK = false;
@@ -116,31 +129,6 @@ class SerialCommunication {
                     Image image = Image();
                     image.retry();
                     delay(2000);
-                }
-                else {
-                    // Handshake OK
-                    bikeStatus.communicationOK = true;
-                    bikeStatus.communicationLastPing = millis();
-                    // Show timestamp if in debug mode
-                    // TODO
-                    if (bikeStatus.debugMode || true) {
-                        unsigned long allSeconds=millis()/1000;
-                        int runHours= allSeconds/3600;
-                        int secsRemaining=allSeconds%3600;
-                        int runMinutes=secsRemaining/60;
-                        int runSeconds=secsRemaining%60;
-                        display.setCursor(0,0);
-                        display.fillRect(0, 0, DISPLAY_SCREEN_WIDTH, DISPLAY_TEXT_CHAR_HEIGHT -1, SSD1306_BLACK);
-                        display.setCursor(0,0);
-                        display.println(runHours);
-                        display.setCursor(16,0);
-                        display.println(runMinutes);
-                        display.setCursor(32,0);
-                        display.println(runSeconds);
-                    }
-                    // Show status text for a short time
-                    controlDisplay.statusTextShow("HANDSHAKE SUCCESS");
-                    bikeStatus.displayStatusTextRemoveTimeStamp = (millis() + DISPLAY_STATUSTEXT_OFF_WAIT_TIME);
                 }
             }
         }

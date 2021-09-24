@@ -22,4 +22,6 @@ const uint8_t OUTPUT_PIN_INDICATOR_RIGHT          = 10;
 const uint8_t OUTPUT_PIN_AUX                      = 11;
 
 // Pin to arduino onboard led
-const uint8_t ONBOARD_LED_PIN                     = 13;
+const uint8_t ONBOARD_LED_PIN                     = 13;     // Pin for onboard led, onboard led is primarely for debugging
+const uint8_t ONBOARD_LED_ON = HIGH;                        // Set HIGH or LOW to determin what sets the onboard led on or off
+const uint8_t ONBOARD_LED_OFF = LOW;                        // Ex: for Arduino Uno/Nano led in on using HIGH, but for NodeMCU led is on using LOW

@@ -9,5 +9,9 @@
 			"path": "Ctrl-MC_RelayUnit"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"algorithm": "cpp"
+		}
+	}
 }

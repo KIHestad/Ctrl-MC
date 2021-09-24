@@ -1,5 +1,8 @@
 /***  Ctrl-MC // An open source Motorcycle Controller Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC  ***/
 
+// System enums
+enum TemperatureDefaultType { tempCelcius, tempFarenheit };
+
 // Bike main status
 enum BikeStatusIgnition { ignOff, ignPasswordMode, ignOn };
 enum BikeStatusEngine { engStopped, engRunning };
@@ -48,5 +51,12 @@ class SerialCommunicationDataReceived {
         bool success;
         uint8_t codeGroup;
         uint8_t code;
+};
+
+// Model for menu items
+class MenuItem {
+    public:
+        uint8_t id; // Identifier used by code to know what to do
+        String displayName; // Name of menu item to show on display
 };
 

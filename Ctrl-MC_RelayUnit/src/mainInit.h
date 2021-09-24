@@ -29,6 +29,7 @@ class MainInit {
             setRelayOutputPin(OUTPUT_PIN_AUX, false);
             // Onboard led
             pinMode(ONBOARD_LED_PIN, OUTPUT);
+            digitalWrite(ONBOARD_LED_OFF, ONBOARD_LED_OFF);
         }
 
 };

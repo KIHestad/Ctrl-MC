@@ -1,8 +1,11 @@
+/***  Ctrl-MC // An open source Motorcycle Controller Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC  ***/
+
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <models.h>
+#include <utils.h>
 #include <codes.h>
 #include <_config.h> // To be user edited to enable/disable features and configure arduino board
 BikeStatus bikeStatus;
@@ -15,8 +18,8 @@ SerialCommunication serialCommunication;
 #include <controlIgnition.h>
 ControlIgnition controlIgnition;
 #include <setup.h>
-
-
+#include <controlDisplayMenu.h>
+ControlDisplayMenu controlDisplayMenu;
 
 void setup() {
   // Init
@@ -37,6 +40,8 @@ void loop() {
   else {
     // Ignition is on, allow operations, inititate handshake to check that communication to relay unit is working
     serialCommunication.handshake();
+    // Check for selected menu
+    controlDisplayMenu.checkForAction();
   }
 
 }
