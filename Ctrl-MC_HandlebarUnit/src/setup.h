@@ -4,8 +4,14 @@ class Setup {
     private:
         // Set Arduino pins according to congig
         void setInputPin(Input input) {
-            if (input.enabled)
-                pinMode(input.pin, INPUT_PULLUP);
+            if (input.enabled) {
+                if (input.pinType == pinDigital)
+                    pinMode(input.pin, INPUT_PULLUP);
+                else if (input.pinType == pinAnalog) {
+                    pinMode(input.pin, INPUT);
+                }
+            }
+                
         }
 
     public:
@@ -13,7 +19,7 @@ class Setup {
         void init() {
             setPinMode();
             bikeStatus = BikeStatus();
-            bikeStatus.init();
+            setBikeStatus();
             controlDisplay = ControlDisplay();
             controlDisplay.init();
             serialCommunication = SerialCommunication();
@@ -34,6 +40,23 @@ class Setup {
             // Onboard LED pin
             pinMode(ONBOARD_LED_PIN, OUTPUT);
             digitalWrite(ONBOARD_LED_PIN, ONBOARD_LED_OFF);
+        }
+
+        void setBikeStatus() {
+            bikeStatus.debugMode = false;
+            bikeStatus.displayOffTimestamp = 0;
+            bikeStatus.displayOffProgressRunning = false;
+            bikeStatus.displayStatusTextRemoveTimeStamp = 0;
+            bikeStatus.displayMenuTimestamp = 0;
+            bikeStatus.displayMenyScrollSelector = -1;
+            bikeStatus.displayMenyShowRunningStopWatch = 0;
+            bikeStatus.communicationOK = false;
+            bikeStatus.communicationLastPing = millis();
+            bikeStatus.ignitionOnTimestamp = millis();
+            bikeStatus.ignition = ignOff;
+            bikeStatus.engine = engStopped;
+            bikeStatus.lights = lightsOff;
+            bikeStatus.lightHilo = lightsLow;
         }
 
 };

@@ -1,0 +1,45 @@
+class ControlHandlebarButtons {
+
+    private: 
+
+        bool btnHiLoHold = false; // Set to true when pressed until released to avoid continuosly presses to be detected
+
+    public:
+        
+        void checkForButtonAction() {
+            // High / Low Beam
+            if (INPUT_HILO.enabled)
+            {
+                bool btnHiLoPressed = readInput(INPUT_HILO);
+                if (btnHiLoHold && !btnHiLoPressed)
+                {
+                    // Release
+                    btnHiLoHold = false;
+                }
+                else if (btnHiLoPressed && !btnHiLoHold)
+                {
+                    // Button pressed, set as hold until detected release
+                    btnHiLoHold = true;
+                    // Toggle Hi/lo
+                    if (bikeStatus.lightHilo == lightsLow)
+                        bikeStatus.lightHilo = lightsHigh;
+                    else if (bikeStatus.lightHilo == lightsHigh)
+                        bikeStatus.lightHilo = lightsLow;
+                    // If in displaymenu update icon
+                    if (bikeStatus.displayMenyScrollSelector > -1) {
+                        MenuItem menuSelected = MENUS_AVAILABLE[bikeStatus.displayMenyScrollSelector];
+                        if (menuSelected.id == 5) {
+                            if (bikeStatus.displayOffProgressRunning) {
+                                // Stay on same menu, cancel display off and ignore action
+                                controlDisplay.displayOffRemove();
+                            }
+                            bikeStatus.displayMenuTimestamp = millis() + (MENU_SHUTDOWN_WAIT * 1000);
+                            display.clearDisplay();
+                            controlDisplayMenu.showSelectedLights();
+                        }
+                    }
+                    delay(250);
+                }
+            }
+        }
+};

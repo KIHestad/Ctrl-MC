@@ -1,22 +1,6 @@
 /***  Ctrl-MC // An open source Motorcycle Controller Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC  ***/
 
 class ControlDisplay {
-    private:
-
-        // Get x position for centered text
-        int getXposForCenterText(int textLength) {
-            return (DISPLAY_SCREEN_WIDTH/2)-(textLength*DISPLAY_TEXT_CHAR_WIDTH/2);
-        }
-        // Get y position for centered text, parameter num = row number; 1, 2 or 3
-        int getYposForCenterText(int rowNum) {
-            int rowRelativeToMid = rowNum -2; // -1 = first, 0 = second(mid), 1 third and last
-            int centerRowTopPos = (DISPLAY_SCREEN_HEIGHT/2)-DISPLAY_TEXT_CHAR_HEIGHT/2;
-            return (centerRowTopPos + (DISPLAY_TEXT_CHAR_HEIGHT*rowRelativeToMid*2));
-        }
-        // Write centered text at spesific row
-        void setCursorForCenteredText(int rowNum, int textLength) {
-            display.setCursor(getXposForCenterText(textLength), getYposForCenterText(rowNum)); 
-        }
 
     public:
         
@@ -31,7 +15,7 @@ class ControlDisplay {
             display.setTextSize(DISPLAY_TEXT_SIZE);
             display.setTextColor(SSD1306_WHITE);
             showSplash();
-            bikeStatus.displayOffTimestamp = millis();
+            displayOffInititate();
         };
 
         // Show splash screen
@@ -60,7 +44,7 @@ class ControlDisplay {
 
         void statusTextSetCursor(uint8_t txtLength) {
             uint8_t textPixelWidth = txtLength * DISPLAY_TEXT_CHAR_WIDTH;
-            display.setCursor((DISPLAY_SCREEN_WIDTH/2) - (textPixelWidth/2) , DISPLAY_SCREEN_HEIGHT - DISPLAY_TEXT_CHAR_HEIGHT -1); 
+            display.setCursor((DISPLAY_SCREEN_WIDTH/2) - (textPixelWidth/2) , DISPLAY_SCREEN_HEIGHT - DISPLAY_TEXT_CHAR_HEIGHT); 
         }
 
         void statusTextPrepare(uint8_t txtLength) {
@@ -81,16 +65,19 @@ class ControlDisplay {
             if (bikeStatus.displayOffTimestamp > 0) {
                 unsigned long timeElapsed = millis() - bikeStatus.displayOffTimestamp;
                 // Check for power off
-                if (timeElapsed > bikeStatus.displayOffWaitTime) {
+                if (timeElapsed > DISPLAY_OFF_WAIT_TIME) {
                     // Power off now
                     displayOffRemove();
                     display.clearDisplay();
                     display.display();
                     bikeStatus.displayStatusTextRemoveTimeStamp = 0;
+                    bikeStatus.displayMenuTimestamp = 0;
+                    bikeStatus.displayMenyScrollSelector = -1;
+                    bikeStatus.displayMenyShowRunningStopWatch = 0;
                 }
                 else {
                     // Show progress bar
-                    int xLineStart = DISPLAY_SCREEN_WIDTH * timeElapsed / bikeStatus.displayOffWaitTime / 2;
+                    int xLineStart = DISPLAY_SCREEN_WIDTH * timeElapsed / DISPLAY_OFF_WAIT_TIME / 2;
                     int xLineEnd = DISPLAY_SCREEN_WIDTH - xLineStart;
                     display.drawLine(0, 0, DISPLAY_SCREEN_WIDTH, 0, SSD1306_BLACK);
                     display.drawLine(xLineStart, 0, xLineEnd + 2, 0, SSD1306_WHITE);
@@ -107,13 +94,34 @@ class ControlDisplay {
             }
         };
 
-        void displayOffRemove() {
-            // Hide progress bar
-            bikeStatus.displayOffTimestamp = 0;
-            bikeStatus.displayOffProgressRunning = false;
-            int y = DISPLAY_SCREEN_HEIGHT-1;
-            display.drawLine(0, y, DISPLAY_SCREEN_WIDTH, y, SSD1306_BLACK);
+        // Inititate display autosuhutdown
+        void displayOffInititate() {
+            bikeStatus.displayOffTimestamp = millis();
         };
 
+        // Terminate display autosuhutdown and hide progress bar
+        void displayOffRemove() {
+            bikeStatus.displayOffTimestamp = 0;
+            bikeStatus.displayOffProgressRunning = false;
+            display.drawLine(0, 0, DISPLAY_SCREEN_WIDTH, 0, SSD1306_BLACK);
+        };
 
+    private:
+
+        // Get x position for centered text
+        int getXposForCenterText(int textLength) {
+            return (DISPLAY_SCREEN_WIDTH/2)-(textLength*DISPLAY_TEXT_CHAR_WIDTH/2);
+        }
+        // Get y position for centered text, parameter num = row number; 1, 2 or 3
+        int getYposForCenterText(int rowNum) {
+            int rowRelativeToMid = rowNum -2; // -1 = first, 0 = second(mid), 1 third and last
+            int centerRowTopPos = (DISPLAY_SCREEN_HEIGHT/2)-DISPLAY_TEXT_CHAR_HEIGHT/2;
+            return (centerRowTopPos + ((DISPLAY_TEXT_CHAR_HEIGHT+1)*rowRelativeToMid*2));
+        }
+        // Write centered text at spesific row
+        void setCursorForCenteredText(int rowNum, int textLength) {
+            display.setCursor(getXposForCenterText(textLength), getYposForCenterText(rowNum)); 
+        }
+        
+        
 };

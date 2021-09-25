@@ -43,10 +43,9 @@ class SerialCommunication {
             uint8_t responseCRC = 0;
             bool responseCodeRetrieved = false;
             bool responseCRCRetrived = false;
-            long timeNowTimestamp = millis();
-            long timeoutTimestamp = timeNowTimestamp + 500; // milliseconds before timeout
+            unsigned long timeoutTimestamp = millis() + 500; // milliseconds before timeout
             // Check for data in serial buffer within timeout period, read code then CRC 
-            while (!responseCRCRetrived && timeNowTimestamp < timeoutTimestamp)
+            while (!responseCRCRetrived && millis() < timeoutTimestamp)
             {
                 if (Serial.available() > 0) {
                     if (!responseCodeRetrieved) {
@@ -58,7 +57,6 @@ class SerialCommunication {
                         responseCRCRetrived = true;
                     }
                 }
-                timeNowTimestamp = millis();
             }
             // Check if response data retrieved
             if (!responseCodeRetrieved && !responseCRCRetrived) {
@@ -123,12 +121,18 @@ class SerialCommunication {
                         controlDisplay.statusTextShow("HANDSHAKE FAILED");
                     }
                     // Initiate retry by setting bike status to comm failure
-                    bikeStatus.communicationOK = false;
-                    delay(3000);
-                    display.clearDisplay();
-                    Image image = Image();
-                    image.retry();
-                    delay(2000);
+                    bikeStatus.communicationOK = SYSTEM_HANDSHAKE_IGNORE_COMM_ERROR;  // normally set to false, for debugging it can be set to true
+                    if (!SYSTEM_HANDSHAKE_IGNORE_COMM_ERROR) {
+                        delay(3000);
+                        display.clearDisplay();
+                        Image image = Image();
+                        controlDisplay.statusTextShow("RECONNECTING");
+                        image.retry();
+                        delay(2000);
+                    }
+                    else {
+                        bikeStatus.communicationLastPing = millis() + (1000 * 60 * 60); // When SYSTEM_HANDSHAKE_IGNORE_COMM_ERROR is set true, do not check comm for a while
+                    }
                 }
             }
         }

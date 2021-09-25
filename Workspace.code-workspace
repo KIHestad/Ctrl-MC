@@ -11,7 +11,8 @@
 	],
 	"settings": {
 		"files.associations": {
-			"algorithm": "cpp"
+			"algorithm": "cpp",
+			"controlhandlebarbuttons": "cpp"
 		}
 	}
 }
