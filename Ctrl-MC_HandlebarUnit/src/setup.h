@@ -44,15 +44,18 @@ class Setup {
 
         void setBikeStatus() {
             bikeStatus.debugMode = false;
+            bikeStatus.communicationOK = false;
+            bikeStatus.communicationLastPing = millis();
+            bikeStatus.ignitionOnTimestamp = millis();
+            
+            bikeStatus.displayMenyScrollSelector = 0; // No display menu selected
+            bikeStatus.displayMenySubLevelSelector = 0; // no sub menu level selected
             bikeStatus.displayOffTimestamp = 0;
             bikeStatus.displayOffProgressRunning = false;
             bikeStatus.displayStatusTextRemoveTimeStamp = 0;
             bikeStatus.displayMenuTimestamp = 0;
-            bikeStatus.displayMenyScrollSelector = -1;
             bikeStatus.displayMenyShowRunningStopWatch = 0;
-            bikeStatus.communicationOK = false;
-            bikeStatus.communicationLastPing = millis();
-            bikeStatus.ignitionOnTimestamp = millis();
+            
             bikeStatus.ignition = ignOff;
             bikeStatus.engine = engStopped;
             bikeStatus.lights = lightsOff;

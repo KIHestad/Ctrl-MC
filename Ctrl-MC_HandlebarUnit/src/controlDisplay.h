@@ -39,7 +39,7 @@ class ControlDisplay {
         };
 
         void statusTextRemove() {
-            display.fillRect(0, DISPLAY_SCREEN_HEIGHT-DISPLAY_TEXT_CHAR_HEIGHT -1, DISPLAY_SCREEN_WIDTH, DISPLAY_TEXT_CHAR_HEIGHT -1, SSD1306_BLACK); 
+            display.fillRect(0, DISPLAY_SCREEN_HEIGHT-DISPLAY_TEXT_CHAR_HEIGHT -1, DISPLAY_SCREEN_WIDTH, DISPLAY_TEXT_CHAR_HEIGHT + 2, SSD1306_BLACK); 
         };
 
         void statusTextSetCursor(uint8_t txtLength) {
@@ -52,12 +52,13 @@ class ControlDisplay {
             statusTextSetCursor(txtLength);
         }
 
-        void statusTextShow(String txt) {
+        void statusTextShow(String txt, bool displayImmediately = true) {
             statusTextRemove();
             statusTextSetCursor(txt.length());
             display.println(txt);
             display.println(F("")); // TODO: Unstable to pass String, does this help?
-            display.display();
+            if (displayImmediately)
+                display.display();
         }
 
         // Turn off display by clearing content after a timeout period, show progressbar until display off
@@ -72,7 +73,8 @@ class ControlDisplay {
                     display.display();
                     bikeStatus.displayStatusTextRemoveTimeStamp = 0;
                     bikeStatus.displayMenuTimestamp = 0;
-                    bikeStatus.displayMenyScrollSelector = -1;
+                    bikeStatus.displayMenyScrollSelector = 0;
+                    bikeStatus.displayMenySubLevelSelector = 0;
                     bikeStatus.displayMenyShowRunningStopWatch = 0;
                 }
                 else {

@@ -12,9 +12,9 @@ const uint8_t ONBOARD_LED_OFF = HIGH;                     // Ex: for Arduino Uno
 /*****************************************************************************
  *   Featuere activation and digital input pins cofiguration settings   
  *****************************************************************************/
-const Input INPUT_CLUTCH =        { true,  D3, pinDigital };   // Clutch lever
+const Input INPUT_CLUTCH =        { false,  0, pinDigital };   // Clutch lever
 const Input INPUT_HORN =          { false, 0, pinDigital };   // Horn, activated using long press
-const Input INPUT_HILO =          { true, D7, pinDigital };     // Toggle headlight between High and Low beam
+const Input INPUT_HILO =          { true, D3, pinDigital };     // Toggle headlight between High and Low beam
 const Input INPUT_IND_LEFT =      { false, 0, pinDigital };    // Indicator (turn signal) Left
 const Input INPUT_IND_RIGHT =     { false, 0, pinDigital };    // Indicator (turn signal) Right
 
@@ -56,7 +56,7 @@ const TemperatureDefaultType SYSTEM_TEMP_DEFAULT_TYPE = tempCelcius;    // Defau
  *****************************************************************************/
 
 const bool IGN_PW_ENABLED = true;                 // Enable to turn on ignition using password
-const Input IGN_PW_START_BUTTON = INPUT_CLUTCH;   // Button to start / reset password input
+const Input IGN_PW_START_BUTTON = INPUT_HILO;   // Button to start / reset password input
 const uint8_t IGN_PW_LENGTH = 3;                  // Number of button presses for password
 const Input IGN_PW[IGN_PW_LENGTH] = {             // The password as an array of inputs
     INPUT_MENU_SELECT,
@@ -80,12 +80,11 @@ const MenuItem MENU_TEMP_SYSTEM = { 4, "SYSTEM TEMP" }; // Read from relay unit
 const MenuItem MENU_LIGHTS = { 5, "LIGHTS" }; // Control Ligths - OFF / PARK / ON
 
 // Selected menu items in the order they will appear
-const uint8_t MENUS_AVAILABLE_LENGTH = 5;
+const uint8_t MENUS_AVAILABLE_LENGTH = 4;
 const MenuItem MENUS_AVAILABLE[MENUS_AVAILABLE_LENGTH] = {
     MENU_LIGHTS,
     MENU_IGNITION,
     MENU_STOPWATCH,
-    MENU_TEMP_OUTSIDE,
     MENU_TEMP_SYSTEM
 };
 

@@ -27,8 +27,7 @@ class ControlIgnition {
                     }
                     // Button press detected, show on display
                     Image image = Image();
-                    image.ignitionLockFrameButtonPress();
-                    display.display();
+                    image.ignOff();
                     // Remember it to check for continously press later
                     btnPwHoldPin = btn.pin;
                     // Check if incorrect password keypress
@@ -40,21 +39,30 @@ class ControlIgnition {
                         // Success, update bike status and show on display
                         bikeStatus.ignition = ignOn;
                         bikeStatus.ignitionOnTimestamp = millis();
-                        display.clearDisplay();
-                        image.ignitionLockFrame();
-                        image.ignitionLockKeyHoleUnlocked();
-                        display.display();
-                        delay(1000);
+                        image.ignOffToOn1();
+                        delay(50);
+                        image.ignOffToOn2();
+                        delay(50);
+                        image.ignOn();
+                        delay(900);
                         display.clearDisplay();
                         display.display();
                     }
                     else {
-                        // Still not correct password entered, prepare for resetting display
-                        delay(200); 
-                        display.clearDisplay();
-                        image.ignitionLockFrame();
-                        image.ignitionLockKeyHoleLocked();
+                        // Still not correct password entered, display dummy pw character
+                        controlDisplay.statusTextRemove();
+                        uint8_t pwLength = passwordPressCount > 40 ? 40 : passwordPressCount;
+                        uint8_t pwCharWidthInclSeparator = DISPLAY_SCREEN_WIDTH / pwLength;
+                        pwCharWidthInclSeparator = pwCharWidthInclSeparator > 16 ? 16 : pwCharWidthInclSeparator;
+                        uint8_t pwTotalWidht = pwCharWidthInclSeparator * pwLength;
+                        uint8_t x = (DISPLAY_SCREEN_WIDTH / 2) - (pwTotalWidht / 2) + 1;
+                        for (uint8_t i = 0; i < pwLength; i++)
+                        {
+                            display.fillRect(x, DISPLAY_SCREEN_HEIGHT - DISPLAY_TEXT_CHAR_HEIGHT, pwCharWidthInclSeparator-2, DISPLAY_TEXT_CHAR_HEIGHT, SSD1306_WHITE);
+                            x += pwCharWidthInclSeparator;
+                        }
                         display.display();
+                        delay(200);
                     }
                     passwordTimeoutTimestamp = millis();
                 }
@@ -75,16 +83,14 @@ class ControlIgnition {
                         // Cancel running display off
                         controlDisplay.displayOffRemove();
                         Image image = Image();
-                        display.clearDisplay();
-                        image.ignitionLockFrame();
-                        image.ignitionLockKeyHoleLocked();
-                        display.display();
+                        image.ignOff();
                         // Reset values
                         passwordPressCount = 0;
                         passwordMismatch = false;
                         passwordTimeoutProgressStarted = false;
                         passwordTimeoutTimestamp = millis();
                         btnPwHoldPin = IGN_PW_START_BUTTON.pin;
+                        delay(200);
                     }
                 }
                 else if (bikeStatus.ignition == ignPasswordMode)

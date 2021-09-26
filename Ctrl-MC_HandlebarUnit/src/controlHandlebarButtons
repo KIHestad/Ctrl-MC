@@ -26,8 +26,8 @@ class ControlHandlebarButtons {
                     else if (bikeStatus.lightHilo == lightsHigh)
                         bikeStatus.lightHilo = lightsLow;
                     // If in displaymenu update icon
-                    if (bikeStatus.displayMenyScrollSelector > -1) {
-                        MenuItem menuSelected = MENUS_AVAILABLE[bikeStatus.displayMenyScrollSelector];
+                    if (bikeStatus.displayMenyScrollSelector > 0) {
+                        MenuItem menuSelected = MENUS_AVAILABLE[bikeStatus.displayMenyScrollSelector - 1];
                         if (menuSelected.id == 5) {
                             if (bikeStatus.displayOffProgressRunning) {
                                 // Stay on same menu, cancel display off and ignore action

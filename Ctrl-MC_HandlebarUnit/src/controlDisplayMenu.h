@@ -4,7 +4,7 @@ class ControlDisplayMenu {
         Image image = Image();
         bool btnMenuNextHold = false; // Set to true when pressed until released to avoid continuosly presses to be detected
         bool btnMenuSelectHold = false; // Set to true when pressed until released to avoid continuosly presses to be detected
-        
+        ChecBoxSelected checkBoxSelected; // Indicates what checkbox is currently selected if shown in menu sub level
         // Ligths parameters
         BikeStatusLights lightsParkSelectNext = lightsMain; // Deafult go to Main lights from park
 
@@ -20,7 +20,8 @@ class ControlDisplayMenu {
             if (bikeStatus.displayMenyShowRunningStopWatch > 0 && millis() > bikeStatus.displayMenyShowRunningStopWatch + 1000) {
                 displayStopWatchTime();
             }
-            // Check if next menu button is pressed
+            
+            // Check if next menu button is pressed - PERFORM GOTO NEXT MENU ITEM
             if (INPUT_MENU_NEXT.enabled)
             {
                 bool btnMenuNextPressed = readInput(INPUT_MENU_NEXT);
@@ -41,26 +42,47 @@ class ControlDisplayMenu {
                         controlDisplay.displayOffRemove();
                     }
                     else {
-                        // Goto next menu, 0 = first menu item
-                        bikeStatus.displayMenyScrollSelector = bikeStatus.displayMenyScrollSelector + 1;
+                        // Goto next menu if not sub menu is selected, 0 = no menu currently selected, 1 = first menu item
+                        if (bikeStatus.displayMenySubLevelSelector == 0) {
+                            bikeStatus.displayMenyScrollSelector = bikeStatus.displayMenyScrollSelector + 1;
+                            display.clearDisplay();
+                        }
                     }
                     bikeStatus.displayMenyShowRunningStopWatch = 0;
-                    display.clearDisplay();
-                    if (bikeStatus.displayMenyScrollSelector >= MENUS_AVAILABLE_LENGTH) {
+                    if (bikeStatus.displayMenyScrollSelector >= MENUS_AVAILABLE_LENGTH + 1) {
                         // TODO - goto status screen
+                        display.clearDisplay();
                         display.display();
-                        bikeStatus.displayMenyScrollSelector = -1;
+                        bikeStatus.displayMenyScrollSelector = 0;
                     }
                     else {
                         // Select the menu according to config
-                        MenuItem menuSelected = MENUS_AVAILABLE[bikeStatus.displayMenyScrollSelector];
+                        MenuItem menuSelected = MENUS_AVAILABLE[bikeStatus.displayMenyScrollSelector - 1];
                         // Show next menu now
                         if (menuSelected.id == 1) {
                             // Ignition
-                            image.ignitionLockFrame();
-                            image.ignitionLockKeyHoleUnlocked();
-                            display.display();
-                            controlDisplay.statusTextShow(menuSelected.displayName);
+                            if (bikeStatus.displayMenySubLevelSelector == 0)
+                            {
+                                // No sub level menu selected, show default ingnition onb
+                                image.ignOn();
+                                controlDisplay.statusTextShow("IGNITION ON");
+                                checkBoxSelected = checkBoxRight;
+                            }
+                            else
+                            {
+                                // Sub level selected, toggle checkboxes
+                                if (checkBoxSelected == checkBoxRight) {
+                                    checkBoxSelected = checkBoxLeft;
+                                    controlDisplay.statusTextShow("TURN OFF", false);
+                                }
+                                else if (checkBoxSelected == checkBoxLeft) {
+                                    checkBoxSelected = checkBoxRight;
+                                    controlDisplay.statusTextShow("IGNITION ON", false);
+                                }
+                                // Toggle on display
+                                image.menuSelectFrameContentInverse(true,true);
+                                display.display();
+                            }
                         }
                         else if (menuSelected.id == 2) {
                             // Stopwatch
@@ -87,7 +109,8 @@ class ControlDisplayMenu {
                     delay(250); // avoid dirty signal
                 }
             }
-            // Check if select menu item button is pressed
+            
+            // Check if select menu item button is pressed - PERFORM ACTION
             if (INPUT_MENU_SELECT.enabled)
             {
                 bool btnMenuSelectPressed = readInput(INPUT_MENU_SELECT);
@@ -106,13 +129,53 @@ class ControlDisplayMenu {
                     if (bikeStatus.displayOffProgressRunning) {
                         // Stay on same menu, cancel display off and ignore action
                         controlDisplay.displayOffRemove();
+                        display.display();
                     }
                     else {
                         // Select the menu according to config
-                        MenuItem menuSelected = MENUS_AVAILABLE[bikeStatus.displayMenyScrollSelector];
+                        MenuItem menuSelected = MENUS_AVAILABLE[bikeStatus.displayMenyScrollSelector - 1];
                         // Show next menu now
                         if (menuSelected.id == 1) {
                             // Ignition actions
+                            if (bikeStatus.displayMenySubLevelSelector == 0) {
+                                // initially show ignition on checkboxes
+                                clearGraphicsNotStatusText();
+                                image.menuSelectFrame(true,true);
+                                image.menuSelectIconOff(true,false);
+                                image.menuSelectIconOn(false,true);
+                                image.menuSelectFrameContentInverse(false,true);
+                                display.display();
+                                bikeStatus.displayMenySubLevelSelector = 1; // Indicate first level sub menu selected
+                            }
+                            else if (bikeStatus.displayMenySubLevelSelector == 1) {
+                                // perform action
+                                bikeStatus.displayMenySubLevelSelector = 0;
+                                if (checkBoxSelected == checkBoxRight) {
+                                    // keep on, return to ignition main menu
+                                    clearGraphicsNotStatusText();
+                                    image.ignOn();
+                                    controlDisplay.statusTextShow("IGNITION ON");
+                                }
+                                else if (checkBoxSelected == checkBoxLeft) {
+                                    // turn off
+                                    bikeStatus.ignition = ignOff;
+                                    bikeStatus.lights = lightsOff;
+                                    bikeStatus.engine = engStopped;
+                                    bikeStatus.displayMenyScrollSelector = 0;
+                                    // TODO - turn off relays
+
+                                    // show end screen
+                                    image.ignOn();
+                                    delay(500);
+                                    image.ignOffToOn2();
+                                    delay(50);
+                                    image.ignOffToOn1();
+                                    delay(50);
+                                    image.ignOff();
+                                    controlDisplay.statusTextShow("IGNITION TURNED OFF");
+                                    controlDisplay.displayOffInititate();
+                                }
+                            }
                         }
                         else if (menuSelected.id == 2) {
                             // Stopwatch actions
@@ -152,22 +215,20 @@ class ControlDisplayMenu {
 
         void showSelectedLights() {
             if (bikeStatus.lights == lightsOff) {
-                image.menuLightsOff();
+                image.lightsOffBig(imgPosMenuCenter);
                 controlDisplay.statusTextShow("LIGHTS OFF");
             }
             else if (bikeStatus.lights == lightsPark) {
-                image.menuLightsOff();
-                image.menuLightsPark();
+                image.lightsParkBig(imgPosMenuCenter);
                 controlDisplay.statusTextShow("PARKING LIGHTS");
             }
             else if (bikeStatus.lights == lightsMain) {
-                image.menuLightsOff();
                 if (bikeStatus.lightHilo == lightsLow) { 
-                    image.menuLightsLow();
+                    image.lightsLowBig(imgPosMenuCenter);
                     controlDisplay.statusTextShow("LOW BEAM");
                 }
                 else if (bikeStatus.lightHilo == lightsHigh) {
-                    image.menuLightsHigh();
+                    image.lightsHighBig(imgPosMenuCenter);
                     controlDisplay.statusTextShow("HIGH BEAM");
                 }
             }
@@ -175,7 +236,25 @@ class ControlDisplayMenu {
 
     private:
 
-        
+        void clearGraphicsNotStatusText() {
+            display.fillRect(0, 0, DISPLAY_SCREEN_WIDTH, DISPLAY_SCREEN_HEIGHT-DISPLAY_TEXT_CHAR_HEIGHT, SSD1306_BLACK);
+        }
+
+        // Display text on menu select checkboxes, checkbox frame start on y-pos 3, sixe: 50x50, frame border 2px
+        void menuSelectCheckboxText(String text, bool left, bool right) {
+            uint8_t y = 3 + 35;
+            uint8_t textPixLen = text.length() * DISPLAY_TEXT_CHAR_WIDTH;
+            if (left) {
+                uint8_t x = ((DISPLAY_SCREEN_WIDTH/2)-6-25)-(textPixLen/2);
+                display.setCursor(x,y);
+                display.println(text);
+            }
+            if (right) {
+                uint8_t x = ((DISPLAY_SCREEN_WIDTH/2)+6+25)-(textPixLen/2);
+                display.setCursor(x,y);
+                display.println(text);
+            }
+        }
         
         void displayStopWatchTime() {
             // Stopwatch, get time
