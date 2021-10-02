@@ -1,10 +1,14 @@
 /***  Ctrl-MC // An open source Motorcycle Controller Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC  ***/
 
 /*****************************************************************************
+ *   Relay Unit Pins cofiguration settings   
+ *****************************************************************************/
+const uint8_t RELAY_IND_LEFT = 1;
+const uint8_t RELAY_IND_RIGHT = 0;
+
+/*****************************************************************************
  *   Output Pins cofiguration settings   
  *****************************************************************************/
-
-// Pin to arduino onboard led
 const uint8_t ONBOARD_LED_PIN = LED_BUILTIN;              // The pin number or ref to board variable for the pins controlling onboard led
 const uint8_t ONBOARD_LED_ON = LOW;                       // Set HIGH or LOW to determin what sets the onboard led on or off
 const uint8_t ONBOARD_LED_OFF = HIGH;                     // Ex: for Arduino Uno/Nano led in on using HIGH, but for NodeMCU led is on using LOW
@@ -12,11 +16,11 @@ const uint8_t ONBOARD_LED_OFF = HIGH;                     // Ex: for Arduino Uno
 /*****************************************************************************
  *   Featuere activation and digital input pins cofiguration settings   
  *****************************************************************************/
-const Input INPUT_CLUTCH =        { false,  0, pinDigital };   // Clutch lever
+const Input INPUT_CLUTCH =        { false, 0, pinDigital };   // Clutch lever
 const Input INPUT_HORN =          { false, 0, pinDigital };   // Horn, activated using long press
-const Input INPUT_HILO =          { true, D3, pinDigital };     // Toggle headlight between High and Low beam
-const Input INPUT_IND_LEFT =      { false, 0, pinDigital };    // Indicator (turn signal) Left
-const Input INPUT_IND_RIGHT =     { false, 0, pinDigital };    // Indicator (turn signal) Right
+const Input INPUT_HILO =          { true, D4, pinDigital };    // Toggle headlight between High and Low beam
+const Input INPUT_IND_LEFT =      { true, D3, pinDigital };    // Indicator (turn signal) Left
+const Input INPUT_IND_RIGHT =     { true, D7, pinDigital };    // Indicator (turn signal) Right
 
 const Input INPUT_MENU_SELECT =   { true,  D5, pinDigital };   // Button for Display Menu select/toggle/activate option
 const Input INPUT_MENU_NEXT =     { true,  D6, pinDigital };   // Button for Display Mneu for goto next menu/option on display
@@ -55,15 +59,21 @@ const TemperatureDefaultType SYSTEM_TEMP_DEFAULT_TYPE = tempCelcius;    // Defau
  *   Ignition control
  *****************************************************************************/
 
-const bool IGN_PW_ENABLED = true;                 // Enable to turn on ignition using password
-const Input IGN_PW_START_BUTTON = INPUT_HILO;   // Button to start / reset password input
-const uint8_t IGN_PW_LENGTH = 3;                  // Number of button presses for password
-const Input IGN_PW[IGN_PW_LENGTH] = {             // The password as an array of inputs
-    INPUT_MENU_SELECT,
+const bool IGN_PW_ENABLED = true;                       // Enable to turn on ignition using password
+const Input IGN_PW_START_BUTTON = INPUT_MENU_NEXT;      // Button to start / reset password input
+const uint8_t IGN_PW_LENGTH = 4;                        // Number of button presses for password
+const Input IGN_PW[IGN_PW_LENGTH] = {                   // The password as an array of inputs
+    INPUT_IND_LEFT,
+    INPUT_IND_RIGHT,
     INPUT_MENU_NEXT,
-    INPUT_MENU_SELECT 
+    INPUT_MENU_SELECT
 };
 
+/*****************************************************************************
+ *   Turn signal settings
+ *****************************************************************************/
+const unsigned long IND_BLINK_SPEED = 700; // Milliseconds for each blink, should be from 500 (fast) to 1500 (slow)
+const uint8_t IND_AUTO_SHUTOFF = 30; // Number of seconds from left/right turn signal shoul be automatically turned off, not for hazard, 0 = not use
 
 /*****************************************************************************
  *   Display Menues

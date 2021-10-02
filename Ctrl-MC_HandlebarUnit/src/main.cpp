@@ -1,5 +1,6 @@
 /***  Ctrl-MC // An open source Motorcycle Controller Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC  ***/
 
+#include <Arduino.h>
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -13,27 +14,34 @@ Adafruit_SSD1306 display(DISPLAY_SCREEN_WIDTH, DISPLAY_SCREEN_HEIGHT, &Wire, DIS
 #include <image.h>
 #include <controlDisplay.h>
 ControlDisplay controlDisplay;
+#include <serialCommunication.h>
+SerialCommunication serialCommunication;
 #include <controlDisplayMenu.h>
 ControlDisplayMenu controlDisplayMenu;
 #include <controlHandlebarButtons>
 ControlHandlebarButtons controlHandlebarButtons;
-#include <serialCommunication.h>
-SerialCommunication serialCommunication;
 #include <controlIgnition.h>
 ControlIgnition controlIgnition;
-#include <setup.h>
+#include <action.h>
+Action action;
+#include <init.h>
 
 void setup() {
   // Init
   Serial.begin(9600);
   // Setup initial values
-  Setup setup = Setup();
-  setup.init();
+  Init init = Init();
+  init.run();
 }
 
 void loop() {
-  // Check for power off display and remove status text
-  controlDisplay.displayOffProgress();
+  // Check for data from relay unit
+  SerialCommunicationDataReceived dataReceived = serialCommunication.read();
+  if (dataReceived.success) {
+    action.checkReceivedData(dataReceived);
+  }
+  // Check progress for switching back to status page
+  controlDisplay.gotoStatusPage();
   // Depending on ignition status allow different operations
   if (bikeStatus.ignition != ignOn) {
     // Ignintion is not on = off or in password mode
@@ -41,13 +49,13 @@ void loop() {
   }
   else {
     // Ignition is on, allow operations, inititate handshake to check that communication to relay unit is working
-    serialCommunication.handshake();
-    // Check for start / stop engine
-    controlIgnition.checkForStartStopEngine();
+    serialCommunication.performHandshake();
     // Check for selected menu
     controlDisplayMenu.checkForMenuAction();
-    // CHeck handlebarbuttons
+    // Check handlebarbuttons
     controlHandlebarButtons.checkForButtonAction();
+    // Check for runnning actions
+    action.indicatorBlink();
   }
 
 }

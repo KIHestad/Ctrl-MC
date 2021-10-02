@@ -20,9 +20,9 @@ class ControlIgnition {
                     btnPwHoldPin = -1;
                 }
                 else if (btnPressed && btn.pin != btnPwHoldPin) {
-                    // If display off has been initiated, cancel now
-                    if (bikeStatus.displayOffTimestamp > 0 || passwordTimeoutProgressStarted) {
-                        controlDisplay.displayOffRemove(); // Cancel running display off
+                    // Check if progress for goto status page is in progress, cancel now
+                    if (bikeStatus.displayGotoStatusPageTimestamp > 0 || passwordTimeoutProgressStarted) {
+                        controlDisplay.gotoStatusPageCancel(); // Cancel running display off
                         passwordTimeoutProgressStarted = false;
                     }
                     // Button press detected, show on display
@@ -39,14 +39,15 @@ class ControlIgnition {
                         // Success, update bike status and show on display
                         bikeStatus.ignition = ignOn;
                         bikeStatus.ignitionOnTimestamp = millis();
+                        bikeStatus.communicationOK = true;
+                        bikeStatus.communicationLastPing = millis() - (SYSTEM_HANDSHAKE_CHECK_INTERVAL * 1000);
                         image.ignOffToOn1();
                         delay(50);
                         image.ignOffToOn2();
                         delay(50);
                         image.ignOn();
                         delay(900);
-                        display.clearDisplay();
-                        display.display();
+                        controlDisplay.refreshStatusPage();
                     }
                     else {
                         // Still not correct password entered, display dummy pw character
@@ -81,7 +82,7 @@ class ControlIgnition {
                         // Activated password feature
                         bikeStatus.ignition = ignPasswordMode;
                         // Cancel running display off
-                        controlDisplay.displayOffRemove();
+                        controlDisplay.gotoStatusPageCancel();
                         Image image = Image();
                         image.ignOff();
                         // Reset values
@@ -96,14 +97,14 @@ class ControlIgnition {
                 else if (bikeStatus.ignition == ignPasswordMode)
                 {
                     // Waiting for password, check for timeout
-                    if (passwordTimeoutProgressStarted && !bikeStatus.displayOffProgressRunning) {
+                    if (passwordTimeoutProgressStarted && !bikeStatus.displayGotoStatusPageProgress) {
                         // Timeout
                         bikeStatus.ignition = ignOff;                        
                     }
                     else {
                         // Check for initiate timeout
                         if (!passwordTimeoutProgressStarted && millis() - passwordTimeoutTimestamp > 6000) {
-                            controlDisplay.displayOffInititate();
+                            controlDisplay.gotoStatusPageInitiate();
                             passwordTimeoutProgressStarted = true;
                         }
                         // Check for password, read buttons
@@ -120,30 +121,5 @@ class ControlIgnition {
                 }
             }
         };
-
-        void checkForStartStopEngine() {
-            OnBoardLed onBoardLed = OnBoardLed();
-            if (INPUT_START_STOP.enabled)
-            {
-                if (bikeStatus.engine == engStopped || bikeStatus.engine == engStartMotorEngaged) {
-                    bool btnStartStopPressed = readInput(INPUT_START_STOP);
-                    if (btnStartStopPressed && bikeStatus.engine == engStopped) {
-                        // Initiate start motor
-                        bikeStatus.engine = engStartMotorEngaged;
-                        onBoardLed.on();
-                    }
-                    if (!btnStartStopPressed && bikeStatus.engine == engStartMotorEngaged) {
-                        // Disengage start motor
-                        bikeStatus.engine = engStopped; // engUnknownStatus; // check relay module for bike running status
-                        onBoardLed.off();
-                    }
-                }
-                else if (bikeStatus.engine == engRunning)
-                {
-                    
-                }
-            }
-        };
-
         
 };

@@ -1,0 +1,130 @@
+class ControlHandlebarButtons {
+
+    private: 
+
+        bool btnHiLoHold = false; // Set to true when pressed until released to avoid continuosly presses to be detected
+        bool btnIndLeftHold = false; 
+        bool btnIndRightHold = false; 
+
+    public:
+        
+        void checkForButtonAction() {
+            
+            // Start / Stop engine
+            if (INPUT_START_STOP.enabled)
+            {
+                if (bikeStatus.engine == engStopped || bikeStatus.engine == engStartMotorEngaged) {
+                    bool btnStartStopPressed = readInput(INPUT_START_STOP);
+                    OnBoardLed onBoardLed = OnBoardLed();
+                    if (btnStartStopPressed && bikeStatus.engine == engStopped) {
+                        // Initiate start motor
+                        bikeStatus.engine = engStartMotorEngaged;
+                        onBoardLed.on();
+                    }
+                    if (!btnStartStopPressed && bikeStatus.engine == engStartMotorEngaged) {
+                        // Disengage start motor
+                        bikeStatus.engine = engStopped; // engUnknownStatus; // check relay module for bike running status
+                        onBoardLed.off();
+                    }
+                }
+                else if (bikeStatus.engine == engRunning)
+                {
+                    
+                }
+            }
+
+            // High / Low Beam
+            if (INPUT_HILO.enabled)
+            {
+                bool btnHiLoPressed = readInput(INPUT_HILO);
+                if (btnHiLoHold && !btnHiLoPressed)
+                {
+                    // Release
+                    btnHiLoHold = false;
+                }
+                else if (btnHiLoPressed && !btnHiLoHold)
+                {
+                    // Button pressed, set as hold until detected release
+                    btnHiLoHold = true;
+                    // Toggle Hi/lo
+                    if (bikeStatus.lightHilo == lightsLow)
+                        bikeStatus.lightHilo = lightsHigh;
+                    else if (bikeStatus.lightHilo == lightsHigh)
+                        bikeStatus.lightHilo = lightsLow;
+                    // Update icon
+                    if (bikeStatus.displayMenyScrollSelector == 0)
+                        controlDisplay.refreshStatusPage();
+                    else if (bikeStatus.displayMenyScrollSelector > 0) {
+                        // if light menu is selected
+                        MenuItem menuSelected = MENUS_AVAILABLE[bikeStatus.displayMenyScrollSelector - 1];
+                        if (menuSelected.id == 5) {
+                            if (bikeStatus.displayGotoStatusPageProgress) {
+                                // Stay on same menu, cancel goto status page progress
+                                controlDisplay.gotoStatusPageCancel();
+                            }
+                            bikeStatus.displayMenuTimestamp = millis() + (MENU_SHUTDOWN_WAIT * 1000);
+                            display.clearDisplay();
+                            controlDisplayMenu.showSelectedLights();
+                        }
+                    }
+
+                    delay(250);
+                }
+            }
+
+            // Indicators
+            if (INPUT_IND_LEFT.enabled && INPUT_IND_RIGHT.enabled)
+            {
+                // Check for ind buttons
+                bool btnIndLeftPressed = readInput(INPUT_IND_LEFT);
+                bool btnIndRightPressed = readInput(INPUT_IND_RIGHT);
+                // Check if btn released
+                if (btnIndLeftHold && !btnIndLeftPressed)
+                    btnIndLeftHold = false;
+                if (btnIndRightHold && !btnIndRightPressed)
+                    btnIndRightHold = false;
+                // Check if pressed and hold status to find correct action
+                if (btnIndLeftPressed || btnIndRightPressed)
+                {
+                    bikeStatus.indicatorLastBlinkTimestamp = millis() + IND_BLINK_SPEED;
+                    bikeStatus.indicatorBlinkOn = true;
+                    if (btnIndLeftPressed && btnIndRightPressed && !btnIndLeftHold && !btnIndRightHold && bikeStatus.indicator != indHazard) {
+                        // Activate Hazard
+                        btnIndLeftHold = true;
+                        btnIndRightHold = true;
+                        bikeStatus.indicator = indHazard;
+                        serialCommunication.send(RELAY_IND_LEFT,1);
+                        serialCommunication.send(RELAY_IND_RIGHT,1);
+                        //controlDisplay.statusTextShow("HAZARD");
+                    }
+                    else if (btnIndLeftPressed && !btnIndLeftHold && bikeStatus.indicator == indOff) {
+                        // Activate Left Turn Signal
+                        btnIndLeftHold = true;
+                        bikeStatus.indicator = indLeft;
+                        serialCommunication.send(RELAY_IND_LEFT,1);
+                        //controlDisplay.statusTextShow("IND LEFT");
+                    }
+                    else if (btnIndRightPressed && !btnIndRightHold && bikeStatus.indicator == indOff) {
+                        // Activate Right Turn Signal
+                        btnIndRightHold = true;
+                        bikeStatus.indicator = indRight;
+                        serialCommunication.send(RELAY_IND_RIGHT,1);
+                        //controlDisplay.statusTextShow("IND RIGHT");
+                    }
+                    else if (((btnIndLeftPressed && !btnIndLeftHold) || (btnIndRightPressed && !btnIndRightHold)) && bikeStatus.indicator != indOff ) {
+                        // Turn off
+                        bikeStatus.indicator = indOff;
+                        bikeStatus.indicatorBlinkOn = false;
+                        btnIndLeftHold = btnIndLeftPressed;
+                        btnIndRightHold = btnIndRightPressed;
+                        serialCommunication.send(RELAY_IND_LEFT,0);
+                        serialCommunication.send(RELAY_IND_RIGHT,0);
+                        //controlDisplay.statusTextShow("IND OFF");
+                    }
+                    // Goto display status page and refresh
+                    controlDisplay.refreshStatusPage();
+                    delay(50);
+                 }
+            }
+        }
+};

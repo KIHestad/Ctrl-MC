@@ -6,8 +6,7 @@ enum RelayStatus { relayOn, relayOff, relayInactive };
 // Model used to retrive serial communication data
 class SerialCommunicationDataReceived {
     public:
-        bool received;
-        bool success;
-        uint8_t codeGroup;
+        bool success = false;
         uint8_t code;
+        uint8_t value;
 };

@@ -42,6 +42,7 @@ class CodeToHandlebarUnit {
         const uint8_t successGeneric = 251;
 
         // Errors response
+        const uint8_t errorMissingData = 253;
         const uint8_t errorUnknownCode = 254;
         const uint8_t errorChecksumValidationFailed = 255;
 };

@@ -1,37 +1,25 @@
+
 /***  Ctrl-MC // An open source Motorcycle Controller Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC  ***/
-
-class Relay {
-
-  public:
-
-    void on(int pin) {
-        if (pin > -1)
-            digitalWrite(pin, LOW);
+bool readInput(Input input) {
+    if (!input.enabled)
+        return false;
+    if (input.pinType == pinDigital)
+        return (digitalRead(input.pin) == 0);
+    else {
+        int val = analogRead(input.pin);
+        return (val >= input.analogValueExpected - INPUT_ANALOG_DEVIATION_ACCEPTED && val <= input.analogValueExpected + INPUT_ANALOG_DEVIATION_ACCEPTED);
     }
-    
-    void off(int pin) {
-        if (pin > -1)
-            digitalWrite(pin, HIGH);
+}
+
+uint8_t readInputValue(Input input) {
+    if (!input.enabled)
+        return LOW;
+    if (input.pinType == pinDigital)
+        return digitalRead(input.pin);
+    else {
+        return analogRead(input.pin);
     }
-
-    void set(int pin, RelayStatus relayStatus) {
-        if (relayStatus == relayOn)
-          on(pin);
-        else if (relayStatus == relayOff)
-          off(pin);
-    }
-
-    RelayStatus getStatus(int pin) {
-      if (pin == -1)
-        return relayInactive;
-      else if (digitalRead(pin) == LOW)
-        return relayOn;
-      else
-        return relayOff;
-    }
-
-};
-
+}
 
 class OnBoardLed {
     

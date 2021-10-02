@@ -3,25 +3,28 @@
 // *************************************************
 //   Arduino Output Pins Configuration
 // *************************************************
-// Map the controllers outputs to digital output pins that needs to be connected to relays
-// It will require a total of 10 relays (2 channel + 8 channel relay module) to get full functionality
-// It is possible to map several outputs to the same pin, ex: park lights and low_beam lights can use same pin
-// Set pin to -1 if the output is not to be used
-// Digital pin 0 and 1 cannot be used, these are for serial commmunication to handlebar unit
+// Set the controllers outputs to digital output pins that needs to be connected to relays
+// Remember, digital pin 0 and 1 are normally used for serial commmunication to handlebar unit
 // Some analog pins can on most Arduinos also be used as a digital pin
+// Output pins for relays are listed below, first relay should visually be marked with numbered 1 for reference to _config file for the handlebar unit
 
-const uint8_t OUTPUT_PIN_MAIN_IGNITION            = 2;
-const uint8_t OUTPUT_PIN_START_MOTOR              = 3;
-const uint8_t OUTPUT_PIN_SIGNAL_HORN              = 4;
-const uint8_t OUTPUT_PIN_LIGHTS_PARK              = 5;
-const uint8_t OUTPUT_PIN_LIGHTS_LOW_BEAM          = 6;
-const uint8_t OUTPUT_PIN_LIGHTS_HIGH_BEAM         = 7;
-const uint8_t OUTPUT_PIN_LIGHTS_BRAKE             = 8;
-const uint8_t OUTPUT_PIN_INDICATOR_LEFT           = 9;
-const uint8_t OUTPUT_PIN_INDICATOR_RIGHT          = 10;
-const uint8_t OUTPUT_PIN_AUX                      = 11;
+const uint8_t OUTPUT_PIN_RELAY_COUNT = 10; // number of relays, the code managing serial connecteion are made for supporting maximum 16 relays
+const uint8_t OUTPUT_PIN_RELAY[OUTPUT_PIN_RELAY_COUNT] {2, 3, 4, 5, 6, 7, 8, 9, 10, 11}; // pin used for relays
 
 // Pin to arduino onboard led
-const uint8_t ONBOARD_LED_PIN                     = 13;     // Pin for onboard led, onboard led is primarely for debugging
-const uint8_t ONBOARD_LED_ON = HIGH;                        // Set HIGH or LOW to determin what sets the onboard led on or off
-const uint8_t ONBOARD_LED_OFF = LOW;                        // Ex: for Arduino Uno/Nano led in on using HIGH, but for NodeMCU led is on using LOW
+const uint8_t ONBOARD_LED_PIN = 13;     // Pin for onboard led, onboard led is primarely for debugging
+const uint8_t ONBOARD_LED_ON = HIGH;    // Set HIGH or LOW to determin what sets the onboard led on or off
+const uint8_t ONBOARD_LED_OFF = LOW;    // Ex: for Arduino Uno/Nano led in on using HIGH, but for NodeMCU led is on using LOW
+
+// *************************************************
+//   Arduino Input Pins Configuration
+// *************************************************
+// Set the controllers input pins to receive data as well, set to -1 if not to be used
+// Remember, digital pin 0 and 1 are normally used for serial commmunication to handlebar unit
+// Some analog pins can on most Arduinos also be used as a digital pin
+
+const int8_t INPUT_PIN_TEMP = 12;
+const int8_t INPUT_PIN_OIL = A0;
+const int8_t INPUT_PIN_NEUTRAL = A1;
+const int8_t INPUT_PIN_BRAKE = A2;
+const int8_t INPUT_PIN_ENG_RUNNING = A3; // experimemtal

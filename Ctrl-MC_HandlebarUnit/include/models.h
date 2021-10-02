@@ -4,13 +4,15 @@
 enum TemperatureDefaultType { tempCelcius, tempFarenheit };
 enum PinType {pinDigital, pinAnalog };
 enum ChecBoxSelected { checkBoxLeft, checkBoxMid, checkBoxRight};
-enum ImagePosition {imgPosMenuCenter, imgPos2Left, imgPos2Right, imgPos3Left, imgPos3RightTop, imgPos3RightBottom};
+enum ImagePosition {imgPosMenuCenter, imgPosCenter, imgPos2Left, imgPos2Right, imgPos3Left, imgPos3RightTop, imgPos3RightBottom};
 
 // Bike main status
 enum BikeStatusIgnition { ignOff, ignPasswordMode, ignOn };
 enum BikeStatusEngine { engStopped, engStartMotorEngaged, engUnknownStatus, engRunning };
 enum BikeStatusLights { lightsOff, lightsPark, lightsMain };
 enum BikeStatusLightsHiLo { lightsLow, lightsHigh };
+enum BikeStatusIndicator { indOff, indLeft, indRight, indHazard };
+
 class BikeStatus {
     public:
 
@@ -21,16 +23,21 @@ class BikeStatus {
         
         uint8_t displayMenyScrollSelector; // The current display menu selected by NEXT MENU ITEM button, counts upwards for each menu on button press
         uint8_t displayMenySubLevelSelector; // The current submenu selected
-        unsigned long displayMenuTimestamp; // The timestamp for last display menu next or select action is selected, used for determing auto shutdown
-        unsigned long displayOffTimestamp; // Timestamp for when display off was initiated
-        bool displayOffProgressRunning; // Flag set to true when progress is running 
+        unsigned long displayMenuTimestamp; // The timestamp for last display menu next or select action is selected, used for determing when to trigger goto status page
+        unsigned long displayGotoStatusPageTimestamp; // Timestamp for showing progressbar when goto status page was triggered
+        bool displayGotoStatusPageProgress; // Flag set to true when progress goto status page is running 
         unsigned long displayStatusTextRemoveTimeStamp; // Set timestamp to the future for auto remove status text
         unsigned long displayMenyShowRunningStopWatch; // Set to actual time [millis()] to update time each second
         
+        unsigned long indicatorLastBlinkTimestamp; // Timestamp for controller to know when to blink next time
+        bool indicatorBlinkOn; // Flag to know to turn on or off turn signal, toggles for each ite
+        bool neutral; // Flag set if bike gears in neutral position
+
         BikeStatusIgnition ignition;
         BikeStatusEngine engine;
         BikeStatusLights lights;
         BikeStatusLightsHiLo lightHilo;
+        BikeStatusIndicator indicator;
 };
 
 // Used to define pins allocation for inputs and custom features for button inputs
@@ -47,10 +54,9 @@ class Input {
 // Model used to retrive serial communication data
 class SerialCommunicationDataReceived {
     public:
-        bool dataRead;
         bool success;
-        uint8_t codeGroup;
         uint8_t code;
+        uint8_t value;
 };
 
 // Model for menu items

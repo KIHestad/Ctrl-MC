@@ -14,7 +14,7 @@ class ControlDisplayMenu {
             // Check for auto shut down
             if (bikeStatus.displayMenuTimestamp != 0 && millis() > bikeStatus.displayMenuTimestamp) {
                 bikeStatus.displayMenuTimestamp = 0;
-                controlDisplay.displayOffInititate();
+                controlDisplay.gotoStatusPageInitiate();
             }
             // If stopwatch is selected, show as running
             if (bikeStatus.displayMenyShowRunningStopWatch > 0 && millis() > bikeStatus.displayMenyShowRunningStopWatch + 1000) {
@@ -36,10 +36,10 @@ class ControlDisplayMenu {
                     btnMenuNextHold = true;
                     // Timestamp for display menu auto shutdown
                     bikeStatus.displayMenuTimestamp = millis() + (MENU_SHUTDOWN_WAIT * 1000);
-                    // Check if shutdown is in progress, cancel and show same menu if relevant
-                    if (bikeStatus.displayOffProgressRunning) {
+                    // Check if progress for goto status page is in progress, cancel and show same menu if relevant
+                    if (bikeStatus.displayGotoStatusPageProgress) {
                         // Stay on same menu, just cancel display off
-                        controlDisplay.displayOffRemove();
+                        controlDisplay.gotoStatusPageCancel();
                     }
                     else {
                         // Goto next menu if not sub menu is selected, 0 = no menu currently selected, 1 = first menu item
@@ -50,15 +50,14 @@ class ControlDisplayMenu {
                     }
                     bikeStatus.displayMenyShowRunningStopWatch = 0;
                     if (bikeStatus.displayMenyScrollSelector >= MENUS_AVAILABLE_LENGTH + 1) {
-                        // TODO - goto status screen
-                        display.clearDisplay();
-                        display.display();
+                        // Goto status screen
                         bikeStatus.displayMenyScrollSelector = 0;
+                        controlDisplay.refreshStatusPage();
                     }
                     else {
                         // Select the menu according to config
                         MenuItem menuSelected = MENUS_AVAILABLE[bikeStatus.displayMenyScrollSelector - 1];
-                        // Show next menu now
+                        // Show menu now
                         if (menuSelected.id == 1) {
                             // Ignition
                             if (bikeStatus.displayMenySubLevelSelector == 0)
@@ -125,10 +124,10 @@ class ControlDisplayMenu {
                     btnMenuSelectHold = true;
                     // Timestamp for display menu auto shutdown
                     bikeStatus.displayMenuTimestamp = millis() + (MENU_SHUTDOWN_WAIT * 1000);
-                    // Check if shutdown is in progress, cancel it and continue if relevant
-                    if (bikeStatus.displayOffProgressRunning) {
+                    // Check if progress for goto status page is in progress, cancel it and continue if relevant
+                    if (bikeStatus.displayGotoStatusPageProgress) {
                         // Stay on same menu, cancel display off and ignore action
-                        controlDisplay.displayOffRemove();
+                        controlDisplay.gotoStatusPageCancel();
                         display.display();
                     }
                     else {
@@ -163,7 +162,8 @@ class ControlDisplayMenu {
                                     bikeStatus.engine = engStopped;
                                     bikeStatus.displayMenyScrollSelector = 0;
                                     // TODO - turn off relays
-
+                                    serialCommunication.send(RELAY_IND_LEFT, 0);
+                                    serialCommunication.send(RELAY_IND_RIGHT, 0);
                                     // show end screen
                                     image.ignOn();
                                     delay(500);
@@ -173,7 +173,7 @@ class ControlDisplayMenu {
                                     delay(50);
                                     image.ignOff();
                                     controlDisplay.statusTextShow("IGNITION TURNED OFF");
-                                    controlDisplay.displayOffInititate();
+                                    controlDisplay.gotoStatusPageInitiate();
                                 }
                             }
                         }
