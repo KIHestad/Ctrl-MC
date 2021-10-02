@@ -38,7 +38,7 @@ class ControlDisplayMenu {
                     bikeStatus.displayMenuTimestamp = millis() + (MENU_SHUTDOWN_WAIT * 1000);
                     // Check if progress for goto status page is in progress, cancel and show same menu if relevant
                     if (bikeStatus.displayGotoStatusPageProgress) {
-                        // Stay on same menu, just cancel display off
+                        // Stay on same menu, cancel goto status page
                         controlDisplay.gotoStatusPageCancel();
                     }
                     else {
@@ -52,6 +52,7 @@ class ControlDisplayMenu {
                     if (bikeStatus.displayMenyScrollSelector >= MENUS_AVAILABLE_LENGTH + 1) {
                         // Goto status screen
                         bikeStatus.displayMenyScrollSelector = 0;
+                        controlDisplay.gotoStatusPageCancel();
                         controlDisplay.refreshStatusPage();
                     }
                     else {
@@ -159,6 +160,9 @@ class ControlDisplayMenu {
                                     // turn off
                                     bikeStatus.ignition = ignOff;
                                     bikeStatus.lights = lightsOff;
+                                    bikeStatus.lightHilo = lightsLow;
+                                    bikeStatus.indicator = indOff;
+                                    
                                     bikeStatus.engine = engStopped;
                                     bikeStatus.displayMenyScrollSelector = 0;
                                     // TODO - turn off relays
