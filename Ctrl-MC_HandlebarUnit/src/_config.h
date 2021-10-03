@@ -32,18 +32,16 @@ const uint8_t INPUT_ANALOG_DEVIATION_ACCEPTED = 50;            // For analog val
 /*****************************************************************************
  *   OLED Display settings, according to Adafruit library
  *****************************************************************************/
-const bool DISPLAY_POWERED_ON = true;                             // Initially the display is powered on
-const uint8_t DISPLAY_PIN_SDA = D2;                               // The Pin attached to the display, for Arduino Nano: A4, for NodeMCU D2
-const uint8_t DISPLAY_PIN_SCL = D1;                               // The Pin attached to the display, for Arduino Nano: A5, for NodeMCU D1
-const uint8_t DISPLAY_SCREEN_ADDRESS = 0x3C;                      // See datasheet for Address; normally 0x3D for 128x64, 0x3C for 128x32
-const int8_t DISPLAY_OLED_RESET = -1;                             // Reset pin # (or -1 if sharing Arduino reset pin)
-const uint8_t DISPLAY_SCREEN_WIDTH = 128;                         // OLED display width, in pixels
-const uint8_t DISPLAY_SCREEN_HEIGHT = 64;                         // OLED display height, in pixels
-const uint8_t DISPLAY_TEXT_SIZE = 1;                              // Desired text size. 1 is default 6x8, 2 is 12x16, 3 is 18x24, etc these numbers include one extra pixel for space
-const uint8_t DISPLAY_TEXT_CHAR_WIDTH = 6 * DISPLAY_TEXT_SIZE;    // Width of text INCLUDING ONE PIXEL FOR SEPARATION BETWEEN CHARS written to display, adjusted according to text size
-const uint8_t DISPLAY_TEXT_CHAR_HEIGHT = 7 * DISPLAY_TEXT_SIZE;   // Height of text EXCLUDING PIXEL FOR SEPARATION BETWEEB ROWS written to display, adjusted according to text size
-const unsigned long DISPLAY_OFF_WAIT_TIME = 4000;                 // Delay time in ms to auto turn off display after initiated, showing progressbar
-const unsigned long DISPLAY_STATUSTEXT_OFF_WAIT_TIME = 3000;      // Delay time in ms to remove status text when inititated
+const bool DISPLAY_POWERED_ON = true;                               // Initially the display is powered on
+const uint8_t DISPLAY_PIN_SDA = D2;                                 // The Pin attached to the display, for Arduino Nano: A4, for NodeMCU D2
+const uint8_t DISPLAY_PIN_SCL = D1;                                 // The Pin attached to the display, for Arduino Nano: A5, for NodeMCU D1
+const uint8_t DISPLAY_SCREEN_ADDRESS = 0x3C;                        // See datasheet for Address; normally 0x3D for 128x64, 0x3C for 128x32
+const int8_t DISPLAY_OLED_RESET = -1;                               // Reset pin # (or -1 if sharing Arduino reset pin)
+const uint8_t DISPLAY_SCREEN_WIDTH = 128;                           // OLED display width, in pixels
+const uint8_t DISPLAY_SCREEN_HEIGHT = 64;                           // OLED display height, in pixels
+const uint8_t DISPLAY_TEXT_SIZE = 1;                                // Desired text size. 1 is default 6x8, 2 is 12x16, 3 is 18x24, etc these numbers include one extra pixel for space
+const uint8_t DISPLAY_TEXT_CHAR_WIDTH = 6 * DISPLAY_TEXT_SIZE;      // Width of text INCLUDING ONE PIXEL FOR SEPARATION BETWEEN CHARS written to display, adjusted according to text size
+const uint8_t DISPLAY_TEXT_CHAR_HEIGHT = 7 * DISPLAY_TEXT_SIZE;     // Height of text EXCLUDING PIXEL FOR SEPARATION BETWEEB ROWS written to display, adjusted according to text size
 
 
 /*****************************************************************************
@@ -80,7 +78,8 @@ const uint8_t IND_AUTO_SHUTOFF = 30; // Number of seconds from left/right turn s
  *****************************************************************************/
 
 // Display settings
-const uint8_t MENU_SHUTDOWN_WAIT = 15; // Number of seconds a menu item is shown before automatically shut down and go back to status screen
+const uint8_t MENU_SHUTDOWN_WAIT = 6; // Number of seconds a menu item is shown before automatically shut down and go back to status screen
+const unsigned long MENU_STATUS_PAGE_PROGRESSBAR_DURATON = 4000; // Delay time in ms for progressbar to be shown when initiated to switch over to show status page from another page
 
 // List of available menu items, do not remove any or change ID, name can be modified / translated
 const MenuItem MENU_IGNITION = { 1, "IGNITION" }; // Show ignition status, possible to turn off

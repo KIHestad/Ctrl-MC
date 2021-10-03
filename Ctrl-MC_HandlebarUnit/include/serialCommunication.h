@@ -29,6 +29,12 @@ class SerialCommunication {
             Serial.write(calcCRC(code, value)); 
         }
         
+        void clearBuffer() {
+            while (Serial.available() > 0) {
+                Serial.read();
+            }
+        }
+
         SerialCommunicationDataReceived read() {
             // Prepare model
             SerialCommunicationDataReceived dataReceived = SerialCommunicationDataReceived();
@@ -79,10 +85,10 @@ class SerialCommunication {
                     Image image = Image();
                     image.retry();
                     controlDisplay.statusTextShow("COMM RESTORED");
-                    delay(500);
-                    // TODO SHOW STATUS DISPLAY
-                    display.clearDisplay();
-                    display.display();
+                    delay(1000);
+                    bikeStatus.displayMenyPageSelected = 0;
+                    bikeStatus.displayMenySubPageSelected = 0;
+                    controlDisplay.refreshStatusPage();
                 }
 
                 bikeStatus.communicationOK = true;

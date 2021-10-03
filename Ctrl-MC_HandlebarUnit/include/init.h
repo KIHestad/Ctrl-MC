@@ -35,19 +35,19 @@ class Init {
             bikeStatus.communicationLastPing = millis();
             bikeStatus.ignitionOnTimestamp = millis();
             
-            bikeStatus.displayMenyScrollSelector = 0; // No display menu selected
-            bikeStatus.displayMenySubLevelSelector = 0; // no sub menu level selected
+            bikeStatus.displayMenyPageSelected = 0; // No display menu selected, show status page as default
+            bikeStatus.displayMenySubPageSelected = 0; // No sub menu level selected as default
+            bikeStatus.displayMenuTimeoutTimestamp = 0; 
+            bikeStatus.displayMenyShowRunningStopWatch = 0;
             bikeStatus.displayGotoStatusPageTimestamp = 0;
             bikeStatus.displayGotoStatusPageProgress = false;
-            bikeStatus.displayStatusTextRemoveTimeStamp = 0;
-            bikeStatus.displayMenuTimestamp = 0;
-            bikeStatus.displayMenyShowRunningStopWatch = 0;
             
             bikeStatus.ignition = ignOff;
             bikeStatus.neutral = true;
             bikeStatus.engine = engStopped;
             bikeStatus.lights = lightsOff;
             bikeStatus.lightHilo = lightsLow;
+            bikeStatus.lightHighBeamFlash = false;
             bikeStatus.indicator = indOff;
         }
 

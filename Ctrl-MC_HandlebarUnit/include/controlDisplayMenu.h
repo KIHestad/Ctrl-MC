@@ -12,8 +12,8 @@ class ControlDisplayMenu {
         
         void checkForMenuAction() {
             // Check for auto shut down
-            if (bikeStatus.displayMenuTimestamp != 0 && millis() > bikeStatus.displayMenuTimestamp) {
-                bikeStatus.displayMenuTimestamp = 0;
+            if (bikeStatus.displayMenuTimeoutTimestamp > 0 && millis() > bikeStatus.displayMenuTimeoutTimestamp) {
+                bikeStatus.displayMenuTimeoutTimestamp = 0;
                 controlDisplay.gotoStatusPageInitiate();
             }
             // If stopwatch is selected, show as running
@@ -35,7 +35,7 @@ class ControlDisplayMenu {
                     // Button pressed, set as hold until detected release
                     btnMenuNextHold = true;
                     // Timestamp for display menu auto shutdown
-                    bikeStatus.displayMenuTimestamp = millis() + (MENU_SHUTDOWN_WAIT * 1000);
+                    bikeStatus.displayMenuTimeoutTimestamp = millis() + (MENU_SHUTDOWN_WAIT * 1000);
                     // Check if progress for goto status page is in progress, cancel and show same menu if relevant
                     if (bikeStatus.displayGotoStatusPageProgress) {
                         // Stay on same menu, cancel goto status page
@@ -43,25 +43,26 @@ class ControlDisplayMenu {
                     }
                     else {
                         // Goto next menu if not sub menu is selected, 0 = no menu currently selected, 1 = first menu item
-                        if (bikeStatus.displayMenySubLevelSelector == 0) {
-                            bikeStatus.displayMenyScrollSelector = bikeStatus.displayMenyScrollSelector + 1;
+                        if (bikeStatus.displayMenySubPageSelected == 0) {
+                            bikeStatus.displayMenyPageSelected++;
                             display.clearDisplay();
                         }
                     }
                     bikeStatus.displayMenyShowRunningStopWatch = 0;
-                    if (bikeStatus.displayMenyScrollSelector >= MENUS_AVAILABLE_LENGTH + 1) {
+                    if (bikeStatus.displayMenyPageSelected >= MENUS_AVAILABLE_LENGTH + 1) {
                         // Goto status screen
-                        bikeStatus.displayMenyScrollSelector = 0;
+                        bikeStatus.displayMenyPageSelected = 0;
+                        bikeStatus.displayMenuTimeoutTimestamp = 0;
                         controlDisplay.gotoStatusPageCancel();
                         controlDisplay.refreshStatusPage();
                     }
                     else {
                         // Select the menu according to config
-                        MenuItem menuSelected = MENUS_AVAILABLE[bikeStatus.displayMenyScrollSelector - 1];
+                        MenuItem menuSelected = MENUS_AVAILABLE[bikeStatus.displayMenyPageSelected - 1];
                         // Show menu now
                         if (menuSelected.id == 1) {
                             // Ignition
-                            if (bikeStatus.displayMenySubLevelSelector == 0)
+                            if (bikeStatus.displayMenySubPageSelected == 0)
                             {
                                 // No sub level menu selected, show default ingnition onb
                                 image.ignOn();
@@ -124,7 +125,7 @@ class ControlDisplayMenu {
                     // Button pressed, set as hold until detected release
                     btnMenuSelectHold = true;
                     // Timestamp for display menu auto shutdown
-                    bikeStatus.displayMenuTimestamp = millis() + (MENU_SHUTDOWN_WAIT * 1000);
+                    bikeStatus.displayMenuTimeoutTimestamp = millis() + (MENU_SHUTDOWN_WAIT * 1000);
                     // Check if progress for goto status page is in progress, cancel it and continue if relevant
                     if (bikeStatus.displayGotoStatusPageProgress) {
                         // Stay on same menu, cancel display off and ignore action
@@ -133,11 +134,11 @@ class ControlDisplayMenu {
                     }
                     else {
                         // Select the menu according to config
-                        MenuItem menuSelected = MENUS_AVAILABLE[bikeStatus.displayMenyScrollSelector - 1];
+                        MenuItem menuSelected = MENUS_AVAILABLE[bikeStatus.displayMenyPageSelected - 1];
                         // Show next menu now
                         if (menuSelected.id == 1) {
                             // Ignition actions
-                            if (bikeStatus.displayMenySubLevelSelector == 0) {
+                            if (bikeStatus.displayMenySubPageSelected == 0) {
                                 // initially show ignition on checkboxes
                                 clearGraphicsNotStatusText();
                                 image.menuSelectFrame(true,true);
@@ -145,11 +146,11 @@ class ControlDisplayMenu {
                                 image.menuSelectIconOn(false,true);
                                 image.menuSelectFrameContentInverse(false,true);
                                 display.display();
-                                bikeStatus.displayMenySubLevelSelector = 1; // Indicate first level sub menu selected
+                                bikeStatus.displayMenySubPageSelected = 1; // Indicate first level sub menu selected
                             }
-                            else if (bikeStatus.displayMenySubLevelSelector == 1) {
+                            else if (bikeStatus.displayMenySubPageSelected == 1) {
                                 // perform action
-                                bikeStatus.displayMenySubLevelSelector = 0;
+                                bikeStatus.displayMenySubPageSelected = 0;
                                 if (checkBoxSelected == checkBoxRight) {
                                     // keep on, return to ignition main menu
                                     clearGraphicsNotStatusText();
@@ -164,7 +165,7 @@ class ControlDisplayMenu {
                                     bikeStatus.indicator = indOff;
                                     
                                     bikeStatus.engine = engStopped;
-                                    bikeStatus.displayMenyScrollSelector = 0;
+                                    bikeStatus.displayMenyPageSelected = 0;
                                     // TODO - turn off relays
                                     serialCommunication.send(RELAY_IND_LEFT, 0);
                                     serialCommunication.send(RELAY_IND_RIGHT, 0);

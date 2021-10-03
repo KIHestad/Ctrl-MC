@@ -32,6 +32,10 @@ void setup() {
   // Setup initial values
   Init init = Init();
   init.run();
+  // Clear searial buffer
+  serialCommunication.clearBuffer();
+  // Read bike status from relay unit
+  // TODO 
 }
 
 void loop() {

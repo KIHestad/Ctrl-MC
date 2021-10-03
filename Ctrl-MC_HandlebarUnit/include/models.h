@@ -21,17 +21,18 @@ class BikeStatus {
         unsigned long communicationLastPing; // Last successful ping to relay, for triggering new ping after ping interval set in settings
         unsigned long ignitionOnTimestamp; // Set timestamp for when iginition was last turned on, used for stopwatch
         
-        uint8_t displayMenyScrollSelector; // The current display menu selected by NEXT MENU ITEM button, counts upwards for each menu on button press
-        uint8_t displayMenySubLevelSelector; // The current submenu selected
-        unsigned long displayMenuTimestamp; // The timestamp for last display menu next or select action is selected, used for determing when to trigger goto status page
-        unsigned long displayGotoStatusPageTimestamp; // Timestamp for showing progressbar when goto status page was triggered
-        bool displayGotoStatusPageProgress; // Flag set to true when progress goto status page is running 
-        unsigned long displayStatusTextRemoveTimeStamp; // Set timestamp to the future for auto remove status text
+        uint8_t displayMenyPageSelected; // The current page to show on display, selected by NEXT MENU ITEM button, 0=show status page
+        uint8_t displayMenySubPageSelected; // The current submenu selected
+        unsigned long displayMenuTimeoutTimestamp; // The timestamp in the future for set after each menu action to trigger automatically return to status page
         unsigned long displayMenyShowRunningStopWatch; // Set to actual time [millis()] to update time each second
         
-        unsigned long indicatorLastBlinkTimestamp; // Timestamp for controller to know when to blink next time
+        unsigned long displayGotoStatusPageTimestamp; // Timestamp for showing progressbar when goto status page was triggered
+        bool displayGotoStatusPageProgress; // Flag set to true when progress goto status page is running 
+        
+        unsigned long indicatorNextBlinkTimestamp; // Timestamp for controller to know when to blink next time
         bool indicatorBlinkOn; // Flag to know to turn on or off turn signal, toggles for each ite
         bool neutral; // Flag set if bike gears in neutral position
+        bool lightHighBeamFlash; // Flag set if hi/lo button is used as passing switch, set true when hi/lo button is pressed and holded for flashing with high beam
 
         BikeStatusIgnition ignition;
         BikeStatusEngine engine;

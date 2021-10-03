@@ -42,32 +42,24 @@ class ControlDisplay {
         void gotoStatusPage() {
             if (bikeStatus.displayGotoStatusPageTimestamp > 0) {
                 unsigned long timeElapsed = millis() - bikeStatus.displayGotoStatusPageTimestamp;
-                // Check for power off
-                if (timeElapsed > DISPLAY_OFF_WAIT_TIME) {
-                    // Power off now
+                // Check progress
+                if (timeElapsed > MENU_STATUS_PAGE_PROGRESSBAR_DURATON) {
+                    // Switch to status page now
                     gotoStatusPageCancel();
-                    refreshStatusPage();
-                    bikeStatus.displayStatusTextRemoveTimeStamp = 0;
-                    bikeStatus.displayMenuTimestamp = 0;
-                    bikeStatus.displayMenyScrollSelector = 0;
-                    bikeStatus.displayMenySubLevelSelector = 0;
+                    bikeStatus.displayMenyPageSelected = 0;
+                    bikeStatus.displayMenySubPageSelected = 0;
+                    bikeStatus.displayMenuTimeoutTimestamp = 0;
                     bikeStatus.displayMenyShowRunningStopWatch = 0;
+                    refreshStatusPage();
                 }
                 else {
                     // Show progress bar
-                    int xLineStart = DISPLAY_SCREEN_WIDTH * timeElapsed / DISPLAY_OFF_WAIT_TIME / 2;
+                    int xLineStart = DISPLAY_SCREEN_WIDTH * timeElapsed / MENU_STATUS_PAGE_PROGRESSBAR_DURATON / 2;
                     int xLineEnd = DISPLAY_SCREEN_WIDTH - xLineStart;
                     display.drawLine(0, 0, DISPLAY_SCREEN_WIDTH, 0, SSD1306_BLACK);
                     display.drawLine(xLineStart, 0, xLineEnd + 2, 0, SSD1306_WHITE);
                     display.display();
                     bikeStatus.displayGotoStatusPageProgress = true;
-                }
-            }
-            if (bikeStatus.displayStatusTextRemoveTimeStamp > 0 ) {
-                if (millis() > bikeStatus.displayStatusTextRemoveTimeStamp) {
-                    statusTextRemove();
-                    display.display();
-                    bikeStatus.displayStatusTextRemoveTimeStamp = 0;
                 }
             }
         };
@@ -86,7 +78,7 @@ class ControlDisplay {
 
         // Refresh and show the status page if not a menu item is selected
         void refreshStatusPage() {
-            if (bikeStatus.displayMenyScrollSelector == 0)
+            if (bikeStatus.displayMenyPageSelected == 0)
             {
                 // Prepare display for status page
                 gotoStatusPageCancel();
@@ -105,26 +97,31 @@ class ControlDisplay {
                             else if (bikeStatus.indicator == indHazard)
                                 image.indicatorHazard(imgPos3Left);
                         }
-                        if (bikeStatus.lights != lightsOff) {
-                            if (bikeStatus.lights == lightsPark)
+                        if (bikeStatus.lights != lightsOff || bikeStatus.lightHighBeamFlash) {
+                            if (bikeStatus.lightHighBeamFlash)
+                                image.lightsHighSmall(imgPos3RightTop);
+                            else if (bikeStatus.lights == lightsPark)
                                 image.lightsParkSmall(imgPos3RightTop);
-                            else if (bikeStatus.lights == lightsMain && bikeStatus.lightHilo == lightsLow)
+                            else if (bikeStatus.lightHilo == lightsLow)
                                 image.lightsLowSmall(imgPos3RightTop);
-                            else if (bikeStatus.lights == lightsMain && bikeStatus.lightHilo == lightsHigh)
+                            else if (bikeStatus.lightHilo == lightsHigh)
                                 image.lightsHighSmall(imgPos3RightTop);
                         }
                         if (bikeStatus.neutral) {
                             image.neutralSmall(imgPos3RightBottom);
                         }
                     }
-                    else if (bikeStatus.lights != lightsOff) {
+                    else if (bikeStatus.lights != lightsOff || bikeStatus.lightHighBeamFlash) {
                         // Both lights and neutral/in gear to be shown, show to icon layout
-                        if (bikeStatus.lights == lightsPark)
-                            image.lightsParkBig(imgPos2Left);
-                        else if (bikeStatus.lights == lightsMain && bikeStatus.lightHilo == lightsLow)
-                            image.lightsLowBig(imgPos2Left);
-                        else if (bikeStatus.lights == lightsMain && bikeStatus.lightHilo == lightsHigh)
+                        if (bikeStatus.lightHighBeamFlash)
                             image.lightsHighBig(imgPos2Left);
+                        else if (bikeStatus.lights == lightsPark)
+                            image.lightsParkBig(imgPos2Left);
+                        else if (bikeStatus.lightHilo == lightsLow)
+                            image.lightsLowBig(imgPos2Left);
+                        else if (bikeStatus.lightHilo == lightsHigh)
+                            image.lightsHighBig(imgPos2Left);
+                        // Neutral
                         if (bikeStatus.neutral) {
                             image.neutralBig(imgPos2Right);
                         }
