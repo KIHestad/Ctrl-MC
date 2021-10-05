@@ -7,12 +7,20 @@
 		{
 			"name": "Ctrl-MC_RelayUnit",
 			"path": "Ctrl-MC_RelayUnit"
+		},
+		{
+			"name": "Ctrl-MC_Common",
+			"path": "Ctrl-MC_Common"
 		}
 	],
 	"settings": {
 		"files.associations": {
 			"algorithm": "cpp",
-			"controlhandlebarbuttons": "cpp"
+			"controlhandlebarbuttons": "cpp",
+			"array": "cpp",
+			"string": "cpp",
+			"string_view": "cpp",
+			"ranges": "cpp"
 		}
 	}
 }
