@@ -11,6 +11,9 @@
 		{
 			"name": "Ctrl-MC_Common",
 			"path": "Ctrl-MC_Common"
+		},
+		{
+			"path": "Documents"
 		}
 	],
 	"settings": {
