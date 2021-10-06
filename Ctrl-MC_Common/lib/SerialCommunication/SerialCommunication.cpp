@@ -30,26 +30,26 @@ void SerialCommunication::sendHandshake() {
 }
 
 // Read serial data
-SerialCommunication::Response SerialCommunication::read() {
+SerialCommunication::Data SerialCommunication::read() {
     // Prepare model
-    SerialCommunication::Response response = SerialCommunication::Response();
+    SerialCommunication::Data serialData = SerialCommunication::Data();
     // Check for data in serial buffer 
     if (Serial.available() == 0) {
         // no data found
-        return response;
+        return serialData;
     }
     // Found data = code, read and look for value and CRC
-    response.received = true;
-    response.code = Serial.read();
+    serialData.received = true;
+    serialData.code = Serial.read();
     uint8_t dataItems = 0;
-    uint8_t crc;
+    uint8_t crc = 0;
     unsigned long timeoutTimestamp = millis() + 500;
     // Look for serial value and crc
     while (dataItems < 2 && millis() < timeoutTimestamp)
     {
         if (Serial.available() > 0) {
             if (dataItems == 0)
-                response.value = Serial.read();
+                serialData.value = Serial.read();
             else // dataItems == 1
                 crc = Serial.read();
             dataItems++;
@@ -62,36 +62,30 @@ SerialCommunication::Response SerialCommunication::read() {
 
     // Check if compete data found, should be 2 dataitems = value + crc
     if (dataItems < 1) {
-        response.code = serialCode.Error;
-        response.value = serialValueError.IncompleteData;
-        return response;
+        serialData.code = serialCode.Error;
+        serialData.value = serialValueError.IncompleteData;
+        return serialData;
     }
     
     // Check if crc is correct
-    uint8_t crcExpected = calcCRC(response.code, response.value);
+    uint8_t crcExpected = calcCRC(serialData.code, serialData.value);
     if (crcExpected != crc) {
-        response.code = serialCode.Error;
-        response.value = serialValueError.InvalidCRC;
-        return response;
-    }
-    
-    // Check for handshake
-    if (response.code == serialCode.Handshake && response.value == 0) {
-        response.success = true;
-        return response;
+        serialData.code = serialCode.Error;
+        serialData.value = serialValueError.InvalidCRC;
+        return serialData;
     }
 
-    // Check for relay action
-    if (response.code < 16 && (response.value == 0 || response.value == 1)) {
-        response.success = true;
-        response.relayAction = true;
-        return response;
+    // Check if received error
+    if (serialData.code == serialCode.Error) {
+        // Modify system error codes
+        if (serialData.value == serialValueError.IncompleteData)
+            serialData.value = serialValueError.ReceivedErrorIncompleteData;
+        else if (serialData.value == serialValueError.InvalidCRC)
+            serialData.value = serialValueError.ReceivedErrorInvalidCRC;
     }
 
-    // Unknown code is receviced
-    response.code = serialCode.Error;
-    response.value = serialValueError.UnknownCode;
-    return response;
+    // All done, return received serial data    
+    return serialData;
 
 }
 

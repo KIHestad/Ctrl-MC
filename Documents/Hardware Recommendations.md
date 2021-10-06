@@ -1,8 +1,6 @@
-# Ctrl-MC // Getting Started
+# Ctrl-MC // Hardware Recommendations
 
-_document is currently in progress_
-
-Just writing down stuff that might be useful as the project moves forward.
+_The project is still in development phase, this list is will be changed as the project evolves_
 
 ## Electronics
 
@@ -39,8 +37,5 @@ Here some options for prebuilt handlebar control swithes:
 * [Motorcycle 3-Button 1" Handlebar Control Momentary Switch](https://www.ebay.com/itm/284179253202)
 * [motogadget mo.switch basic](https://www.motogadget.com/shop/en/mo-switch-basic.html)
 
-## Assembly
-
-_todo_
 
 

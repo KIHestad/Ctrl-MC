@@ -98,6 +98,7 @@ class ControlHandlebarButtons {
                 // Check if any pressed to start indicator actions
                 if (btnIndLeftPressed || btnIndRightPressed)
                 {
+                    SerialCommunication serialCommunication = SerialCommunication();
                     // Check for hold state to avoid continuosly pressed button actions
                     if (btnIndLeftPressed && btnIndRightPressed && bikeStatus.indicator != indHazard) {
                         // Activate Hazard

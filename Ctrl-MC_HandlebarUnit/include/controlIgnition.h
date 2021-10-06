@@ -39,8 +39,11 @@ class ControlIgnition {
                         // Success, update bike status and show on display
                         bikeStatus.ignition = ignOn;
                         bikeStatus.ignitionOnTimestamp = millis();
-                        bikeStatus.communicationOK = true;
-                        bikeStatus.communicationLastPing = millis() - (SYSTEM_HANDSHAKE_CHECK_INTERVAL * 1000);
+                        // Trigger handshake immediately
+                        bikeStatus.handshakeOK = true;
+                        bikeStatus.handshakeNextTimestamp = millis(); 
+                        action.performHandshake(); 
+                        // Show animation
                         image.ignOffToOn1();
                         delay(50);
                         image.ignOffToOn2();

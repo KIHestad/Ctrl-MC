@@ -167,6 +167,7 @@ class ControlDisplayMenu {
                                     bikeStatus.engine = engStopped;
                                     bikeStatus.displayMenyPageSelected = 0;
                                     // TODO - turn off relays
+                                    SerialCommunication serialCommunication = SerialCommunication();
                                     serialCommunication.send(RELAY_IND_LEFT, 0);
                                     serialCommunication.send(RELAY_IND_RIGHT, 0);
                                     // show end screen

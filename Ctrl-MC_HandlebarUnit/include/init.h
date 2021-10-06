@@ -31,8 +31,8 @@ class Init {
 
         void setBikeStatus() {
             bikeStatus.debugMode = false;
-            bikeStatus.communicationOK = true;
-            bikeStatus.communicationLastPing = millis();
+            bikeStatus.handshakeOK = true;
+            bikeStatus.handshakeNextTimestamp = millis();
             bikeStatus.ignitionOnTimestamp = millis();
             
             bikeStatus.displayMenyPageSelected = 0; // No display menu selected, show status page as default
@@ -59,7 +59,6 @@ class Init {
             setBikeStatus();
             controlDisplay = ControlDisplay();
             controlDisplay.init();
-            serialCommunication = SerialCommunication();
             controlIgnition = ControlIgnition();
             action = Action();
         }

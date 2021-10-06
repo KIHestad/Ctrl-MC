@@ -9,11 +9,9 @@
     class SerialCommunication {
         public:
             
-            // Class for response data returned by read method
-            struct Response {
+            // Class for data sent as over serial port
+            struct Data {
                     bool received = false; // set true if data was received
-                    bool success = false; // set true if complete data set found, and crc validation success
-                    bool relayAction = false; // set true if code = 0-15
                     uint8_t code;
                     uint8_t value;
             };
@@ -26,11 +24,13 @@
                     const uint8_t Error = 255;
             };
 
-            // Class for handshake response values - auto send triggered from read when Serial Code: "HandshakeRequest" is received
+            // Class for error codes sent as value
             struct SerialValueError {
-                    const uint8_t GeneralError = 251;
-                    const uint8_t IncompleteData = 252;
-                    const uint8_t InvalidCRC = 253;
+                    const uint8_t GeneralError = 100;
+                    const uint8_t IncompleteData = 200;
+                    const uint8_t InvalidCRC = 201;
+                    const uint8_t ReceivedErrorIncompleteData = 210;
+                    const uint8_t ReceivedErrorInvalidCRC = 211;
                     const uint8_t UnknownCode = 255;
             };
 
@@ -40,7 +40,7 @@
             void sendHandshake();
             // Main methods for send and read serial data
             void send(uint8_t code, uint8_t value);
-            Response read();
+            Data read();
 
         private:
             

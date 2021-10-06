@@ -17,15 +17,16 @@ class BikeStatus {
     public:
 
         bool debugMode; // Flag for running in debug mode
-        bool communicationOK; // Flag that indicates that communitcation to relay module is OK
-        unsigned long communicationLastPing; // Last successful ping to relay, for triggering new ping after ping interval set in settings
+        
+        bool handshakeOK; // Flag that indicates that communitcation to relay module is OK
+        unsigned long handshakeNextTimestamp; // Timestamp for when next handshake should be triggered
+        
         unsigned long ignitionOnTimestamp; // Set timestamp for when iginition was last turned on, used for stopwatch
         
         uint8_t displayMenyPageSelected; // The current page to show on display, selected by NEXT MENU ITEM button, 0=show status page
         uint8_t displayMenySubPageSelected; // The current submenu selected
         unsigned long displayMenuTimeoutTimestamp; // The timestamp in the future for set after each menu action to trigger automatically return to status page
         unsigned long displayMenyShowRunningStopWatch; // Set to actual time [millis()] to update time each second
-        
         unsigned long displayGotoStatusPageTimestamp; // Timestamp for showing progressbar when goto status page was triggered
         bool displayGotoStatusPageProgress; // Flag set to true when progress goto status page is running 
         
@@ -50,14 +51,6 @@ class Input {
         uint8_t analogValueExpected; // If analog pin, the expected value returned has to be set
         unsigned long activateOnLongPress = 0; // Number of milliseconds, 0 = long not activated
 
-};
-
-// Model used to retrive serial communication data
-class SerialCommunicationDataReceived {
-    public:
-        bool success;
-        uint8_t code;
-        uint8_t value;
 };
 
 // Model for menu items

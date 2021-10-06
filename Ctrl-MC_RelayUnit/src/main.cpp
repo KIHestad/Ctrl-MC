@@ -1,9 +1,9 @@
 /***  Ctrl-MC // An open source Motorcycle Controller Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC  ***/
 
 #include <Arduino.h>
-#include <DHT.h>
+#include <DHT.h> // Temp/Humidity sensor lib
 #include <_config.h> // To be user edited to enable/disable features and configure arduino board
-#include <SerialCommunication.h> // Common
+#include <SerialCommunication.h> // Ctrl-MC_Common/lib
 #include <OnBoardLed.h>
 #include <Relay.h>
 #include <Action.h>
@@ -21,10 +21,10 @@ void setup() {
 
 void loop() {
     // Check for incoming data from handlebar unit, if success trigger action
-    SerialCommunication::Response response = serialCommunication.read();
-    if (response.received) {
+    SerialCommunication::Data serialData = serialCommunication.read();
+    if (serialData.received) {
         Action action = Action();
-        action.checkReceivedData(response);
+        action.checkReceivedData(serialData);
     }
 
     // Check for repeated actions, ex: turn signal blink, horn alarm signal - consider trigger from handlebar unit, then this section is not needed
