@@ -1,13 +1,16 @@
 /***  Ctrl-MC // An open source Motorcycle Controller Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC  ***/
 
+// External libaries
 #include <Arduino.h>
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <models.h>
-#include <_config.h> // To be user edited to enable/disable features and configure arduino board
+// Common lbraries
 #include <SerialCommunication.h> // Ctrl-MC_Common/lib
+// Project includes
+#include <models.h>
+#include <Config.h> // To be user edited to enable/disable features and configure arduino board
 #include <utils.h>
 BikeStatus bikeStatus;
 Adafruit_SSD1306 display(DISPLAY_SCREEN_WIDTH, DISPLAY_SCREEN_HEIGHT, &Wire, DISPLAY_SCREEN_ADDRESS);

@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 #include <DHT.h> // Temp/Humidity sensor lib
-#include <_config.h> // To be user edited to enable/disable features and configure arduino board
+#include <Config.h> // To be user edited to enable/disable features and configure arduino board
 #include <SerialCommunication.h> // Ctrl-MC_Common/lib
 #include <OnBoardLed.h>
 #include <Relay.h>
