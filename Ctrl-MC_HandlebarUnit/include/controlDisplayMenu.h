@@ -168,8 +168,9 @@ class ControlDisplayMenu {
                                     bikeStatus.displayMenyPageSelected = 0;
                                     // TODO - turn off relays
                                     SerialCommunication serialCommunication = SerialCommunication();
-                                    serialCommunication.send(RELAY_IND_LEFT, 0);
-                                    serialCommunication.send(RELAY_IND_RIGHT, 0);
+                                    Config::RelayUnitOutput output = Config::RelayUnitOutput();
+                                    serialCommunication.send(output.TurnSignalLeft.pin, 0);
+                                    serialCommunication.send(output.TurnSignalRight.pin, 0);
                                     // show end screen
                                     image.ignOn();
                                     delay(500);

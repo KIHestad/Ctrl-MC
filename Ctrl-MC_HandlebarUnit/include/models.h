@@ -42,21 +42,17 @@ class BikeStatus {
         BikeStatusIndicator indicator;
 };
 
-// Used to define pins allocation for inputs and custom features for button inputs
-class Input {
-    public:
-        bool enabled; // If input is to be used or not
-        uint8_t pin; // Arduino borad pin
-        PinType pinType; // Digital is best, alternative analoge with valuerange
-        uint8_t analogValueExpected; // If analog pin, the expected value returned has to be set
-        unsigned long activateOnLongPress = 0; // Number of milliseconds, 0 = long not activated
-
-};
-
 // Model for menu items
 class MenuItem {
     public:
         uint8_t id; // Identifier used by code to know what to do
         String displayName; // Name of menu item to show on display
+};
+
+// Model for input pins
+class Input {
+    public:
+        uint8_t pin; // pin number
+        bool enabled; // enabled
 };
 

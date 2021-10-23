@@ -9,6 +9,7 @@
 
 #include <Arduino.h>
 #include <SerialCommunication.h> // Added for compiler 
+#include <Config.h> // Added for compiler 
 
 void setup() {
   // do not put your setup code here, not even to run once

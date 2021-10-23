@@ -99,14 +99,15 @@ class ControlHandlebarButtons {
                 if (btnIndLeftPressed || btnIndRightPressed)
                 {
                     SerialCommunication serialCommunication = SerialCommunication();
+                    Config::RelayUnitOutput output = Config::RelayUnitOutput();
                     // Check for hold state to avoid continuosly pressed button actions
                     if (btnIndLeftPressed && btnIndRightPressed && bikeStatus.indicator != indHazard) {
                         // Activate Hazard
                         bikeStatus.indicator = indHazard;
                         btnIndLeftHold = true;
                         btnIndRightHold = true;
-                        serialCommunication.send(RELAY_IND_LEFT,1);
-                        serialCommunication.send(RELAY_IND_RIGHT,1);
+                        serialCommunication.send(output.TurnSignalLeft.pin,1);
+                        serialCommunication.send(output.TurnSignalRight.pin,1);
                         bikeStatus.indicatorNextBlinkTimestamp = millis() + IND_BLINK_SPEED;
                         bikeStatus.indicatorBlinkOn = true;
                         //controlDisplay.statusTextShow("HAZARD");
@@ -115,7 +116,7 @@ class ControlHandlebarButtons {
                         // Activate Left Turn Signal
                         btnIndLeftHold = true;
                         bikeStatus.indicator = indLeft;
-                        serialCommunication.send(RELAY_IND_LEFT,1);
+                        serialCommunication.send(output.TurnSignalLeft.pin,1);
                         bikeStatus.indicatorNextBlinkTimestamp = millis() + IND_BLINK_SPEED;
                         bikeStatus.indicatorBlinkOn = true;
                         //controlDisplay.statusTextShow("IND LEFT");
@@ -124,7 +125,7 @@ class ControlHandlebarButtons {
                         // Activate Right Turn Signal
                         btnIndRightHold = true;
                         bikeStatus.indicator = indRight;
-                        serialCommunication.send(RELAY_IND_RIGHT,1);
+                        serialCommunication.send(output.TurnSignalRight.pin,1);
                         bikeStatus.indicatorNextBlinkTimestamp = millis() + IND_BLINK_SPEED;
                         bikeStatus.indicatorBlinkOn = true;
                         //controlDisplay.statusTextShow("IND RIGHT");
@@ -135,8 +136,8 @@ class ControlHandlebarButtons {
                         bikeStatus.indicatorBlinkOn = false;
                         btnIndLeftHold = btnIndLeftPressed;
                         btnIndRightHold = btnIndRightPressed;
-                        serialCommunication.send(RELAY_IND_LEFT,0);
-                        serialCommunication.send(RELAY_IND_RIGHT,0);
+                        serialCommunication.send(output.TurnSignalLeft.pin,0);
+                        serialCommunication.send(output.TurnSignalRight.pin,0);
                         //controlDisplay.statusTextShow("IND OFF");
                     }
                     // Goto display status page and refresh

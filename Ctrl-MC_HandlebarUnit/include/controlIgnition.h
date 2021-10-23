@@ -9,17 +9,17 @@ class ControlIgnition {
         bool passwordTimeoutProgressStarted = false;
         int8_t btnPwHoldPin = -1; // Remember pin of last pressed button, when set > 0 that pin is set as hold until release is
 
-        void CheckPW(Input btn) {
-            if (btn.enabled)
+        void CheckPW(Input input) {
+            if (input.enabled)
             {
                 // Check if btn is pressed
-                bool btnPressed = readInput(btn);
+                bool btnPressed = readInput(input);
                 // Check for continously press
-                if (btn.pin == btnPwHoldPin && !btnPressed) {
+                if (input.pin == btnPwHoldPin && !btnPressed) {
                     // Relese
                     btnPwHoldPin = -1;
                 }
-                else if (btnPressed && btn.pin != btnPwHoldPin) {
+                else if (btnPressed && input.pin != btnPwHoldPin) {
                     // Check if progress for goto status page is in progress, cancel now
                     if (bikeStatus.displayGotoStatusPageTimestamp > 0 || passwordTimeoutProgressStarted) {
                         controlDisplay.gotoStatusPageCancel(); // Cancel running display off
@@ -29,9 +29,9 @@ class ControlIgnition {
                     Image image = Image();
                     image.ignOff();
                     // Remember it to check for continously press later
-                    btnPwHoldPin = btn.pin;
+                    btnPwHoldPin = input.pin;
                     // Check if incorrect password keypress
-                    if (passwordPressCount < IGN_PW_LENGTH && btn.pin != IGN_PW[passwordPressCount].pin) 
+                    if (passwordPressCount < IGN_PW_LENGTH && input.pin != IGN_PW[passwordPressCount].pin) 
                         passwordMismatch = true;
                     // Check if password complete
                     passwordPressCount++;
@@ -113,7 +113,6 @@ class ControlIgnition {
                         // Check for password, read buttons
                         CheckPW(INPUT_IND_LEFT);
                         CheckPW(INPUT_IND_RIGHT);
-                        CheckPW(INPUT_HORN);
                         CheckPW(INPUT_HILO);
                         CheckPW(INPUT_MENU_NEXT);
                         CheckPW(INPUT_MENU_SELECT);

@@ -1,40 +1,38 @@
 /***  Ctrl-MC // An open source Motorcycle Controller Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC  ***/
 
-/*****************************************************************************
- *   Relay Unit Pins cofiguration settings   
- *****************************************************************************/
-const uint8_t RELAY_IND_LEFT = 1;
-const uint8_t RELAY_IND_RIGHT = 0;
 
 /*****************************************************************************
  *   Output Pins cofiguration settings   
  *****************************************************************************/
+#ifndef LED_BUILTIN
+#define LED_BUILTIN 2 // pin number is specific to your board, ex: esp32 = pin 2
+#endif
 const uint8_t ONBOARD_LED_PIN = LED_BUILTIN;              // The pin number or ref to board variable for the pins controlling onboard led
-const uint8_t ONBOARD_LED_ON = LOW;                       // Set HIGH or LOW to determin what sets the onboard led on or off
-const uint8_t ONBOARD_LED_OFF = HIGH;                     // Ex: for Arduino Uno/Nano led in on using HIGH, but for NodeMCU led is on using LOW
+const uint8_t ONBOARD_LED_ON = HIGH;                       // Set HIGH or LOW to determin what sets the onboard led on or off
+const uint8_t ONBOARD_LED_OFF = LOW;                     // Ex: for Arduino Uno/Nano led in on using HIGH, but for NodeMCU led is on using LOW
 
 /*****************************************************************************
  *   Featuere activation and digital input pins cofiguration settings   
  *****************************************************************************/
-const Input INPUT_CLUTCH =        { false, 0, pinDigital };   // Clutch lever
-const Input INPUT_HORN =          { false, 0, pinDigital };   // Horn, activated using long press
-const Input INPUT_HILO =          { true, D4, pinDigital };    // Toggle headlight between High and Low beam
-const Input INPUT_IND_LEFT =      { true, D3, pinDigital };    // Indicator (turn signal) Left
-const Input INPUT_IND_RIGHT =     { true, D7, pinDigital };    // Indicator (turn signal) Right
+const int INPUT_RESISTOR_TYPE = INPUT_PULLUP; // Set INPUT_PULLUP or INPUT_PULLDOWN for input pins
+const int INPUT_PRESSED_READ_VALUE = LOW; // Set LOW/0 or HIGH/1 as value to be expected when button is pressed, used by digital read
 
-const Input INPUT_MENU_SELECT =   { true,  D5, pinDigital };   // Button for Display Menu select/toggle/activate option
-const Input INPUT_MENU_NEXT =     { true,  D6, pinDigital };   // Button for Display Mneu for goto next menu/option on display
-const Input INPUT_START_STOP =    { false, 0, pinDigital };    // Engine start and ttop
-const Input INPUT_BRAKE_FRONT =   { false, 0, pinDigital };    // Front brake Lever
+const Input INPUT_CLUTCH =        { 13, true };   // Clutch lever
+const Input INPUT_IND_LEFT =      { 12, true };   // Indicator (turn signal) Left
+const Input INPUT_HILO =          { 14, true };   // Toggle headlight between High and Low beam
+const Input INPUT_IND_RIGHT =     { 27, true };   // Indicator (turn signa
 
-const uint8_t INPUT_ANALOG_DEVIATION_ACCEPTED = 50;            // For analog value read the signal will vary, this set +/- acceptance according to expected value
+const Input INPUT_MENU_SELECT =   { 26, true };    // Button for Display Menu select/toggle/activate option - aso works as horn
+const Input INPUT_START_STOP =    { 25, true };   // Engine start and ttop
+const Input INPUT_MENU_NEXT =     { 33, true };   // Button for Display Mneu for goto next menu/option on display
+const Input INPUT_BRAKE_FRONT =   { 32, true };   // Front brake Lever
 
 /*****************************************************************************
  *   OLED Display settings, according to Adafruit library
  *****************************************************************************/
 const bool DISPLAY_POWERED_ON = true;                               // Initially the display is powered on
-const uint8_t DISPLAY_PIN_SDA = D2;                                 // The Pin attached to the display, for Arduino Nano: A4, for NodeMCU D2
-const uint8_t DISPLAY_PIN_SCL = D1;                                 // The Pin attached to the display, for Arduino Nano: A5, for NodeMCU D1
+const uint8_t DISPLAY_PIN_SDA = 21;                                 // The Pin attached to the display, for Arduino Nano: A4, for NodeMCU D2
+const uint8_t DISPLAY_PIN_SCL = 22;                                 // The Pin attached to the display, for Arduino Nano: A5, for NodeMCU D1
 const uint8_t DISPLAY_SCREEN_ADDRESS = 0x3C;                        // See datasheet for Address; normally 0x3D for 128x64, 0x3C for 128x32
 const int8_t DISPLAY_OLED_RESET = -1;                               // Reset pin # (or -1 if sharing Arduino reset pin)
 const uint8_t DISPLAY_SCREEN_WIDTH = 128;                           // OLED display width, in pixels

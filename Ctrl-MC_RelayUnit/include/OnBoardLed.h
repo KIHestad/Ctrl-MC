@@ -4,34 +4,33 @@ class OnBoardLed {
         
         void init() {
             // Onboard LED pin
-            pinMode(ONBOARD_LED_PIN, OUTPUT);
-            digitalWrite(ONBOARD_LED_PIN, ONBOARD_LED_OFF);
+            Config::RelayUnitOnBoardLed onBoardLed = Config::RelayUnitOnBoardLed();
+            if (onBoardLed.config.enabeld) {
+                pinMode(onBoardLed.config.pin, OUTPUT);
+                digitalWrite(onBoardLed.config.pin, onBoardLed.off);
+            }
         }
         
-        void blink(size_t count) {
-            for (size_t i = 0; i < count; i++)
-            {
-                digitalWrite(ONBOARD_LED_PIN, ONBOARD_LED_ON);
-                delay(10);
-                digitalWrite(ONBOARD_LED_PIN, ONBOARD_LED_OFF);
-                delay(10);
+        void blink(size_t count, unsigned long delayInMilliseconds) {
+            Config::RelayUnitOnBoardLed onBoardLed = Config::RelayUnitOnBoardLed();
+            if (onBoardLed.config.enabeld) {
+                for (size_t i = 0; i < count; i++)
+                {
+                    digitalWrite(onBoardLed.config.pin, onBoardLed.on);
+                    delay(delayInMilliseconds);
+                    digitalWrite(onBoardLed.config.pin, onBoardLed.on);
+                    delay(delayInMilliseconds);
+                }
             }
         }
-
-        void blinkSlow(size_t count) {
-            for (size_t i = 0; i < count; i++)
-            {
-                digitalWrite(ONBOARD_LED_PIN, ONBOARD_LED_ON);
-                delay(250);
-                digitalWrite(ONBOARD_LED_PIN, ONBOARD_LED_OFF);
-                delay(250);
-            }
-        }
+        
         void on() {
-            digitalWrite(ONBOARD_LED_PIN, ONBOARD_LED_ON);
+            Config::RelayUnitOnBoardLed onBoardLed = Config::RelayUnitOnBoardLed();
+            digitalWrite(onBoardLed.config.pin, onBoardLed.on);
         }
 
         void off() {
-            digitalWrite(ONBOARD_LED_PIN, ONBOARD_LED_OFF);
+            Config::RelayUnitOnBoardLed onBoardLed = Config::RelayUnitOnBoardLed();
+            digitalWrite(onBoardLed.config.pin, onBoardLed.off);
         }
 };

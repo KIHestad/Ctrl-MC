@@ -7,10 +7,11 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 // Common lbraries
-#include <SerialCommunication.h> // Ctrl-MC_Common/lib
+#include "../../Ctrl-MC_Common/lib/SerialCommunication/SerialCommunication.h" // Ctrl-MC_Common/lib
+#include "../../Ctrl-MC_Common/lib/Config/Config.h" // Ctrl-MC_Common/lib -> To be user edited to enable/disable features and configure arduino board
 // Project includes
 #include <models.h>
-#include <Config.h> // To be user edited to enable/disable features and configure arduino board
+#include <Config_OLD.h>
 #include <utils.h>
 BikeStatus bikeStatus;
 Adafruit_SSD1306 display(DISPLAY_SCREEN_WIDTH, DISPLAY_SCREEN_HEIGHT, &Wire, DISPLAY_SCREEN_ADDRESS);
@@ -22,7 +23,7 @@ ControlDisplay controlDisplay;
 ControlDisplayMenu controlDisplayMenu;
 #include <controlHandlebarButtons>
 ControlHandlebarButtons controlHandlebarButtons;
-#include <action.h>
+#include <Action.h>
 Action action;
 #include <controlIgnition.h>
 ControlIgnition controlIgnition;

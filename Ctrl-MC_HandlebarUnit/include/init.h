@@ -5,18 +5,13 @@ class Init {
         // Set Arduino pins according to congig
         void setInputPin(Input input) {
             if (input.enabled) {
-                if (input.pinType == pinDigital)
-                    pinMode(input.pin, INPUT_PULLUP);
-                else if (input.pinType == pinAnalog) {
-                    pinMode(input.pin, INPUT);
-                }
+                pinMode(input.pin, INPUT_RESISTOR_TYPE);
             }
         }
 
         void setPinMode() {
             // Input pins
             setInputPin(INPUT_CLUTCH);
-            setInputPin(INPUT_HORN);
             setInputPin(INPUT_HILO);
             setInputPin(INPUT_IND_LEFT);
             setInputPin(INPUT_IND_RIGHT);
