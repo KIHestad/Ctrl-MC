@@ -9,11 +9,11 @@ Supported Arduino boards and other HW recommadations are not yet decided upon. H
 * Relay Unit:
   * Arduino board: Arduino Nano (ATmega328PB)
   * Relay module: 8 channel + 2 channel (12V) controlled by digital pins from the Arduino
-    * Mosfet switches instead of relay module might have been better, but not found any suitable board yet
+    * Solid State relays instead of traditional "magntic" relay module might have been better, but not found any suitable board yet
   
-* Handlebar Unit:
-  * NodeMCU / espressif8266: Curretly used but has not enough pins, considering EPS32 / STM32
-  * Display: 0.96" I2C IIC SPI Serial 128X64 OLED LCD LED Display Module for Arduino or other 128x64 displays
+* Display Unit:
+  * Arduino board: ESP32 
+  * Display: 0.96" / 1.3" I2C IIC SPI Serial 128X64 OLED LCD LED Display Module for Arduino or other 128x64 displays
     * 1.8" Color OLED displays looks interesting
 
 * Power Supply / DC-DC stepdown 12V -> 5V
@@ -22,7 +22,9 @@ Supported Arduino boards and other HW recommadations are not yet decided upon. H
     * if lithium battery: voltage can vary depending on charge from 9-13V
   * Need to figure out if possible to have one common power supply unit with long cabels, or if best having 2 separate close to unit
   * Product suggestion:
+    * [Ultra-Small Size DC-DC Step Down Power Supply Module 3A for Arduino](https://www.ebay.com/itm/363245206869)
     * [DC-DC Auto Converter 2A 18W Full Range Regulator Step-up Step-down Power Module](https://www.ebay.com/itm/353687714361)
+    
 
 ## Enclosure / Housing
 
