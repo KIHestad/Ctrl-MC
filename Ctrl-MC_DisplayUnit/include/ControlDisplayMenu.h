@@ -169,8 +169,8 @@ class ControlDisplayMenu {
                                     // TODO - turn off relays
                                     SerialCommunication serialCommunication = SerialCommunication();
                                     Config::RelayUnitOutput output = Config::RelayUnitOutput();
-                                    serialCommunication.send(output.TurnSignalLeft.pin, 0);
-                                    serialCommunication.send(output.TurnSignalRight.pin, 0);
+                                    serialCommunication.send(output.turnSignalLeft.pin, 0);
+                                    serialCommunication.send(output.turnSignalRight.pin, 0);
                                     // show end screen
                                     image.ignOn();
                                     delay(500);

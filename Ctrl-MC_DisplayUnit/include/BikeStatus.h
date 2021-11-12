@@ -1,13 +1,6 @@
 /***  Ctrl-MC // An open source Motorcycle Controller Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC  ***/
 
-// System enums
-enum TemperatureDefaultType { tempCelcius, tempFarenheit };
-enum PinType {pinDigital, pinAnalog };
-enum ChecBoxSelected { checkBoxLeft, checkBoxMid, checkBoxRight};
-enum ImagePosition {imgPosMenuCenter, imgPosCenter, imgPos2Left, imgPos2Right, imgPos3Left, imgPos3RightTop, imgPos3RightBottom};
-
-// Bike main status
-enum BikeStatusIgnition { ignOff, ignPasswordMode, ignOn };
+enum BikeStatusIgnition { ignOff, ignPasswordMode, ignTestButtonsMode, ignOn };
 enum BikeStatusEngine { engStopped, engStartMotorEngaged, engUnknownStatus, engRunning };
 enum BikeStatusLights { lightsOff, lightsPark, lightsMain };
 enum BikeStatusLightsHiLo { lightsLow, lightsHigh };
@@ -17,7 +10,6 @@ class BikeStatus {
     public:
 
         bool debugMode; // Flag for running in debug mode
-        
         bool handshakeOK; // Flag that indicates that communitcation to relay module is OK
         unsigned long handshakeNextTimestamp; // Timestamp for when next handshake should be triggered
         
@@ -40,19 +32,26 @@ class BikeStatus {
         BikeStatusLights lights;
         BikeStatusLightsHiLo lightHilo;
         BikeStatusIndicator indicator;
-};
 
-// Model for menu items
-class MenuItem {
-    public:
-        uint8_t id; // Identifier used by code to know what to do
-        String displayName; // Name of menu item to show on display
+        BikeStatus() {
+            this->debugMode = false;
+            this->handshakeOK = true;
+            this->handshakeNextTimestamp = millis();
+            this->ignitionOnTimestamp = millis();
+            
+            this->displayMenyPageSelected = 0; // No display menu selected, show status page as default
+            this->displayMenySubPageSelected = 0; // No sub menu level selected as default
+            this->displayMenuTimeoutTimestamp = 0; 
+            this->displayMenyShowRunningStopWatch = 0;
+            this->displayGotoStatusPageTimestamp = 0;
+            this->displayGotoStatusPageProgress = false;
+            
+            this->ignition = BikeStatusIgnition::ignOff;
+            this->neutral = true;
+            this->engine = BikeStatusEngine::engStopped;
+            this->lights = BikeStatusLights::lightsOff;
+            this->lightHilo = BikeStatusLightsHiLo::lightsLow;
+            this->lightHighBeamFlash = false;
+            this->indicator = BikeStatusIndicator::indOff;
+        }
 };
-
-// Model for input pins
-class Input {
-    public:
-        uint8_t pin; // pin number
-        bool enabled; // enabled
-};
-

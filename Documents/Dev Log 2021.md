@@ -54,9 +54,7 @@ In the serch for finding a better Arduino board for the handlebar unit, a couple
 
 I ended up buying a 30 pins ESP32 (ESP32 NodeMCU Module Board WiFi Bluetooth CP2102 ESP-32S 2.4GHZ). This board is flexible when it comes to pin usage, most can be used for both input and output. It has WiFi & BT as well, this can be useful for future upgrades like: turn on/off ignintion or configure settings from smartphone. The board worked perfectly, and will be the one to use for the next version.
 
-A 8 channel relay unit has also been bought and will be used in addition to the 2 channel relay used for demoing version 0.3. A slightly bigger 1.3" OLED display will replace the first 0.96" display.
-
-Some 3D-printed enclosures will also be made.
+A 8 channel relay unit has also been bought and will be used in addition to the 2 channel relay used for demoing version 0.3. A slightly bigger 1.3" OLED display will replace the first 0.96" display. Some 3D-printed enclosures will also be made.
 
 
 

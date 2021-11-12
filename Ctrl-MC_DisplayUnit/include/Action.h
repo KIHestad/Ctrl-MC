@@ -72,9 +72,9 @@ class Action {
                 SerialCommunication serialCommunication = SerialCommunication();
                 Config::RelayUnitOutput output = Config::RelayUnitOutput();
                 if (bikeStatus.indicator == indLeft || bikeStatus.indicator == indHazard)
-                    serialCommunication.send(output.TurnSignalLeft.pin, blinkValue);
+                    serialCommunication.send(output.turnSignalLeft.pin, blinkValue);
                 if (bikeStatus.indicator == indRight || bikeStatus.indicator == indHazard)
-                    serialCommunication.send(output.TurnSignalRight.pin, blinkValue);
+                    serialCommunication.send(output.turnSignalRight.pin, blinkValue);
                 bikeStatus.indicatorNextBlinkTimestamp = millis() + IND_BLINK_SPEED;
                 controlDisplay.refreshStatusPage();                
             }

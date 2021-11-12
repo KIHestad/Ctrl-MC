@@ -1,16 +1,15 @@
 {
 	"folders": [
 		{
-			"name": "Ctrl-MC_HandlebarUnit",
-			"path": "Ctrl-MC_HandlebarUnit"
+			"name": "Ctrl-MC_Common",
+			"path": "Ctrl-MC_Common"
+		},
+		{
+			"path": "Ctrl-MC_DisplayUnit"
 		},
 		{
 			"name": "Ctrl-MC_RelayUnit",
 			"path": "Ctrl-MC_RelayUnit"
-		},
-		{
-			"name": "Ctrl-MC_Common",
-			"path": "Ctrl-MC_Common"
 		},
 		{
 			"path": "Documents"
@@ -23,7 +22,9 @@
 			"array": "cpp",
 			"string": "cpp",
 			"string_view": "cpp",
-			"ranges": "cpp"
+			"ranges": "cpp",
+			"iosfwd": "cpp",
+			"xlocbuf": "cpp"
 		}
 	}
 }

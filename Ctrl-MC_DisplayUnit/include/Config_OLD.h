@@ -4,19 +4,16 @@
 /*****************************************************************************
  *   Output Pins cofiguration settings   
  *****************************************************************************/
-#ifndef LED_BUILTIN
-#define LED_BUILTIN 2 // pin number is specific to your board, ex: esp32 = pin 2
-#endif
-const uint8_t ONBOARD_LED_PIN = LED_BUILTIN;              // The pin number or ref to board variable for the pins controlling onboard led
-const uint8_t ONBOARD_LED_ON = HIGH;                       // Set HIGH or LOW to determin what sets the onboard led on or off
-const uint8_t ONBOARD_LED_OFF = LOW;                     // Ex: for Arduino Uno/Nano led in on using HIGH, but for NodeMCU led is on using LOW
+// #ifndef LED_BUILTIN
+// #define LED_BUILTIN 2 // pin number is specific to your board, ex: esp32 = pin 2
+// #endif
+// const uint8_t ONBOARD_LED_PIN = LED_BUILTIN;              // The pin number or ref to board variable for the pins controlling onboard led
+// const uint8_t ONBOARD_LED_ON = HIGH;                       // Set HIGH or LOW to determin what sets the onboard led on or off
+// const uint8_t ONBOARD_LED_OFF = LOW;                     // Ex: for Arduino Uno/Nano led in on using HIGH, but for NodeMCU led is on using LOW
 
 /*****************************************************************************
  *   Featuere activation and digital input pins cofiguration settings   
  *****************************************************************************/
-const int INPUT_RESISTOR_TYPE = INPUT_PULLUP; // Set INPUT_PULLUP or INPUT_PULLDOWN for input pins
-const int INPUT_PRESSED_READ_VALUE = LOW; // Set LOW/0 or HIGH/1 as value to be expected when button is pressed, used by digital read
-
 const Input INPUT_CLUTCH =        { 13, true };   // Clutch lever
 const Input INPUT_IND_LEFT =      { 12, true };   // Indicator (turn signal) Left
 const Input INPUT_HILO =          { 14, true };   // Toggle headlight between High and Low beam
@@ -50,20 +47,6 @@ const bool SYSTEM_DEBUGMODE_DEFAULT_ON = true;                          // Optio
 const bool SYSTEM_HANDSHAKE_IGNORE_COMM_ERROR = true;                   // For debugging only, should always be set to true. If set false comm errors are ignoerd.
 const long SYSTEM_HANDSHAKE_CHECK_INTERVAL = 15;                        // Number of seconds for each ping to relay unit for checking that communication is OK
 const TemperatureDefaultType SYSTEM_TEMP_DEFAULT_TYPE = tempCelcius;    // Default temp display type
-
-/*****************************************************************************
- *   Ignition control
- *****************************************************************************/
-
-const bool IGN_PW_ENABLED = true;                       // Enable to turn on ignition using password
-const Input IGN_PW_START_BUTTON = INPUT_MENU_NEXT;      // Button to start / reset password input
-const uint8_t IGN_PW_LENGTH = 4;                        // Number of button presses for password
-const Input IGN_PW[IGN_PW_LENGTH] = {                   // The password as an array of inputs
-    INPUT_IND_LEFT,
-    INPUT_IND_RIGHT,
-    INPUT_MENU_NEXT,
-    INPUT_MENU_SELECT
-};
 
 /*****************************************************************************
  *   Turn signal settings

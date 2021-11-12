@@ -106,8 +106,8 @@ class ControlHandlebarButtons {
                         bikeStatus.indicator = indHazard;
                         btnIndLeftHold = true;
                         btnIndRightHold = true;
-                        serialCommunication.send(output.TurnSignalLeft.pin,1);
-                        serialCommunication.send(output.TurnSignalRight.pin,1);
+                        serialCommunication.send(output.turnSignalLeft.pin,1);
+                        serialCommunication.send(output.turnSignalRight.pin,1);
                         bikeStatus.indicatorNextBlinkTimestamp = millis() + IND_BLINK_SPEED;
                         bikeStatus.indicatorBlinkOn = true;
                         //controlDisplay.statusTextShow("HAZARD");
@@ -116,7 +116,7 @@ class ControlHandlebarButtons {
                         // Activate Left Turn Signal
                         btnIndLeftHold = true;
                         bikeStatus.indicator = indLeft;
-                        serialCommunication.send(output.TurnSignalLeft.pin,1);
+                        serialCommunication.send(output.turnSignalLeft.pin,1);
                         bikeStatus.indicatorNextBlinkTimestamp = millis() + IND_BLINK_SPEED;
                         bikeStatus.indicatorBlinkOn = true;
                         //controlDisplay.statusTextShow("IND LEFT");
@@ -125,7 +125,7 @@ class ControlHandlebarButtons {
                         // Activate Right Turn Signal
                         btnIndRightHold = true;
                         bikeStatus.indicator = indRight;
-                        serialCommunication.send(output.TurnSignalRight.pin,1);
+                        serialCommunication.send(output.turnSignalRight.pin,1);
                         bikeStatus.indicatorNextBlinkTimestamp = millis() + IND_BLINK_SPEED;
                         bikeStatus.indicatorBlinkOn = true;
                         //controlDisplay.statusTextShow("IND RIGHT");
@@ -136,8 +136,8 @@ class ControlHandlebarButtons {
                         bikeStatus.indicatorBlinkOn = false;
                         btnIndLeftHold = btnIndLeftPressed;
                         btnIndRightHold = btnIndRightPressed;
-                        serialCommunication.send(output.TurnSignalLeft.pin,0);
-                        serialCommunication.send(output.TurnSignalRight.pin,0);
+                        serialCommunication.send(output.turnSignalLeft.pin,0);
+                        serialCommunication.send(output.turnSignalRight.pin,0);
                         //controlDisplay.statusTextShow("IND OFF");
                     }
                     // Goto display status page and refresh

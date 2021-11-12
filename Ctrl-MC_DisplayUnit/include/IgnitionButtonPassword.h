@@ -1,25 +1,21 @@
 /***  Ctrl-MC // An open source Motorcycle Controller Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC  ***/
 
-class ControlIgnition {
+class IgnitionButtonPassword {
 
     private:
         int passwordPressCount = 0;
         bool passwordMismatch = false;
         unsigned long passwordTimeoutTimestamp = 0;
         bool passwordTimeoutProgressStarted = false;
-        int8_t btnPwHoldPin = -1; // Remember pin of last pressed button, when set > 0 that pin is set as hold until release is
+        Button btnPwInitiate;
+        Config::IgnitionButtonPassword configIgnBtnPw;
 
-        void CheckPW(Input input) {
-            if (input.enabled)
+        void checkPW(Button btn) {
+            if (btn.enabled)
             {
-                // Check if btn is pressed
-                bool btnPressed = readInput(input);
-                // Check for continously press
-                if (input.pin == btnPwHoldPin && !btnPressed) {
-                    // Relese
-                    btnPwHoldPin = -1;
-                }
-                else if (btnPressed && input.pin != btnPwHoldPin) {
+                // Check if btn is clicked
+                bool btnClicked = btn.isClicked();
+                if (btnClicked) {
                     // Check if progress for goto status page is in progress, cancel now
                     if (bikeStatus.displayGotoStatusPageTimestamp > 0 || passwordTimeoutProgressStarted) {
                         controlDisplay.gotoStatusPageCancel(); // Cancel running display off
@@ -28,14 +24,12 @@ class ControlIgnition {
                     // Button press detected, show on display
                     Image image = Image();
                     image.ignOff();
-                    // Remember it to check for continously press later
-                    btnPwHoldPin = input.pin;
                     // Check if incorrect password keypress
-                    if (passwordPressCount < IGN_PW_LENGTH && input.pin != IGN_PW[passwordPressCount].pin) 
+                    if (passwordPressCount < configIgnBtnPw.pwLength && btn.pin != configIgnBtnPw.pwButtons[passwordPressCount].pin) 
                         passwordMismatch = true;
                     // Check if password complete
                     passwordPressCount++;
-                    if (passwordPressCount >= IGN_PW_LENGTH && !passwordMismatch) {
+                    if (passwordPressCount >= configIgnBtnPw.pwLength && !passwordMismatch) {
                         // Success, update bike status and show on display
                         bikeStatus.ignition = ignOn;
                         bikeStatus.ignitionOnTimestamp = millis();
@@ -75,12 +69,19 @@ class ControlIgnition {
 
     public:
         
-        void checkForPassword() {
-            if (IGN_PW_ENABLED && IGN_PW_START_BUTTON.enabled)
+        IgnitionButtonPassword() {
+            configIgnBtnPw = Config::IgnitionButtonPassword();
+            ButtonHelper btnHelper = ButtonHelper();
+            btnPwInitiate = btnHelper.getButton(configIgnBtnPw.inititateButton.pin);
+        }
+
+        void run() {
+            // Check for activating ingnition button password
+            Config::IgnitionButtonPassword configIgnBtnPw = Config::IgnitionButtonPassword();
+            if (configIgnBtnPw.enabled && configIgnBtnPw.inititateButton.enabled)
             {
-                if (bikeStatus.ignition == ignOff) {
-                    bool btnStartPwPressed = readInput(IGN_PW_START_BUTTON);
-                    if (btnStartPwPressed)
+                if (bikeStatus.ignition == BikeStatusIgnition::ignOff) {
+                    if (btnPwInitiate.isClicked())
                     {
                         // Activated password feature
                         bikeStatus.ignition = ignPasswordMode;
@@ -93,7 +94,6 @@ class ControlIgnition {
                         passwordMismatch = false;
                         passwordTimeoutProgressStarted = false;
                         passwordTimeoutTimestamp = millis();
-                        btnPwHoldPin = IGN_PW_START_BUTTON.pin;
                         delay(200);
                     }
                 }
@@ -111,14 +111,14 @@ class ControlIgnition {
                             passwordTimeoutProgressStarted = true;
                         }
                         // Check for password, read buttons
-                        CheckPW(INPUT_IND_LEFT);
-                        CheckPW(INPUT_IND_RIGHT);
-                        CheckPW(INPUT_HILO);
-                        CheckPW(INPUT_MENU_NEXT);
-                        CheckPW(INPUT_MENU_SELECT);
-                        CheckPW(INPUT_START_STOP);
-                        CheckPW(INPUT_CLUTCH);
-                        CheckPW(INPUT_BRAKE_FRONT);
+                        checkPW(btnBrakeFront);
+                        checkPW(btnClutch);
+                        checkPW(btnIndicatorLeft);
+                        checkPW(btnIndicatorRight);
+                        checkPW(btnLightsHiLo);
+                        checkPW(btnMenuNext);
+                        checkPW(btnMenuSelect);
+                        checkPW(btnStartStop);
                     }
                 }
             }

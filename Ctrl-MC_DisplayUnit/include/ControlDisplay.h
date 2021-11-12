@@ -50,6 +50,8 @@ class ControlDisplay {
                     bikeStatus.displayMenySubPageSelected = 0;
                     bikeStatus.displayMenuTimeoutTimestamp = 0;
                     bikeStatus.displayMenyShowRunningStopWatch = 0;
+                    if (bikeStatus.ignition == BikeStatusIgnition::ignTestButtonsMode)
+                        bikeStatus.ignition = BikeStatusIgnition::ignOff;
                     refreshStatusPage();
                 }
                 else {
@@ -153,6 +155,16 @@ class ControlDisplay {
         void statusTextShow(String txt, bool displayImmediately = true) {
             statusTextRemove();
             statusTextSetCursor(txt.length());
+            display.println(txt);
+            display.println(F("")); // TODO: Unstable to pass String, does this help?
+            if (displayImmediately)
+                display.display();
+        }
+
+        void centeredTextShow(String txt, bool displayImmediately = true) {
+            uint8_t textPixelWidth = txt.length() * DISPLAY_TEXT_CHAR_WIDTH;
+            display.fillRect(0, (DISPLAY_SCREEN_HEIGHT/2) - DISPLAY_TEXT_CHAR_HEIGHT, DISPLAY_SCREEN_WIDTH, DISPLAY_TEXT_CHAR_HEIGHT + 2, SSD1306_BLACK); 
+            display.setCursor((DISPLAY_SCREEN_WIDTH/2) - (textPixelWidth/2) , (DISPLAY_SCREEN_HEIGHT/2) - DISPLAY_TEXT_CHAR_HEIGHT);
             display.println(txt);
             display.println(F("")); // TODO: Unstable to pass String, does this help?
             if (displayImmediately)

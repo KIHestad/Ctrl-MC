@@ -1,22 +1,29 @@
 /***  Ctrl-MC // An open source Motorcycle Controller Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC  ***/
 
 #include <Arduino.h>
-#include <Config.h> // Ctrl-MC_Common/lib -> To be user edited to enable/disable features and configure arduino board
-#include <SerialCommunication.h> // Ctrl-MC_Common/lib
-#include <OnBoardLed.h>
+#include "../../Ctrl-MC_Common/lib/Config/Config.h" // To be user edited to enable/disable features and configure arduino board
+#include "../../Ctrl-MC_Common/lib/SerialCommunication/SerialCommunication.h" 
+#include "../../Ctrl-MC_Common/lib/OnBoardLed/OnBoardLed.h" 
 #include <Relay.h>
 #include <Action.h>
 // #include <DHT.h> // Temp/Humidity sensor lib
 
 SerialCommunication serialCommunication;
+OnBoardLed onBoardLed;
 
 void setup() {
-    Serial.begin(9600);
+    // Serial comm
+    Config config = Config();
+    Serial.begin(config.serialCommSpeed);
+    serialCommunication = SerialCommunication();
+    serialCommunication.clearBuffer();
+    // Init relay
     Relay relay = Relay();
     relay.init();
-    OnBoardLed onBoardLed = OnBoardLed();
-    onBoardLed.init();
-    serialCommunication = SerialCommunication();
+    // Init onboard led
+    Config::RelayUnitOutput ruOutput = Config::RelayUnitOutput();
+    onBoardLed = OnBoardLed();
+    onBoardLed.init(ruOutput.onBoardLed);
 }
 
 void loop() {
