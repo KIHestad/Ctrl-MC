@@ -56,7 +56,9 @@ I ended up buying a 30 pins ESP32 (ESP32 NodeMCU Module Board WiFi Bluetooth CP2
 
 A 8 channel relay unit has also been bought and will be used in addition to the 2 channel relay used for demoing version 0.3. A slightly bigger 1.3" OLED display will replace the first 0.96" display. Some 3D-printed enclosures will also be made.
 
+##Still preparing Version 0.4 - Nov 2021
 
+Decided to rework the code. Better overall structure and a common local library is holding shared code used by both the relay unit & the display unit. "Display unit" is by the way the new name for the arduino previously called "Handlebar unit". All parts for creating a prototype has now arrived. A 3d printed enclosure for the relay unit is also made. A test feature is also added, possible to enable by longpress on a spesific button before the ignition is turned on, just to check that pin assignments for the display unit is correctly configured, it displays the name of the button pressed on the display.
 
 
 
