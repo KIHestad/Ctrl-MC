@@ -16,7 +16,7 @@ class DisplayMenu {
                 displayHelper.gotoStatusPageInitiate();
             }
             // If stopwatch is selected, show as running
-            if (bikeStatus.displayMenyShowRunningStopWatch > 0 && millis() > bikeStatus.displayMenyShowRunningStopWatch + 1000) {
+            if (bikeStatus.displayMenuShowRunningStopWatch > 0 && millis() > bikeStatus.displayMenuShowRunningStopWatch + 1000) {
                 displayStopWatchTime();
             }
             
@@ -33,16 +33,16 @@ class DisplayMenu {
                 }
                 else {
                     // Goto next menu if not sub menu is selected, 0 = no menu currently selected, 1 = first menu item
-                    if (bikeStatus.displayMenySubPageSelected == 0) {
-                        bikeStatus.displayMenyPageSelected++;
+                    if (bikeStatus.displayMenuSubPageSelected == 0) {
+                        bikeStatus.displayMenuPageSelected++;
                         display.clearDisplay();
                     }
                 }
-                bikeStatus.displayMenyShowRunningStopWatch = 0;
+                bikeStatus.displayMenuShowRunningStopWatch = 0;
                 Config::DisplayMenuItemShow dmis = Config::DisplayMenuItemShow();
-                if (bikeStatus.displayMenyPageSelected >= dmis.count + 1) {
+                if (bikeStatus.displayMenuPageSelected >= dmis.count + 1) {
                     // Goto status screen
-                    bikeStatus.displayMenyPageSelected = 0;
+                    bikeStatus.displayMenuPageSelected = 0;
                     bikeStatus.displayMenuTimeoutTimestamp = 0;
                     displayHelper.gotoStatusPageCancel();
                     displayHelper.refreshStatusPage();
@@ -50,11 +50,11 @@ class DisplayMenu {
                 else {
                     // Select the menu according to config
                     Config::DisplayMenuItemShow dmis = Config::DisplayMenuItemShow();
-                    Config::DisplayMenuItemInfo dmiSelected = dmis.item[bikeStatus.displayMenyPageSelected - 1];
+                    Config::DisplayMenuItemInfo dmiSelected = dmis.item[bikeStatus.displayMenuPageSelected - 1];
                     // Show menu now
                     if (dmiSelected.id == 1) {
                         // Ignition
-                        if (bikeStatus.displayMenySubPageSelected == 0)
+                        if (bikeStatus.displayMenuSubPageSelected == 0)
                         {
                             // No sub level menu selected, show default ingnition onb
                             displayImage.ignOn();
@@ -81,7 +81,7 @@ class DisplayMenu {
                         // Stopwatch
                         displayImage.stopwatch();
                         displayStopWatchTime();
-                        bikeStatus.displayMenyShowRunningStopWatch = millis();
+                        bikeStatus.displayMenuShowRunningStopWatch = millis();
                         displayHelper.statusTextShow(dmiSelected.displayName);
                     }
                     else if (dmiSelected.id == 3) {
@@ -116,11 +116,11 @@ class DisplayMenu {
                 else {
                     // Select the menu according to config
                     Config::DisplayMenuItemShow dmis = Config::DisplayMenuItemShow();
-                    Config::DisplayMenuItemInfo dmiSelected = dmis.item[bikeStatus.displayMenyPageSelected - 1];
+                    Config::DisplayMenuItemInfo dmiSelected = dmis.item[bikeStatus.displayMenuPageSelected - 1];
                     // Show next menu now
                     if (dmiSelected.id == 1) {
                         // Ignition actions
-                        if (bikeStatus.displayMenySubPageSelected == 0) {
+                        if (bikeStatus.displayMenuSubPageSelected == 0) {
                             // initially show ignition on checkboxes
                             clearGraphicsNotStatusText();
                             displayImage.menuSelectFrame(true,true);
@@ -128,11 +128,11 @@ class DisplayMenu {
                             displayImage.menuSelectIconOn(false,true);
                             displayImage.menuSelectFrameContentInverse(false,true);
                             display.display();
-                            bikeStatus.displayMenySubPageSelected = 1; // Indicate first level sub menu selected
+                            bikeStatus.displayMenuSubPageSelected = 1; // Indicate first level sub menu selected
                         }
-                        else if (bikeStatus.displayMenySubPageSelected == 1) {
+                        else if (bikeStatus.displayMenuSubPageSelected == 1) {
                             // perform action
-                            bikeStatus.displayMenySubPageSelected = 0;
+                            bikeStatus.displayMenuSubPageSelected = 0;
                             if (checkBoxSelected == checkBoxRight) {
                                 // keep on, return to ignition main menu
                                 clearGraphicsNotStatusText();
@@ -147,7 +147,7 @@ class DisplayMenu {
                                 bikeStatus.indicator = indOff;
                                 
                                 bikeStatus.engine = engStopped;
-                                bikeStatus.displayMenyPageSelected = 0;
+                                bikeStatus.displayMenuPageSelected = 0;
                                 // TODO - turn off relays
                                 SerialCommunication serialCommunication = SerialCommunication();
                                 Config::RelayUnitOutput output = Config::RelayUnitOutput();

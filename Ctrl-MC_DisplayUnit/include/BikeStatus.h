@@ -15,10 +15,10 @@ class BikeStatus {
         
         unsigned long ignitionOnTimestamp; // Set timestamp for when iginition was last turned on, used for stopwatch
         
-        uint8_t displayMenyPageSelected; // The current page to show on display, selected by NEXT MENU ITEM button, 0=show status page
-        uint8_t displayMenySubPageSelected; // The current submenu selected
+        uint8_t displayMenuPageSelected; // The current page to show on display, selected by NEXT MENU ITEM button, 0=show status page
+        uint8_t displayMenuSubPageSelected; // The current submenu selected
         unsigned long displayMenuTimeoutTimestamp; // The timestamp in the future for set after each menu action to trigger automatically return to status page
-        unsigned long displayMenyShowRunningStopWatch; // Set to actual time [millis()] to update time each second
+        unsigned long displayMenuShowRunningStopWatch; // Set to actual time [millis()] to update time each second
         unsigned long displayGotoStatusPageTimestamp; // Timestamp for showing progressbar when goto status page was triggered
         bool displayGotoStatusPageProgress; // Flag set to true when progress goto status page is running 
         
@@ -41,10 +41,10 @@ class BikeStatus {
             this->handshakeNextTimestamp = millis();
             this->ignitionOnTimestamp = millis();
             
-            this->displayMenyPageSelected = 0; // No display menu selected, show status page as default
-            this->displayMenySubPageSelected = 0; // No sub menu level selected as default
+            this->displayMenuPageSelected = 0; // No display menu selected, show status page as default
+            this->displayMenuSubPageSelected = 0; // No sub menu level selected as default
             this->displayMenuTimeoutTimestamp = 0; 
-            this->displayMenyShowRunningStopWatch = 0;
+            this->displayMenuShowRunningStopWatch = 0;
             this->displayGotoStatusPageTimestamp = 0;
             this->displayGotoStatusPageProgress = false;
             

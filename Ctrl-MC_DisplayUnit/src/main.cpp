@@ -7,8 +7,11 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 // Common lbraries
+#include "../../Ctrl-MC_Common/lib/OnBoardLed/OnBoardLed.h" // Ctrl-MC_Common/lib -> onBoard LED
 #include "../../Ctrl-MC_Common/lib/SerialCommunication/SerialCommunication.h" // Ctrl-MC_Common/lib
 #include "../../Ctrl-MC_Common/lib/Config/Config.h" // Ctrl-MC_Common/lib -> To be user edited to enable/disable features and configure arduino board
+OnBoardLed onBoardLed;
+SerialCommunication serialCommunication;
 // Initiate Adafruit OLD display
 Adafruit_SSD1306 display(Config::DisplaySettings::ScreenWidth, Config::DisplaySettings::ScreenHeight, &Wire, Config::DisplaySettings::ScreenAddress);
 // Project includes
@@ -41,8 +44,7 @@ IgnitionButtonPassword ignitionButtonPassword;
 
 #include <init.h>
 
-SerialCommunication serialCommunication;
-OnBoardLed onBoardLed;
+
 
 void setup() {
     // Serial comm

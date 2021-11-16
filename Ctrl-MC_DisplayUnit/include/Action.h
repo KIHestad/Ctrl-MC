@@ -10,8 +10,8 @@ class Action {
                 displayImage.retry();
                 displayHelper.statusTextShow("COMM RESTORED");
                 delay(1000);
-                bikeStatus.displayMenyPageSelected = 0;
-                bikeStatus.displayMenySubPageSelected = 0;
+                bikeStatus.displayMenuPageSelected = 0;
+                bikeStatus.displayMenuSubPageSelected = 0;
                 displayHelper.refreshStatusPage();
             }
             // Prepare next handshake
@@ -97,8 +97,10 @@ class Action {
             // In frequent intervals trigger handshake request
             if (!bikeStatus.handshakeOK || timestampNow > bikeStatus.handshakeNextTimestamp) {
                 // Send handshake request to relay module
+                onBoardLed.on();
                 SerialCommunication serialCommunication = SerialCommunication();
                 serialCommunication.sendHandshake();
+                onBoardLed.off();
                 // If communication problem, show reconnect icon
                 if (!bikeStatus.handshakeOK) {
                     DisplayImage displayImage = DisplayImage();

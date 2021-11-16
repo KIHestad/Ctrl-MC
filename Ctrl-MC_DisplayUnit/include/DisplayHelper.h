@@ -47,10 +47,10 @@ class DisplayHelper {
                 if (timeElapsed > dms.StatusPageProgressbarDuration) {
                     // Switch to status page now
                     gotoStatusPageCancel();
-                    bikeStatus.displayMenyPageSelected = 0;
-                    bikeStatus.displayMenySubPageSelected = 0;
+                    bikeStatus.displayMenuPageSelected = 0;
+                    bikeStatus.displayMenuSubPageSelected = 0;
                     bikeStatus.displayMenuTimeoutTimestamp = 0;
-                    bikeStatus.displayMenyShowRunningStopWatch = 0;
+                    bikeStatus.displayMenuShowRunningStopWatch = 0;
                     if (bikeStatus.ignition == BikeStatusIgnition::ignTestButtonsMode)
                         bikeStatus.ignition = BikeStatusIgnition::ignOff;
                     refreshStatusPage();
@@ -81,7 +81,7 @@ class DisplayHelper {
 
         // Refresh and show the status page if not a menu item is selected
         void refreshStatusPage() {
-            if (bikeStatus.displayMenyPageSelected == 0)
+            if (bikeStatus.displayMenuPageSelected == 0)
             {
                 // Prepare display for status page
                 gotoStatusPageCancel();

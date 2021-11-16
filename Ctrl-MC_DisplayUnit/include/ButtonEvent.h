@@ -31,18 +31,22 @@ class ButtonEvent {
             }
 
             // Horn
-            if (btnMenuSelect.enabled && bikeStatus.displayMenyPageSelected == 0)
+            if (btnMenuSelect.enabled && bikeStatus.displayMenuPageSelected == 0)
             {
                 bool btnHornIsHold = btnMenuSelect.isHold();
                 if (btnHornIsHold && !bikeStatus.hornActive) {
+                    bikeStatus.hornActive = true;
                     SerialCommunication serialCommunication = SerialCommunication();
                     Config::RelayUnitOutput output = Config::RelayUnitOutput();
-                    serialCommunication.send(output.horn.pin,1);
+                    serialCommunication.send(output.starterMotor.pin,1);
+                    // serialCommunication.send(output.horn.pin,1);
                 }
                 else if (!btnHornIsHold && bikeStatus.hornActive) {
+                    bikeStatus.hornActive = false;
                     SerialCommunication serialCommunication = SerialCommunication();
                     Config::RelayUnitOutput output = Config::RelayUnitOutput();
-                    serialCommunication.send(output.horn.pin,0);
+                    serialCommunication.send(output.starterMotor.pin,0);
+                    //serialCommunication.send(output.horn.pin,0);
                 }
             }
 
@@ -88,12 +92,12 @@ class ButtonEvent {
                         serialCommunication.send(output.lightHigh.pin,high);
                         serialCommunication.send(output.lightLow.pin,low);
                         // Update icon
-                        if (bikeStatus.displayMenyPageSelected == 0)
+                        if (bikeStatus.displayMenuPageSelected == 0)
                             displayHelper.refreshStatusPage();
-                        else if (bikeStatus.displayMenyPageSelected > 0) {
+                        else if (bikeStatus.displayMenuPageSelected > 0) {
                             // if light menu is selected
                             Config::DisplayMenuItemShow dmis = Config::DisplayMenuItemShow();
-                            Config::DisplayMenuItemInfo dmiSelected = dmis.item[bikeStatus.displayMenyPageSelected - 1];
+                            Config::DisplayMenuItemInfo dmiSelected = dmis.item[bikeStatus.displayMenuPageSelected - 1];
                             if (dmiSelected.id == 5) {
                                 if (bikeStatus.displayGotoStatusPageProgress) {
                                     // Stay on same menu, cancel goto status page progress
