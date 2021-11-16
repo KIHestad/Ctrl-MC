@@ -1,24 +1,26 @@
 /***  Ctrl-MC // An open source Motorcycle Controller Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC  ***/
 
-class Image {
+enum ImagePosition {imgPosMenuCenter, imgPosCenter, imgPos2Left, imgPos2Right, imgPos3Left, imgPos3RightTop, imgPos3RightBottom};
+
+class DisplayImage {
 
     private:
 
         void image(const unsigned char img[], ImagePosition imgPos, uint8_t width, uint8_t height) {
             if (imgPos == imgPosMenuCenter)
-                display.drawBitmap((DISPLAY_SCREEN_WIDTH/2)-(width/2), 3+25-(height/2), img, width, height, SSD1306_WHITE);
+                display.drawBitmap((Config::DisplaySettings::ScreenWidth/2)-(width/2), 3+25-(height/2), img, width, height, SSD1306_WHITE);
             else if (imgPos == imgPosCenter)
-                display.drawBitmap((DISPLAY_SCREEN_WIDTH/2)-(width/2), (DISPLAY_SCREEN_HEIGHT/2)-(height/2), img, width, height, SSD1306_WHITE);
+                display.drawBitmap((Config::DisplaySettings::ScreenWidth/2)-(width/2), (Config::DisplaySettings::ScreenHeight/2)-(height/2), img, width, height, SSD1306_WHITE);
             else if (imgPos == imgPos2Left)
-                display.drawBitmap(0, (DISPLAY_SCREEN_HEIGHT/2)-(height/2), img, width, height, SSD1306_WHITE);
+                display.drawBitmap(0, (Config::DisplaySettings::ScreenHeight/2)-(height/2), img, width, height, SSD1306_WHITE);
             else if (imgPos == imgPos2Right)
-                display.drawBitmap(DISPLAY_SCREEN_WIDTH-width, (DISPLAY_SCREEN_HEIGHT/2)-(height/2), img, width, height, SSD1306_WHITE);
+                display.drawBitmap(Config::DisplaySettings::ScreenWidth-width, (Config::DisplaySettings::ScreenHeight/2)-(height/2), img, width, height, SSD1306_WHITE);
             else if (imgPos == imgPos3Left)
-                display.drawBitmap(((DISPLAY_SCREEN_WIDTH-35)/2)-(width/2), (DISPLAY_SCREEN_HEIGHT/2)-(height/2), img, width, height, SSD1306_WHITE);
+                display.drawBitmap(((Config::DisplaySettings::ScreenWidth-35)/2)-(width/2), (Config::DisplaySettings::ScreenHeight/2)-(height/2), img, width, height, SSD1306_WHITE);
             else if (imgPos == imgPos3RightTop)
-                display.drawBitmap(DISPLAY_SCREEN_WIDTH-width, 0, img, width, height, SSD1306_WHITE);
+                display.drawBitmap(Config::DisplaySettings::ScreenWidth-width, 0, img, width, height, SSD1306_WHITE);
             else if (imgPos == imgPos3RightBottom)
-                display.drawBitmap(DISPLAY_SCREEN_WIDTH-width, DISPLAY_SCREEN_HEIGHT/2, img, width, height, SSD1306_WHITE);
+                display.drawBitmap(Config::DisplaySettings::ScreenWidth-width, Config::DisplaySettings::ScreenHeight/2, img, width, height, SSD1306_WHITE);
         }
 
     public:
@@ -91,7 +93,7 @@ class Image {
                 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
             };
             display.clearDisplay();
-            display.drawBitmap(0,0, img, DISPLAY_SCREEN_WIDTH, DISPLAY_SCREEN_HEIGHT, SSD1306_WHITE);
+            display.drawBitmap(0,0, img, Config::DisplaySettings::ScreenWidth, Config::DisplaySettings::ScreenHeight, SSD1306_WHITE);
             display.display();
         }
 
@@ -121,7 +123,7 @@ class Image {
             uint8_t width = 46;
             uint8_t height = 50;
             display.clearDisplay();
-            display.drawBitmap((DISPLAY_SCREEN_WIDTH/2)-(width/2),3, img, width, height, SSD1306_WHITE);
+            display.drawBitmap((Config::DisplaySettings::ScreenWidth/2)-(width/2),3, img, width, height, SSD1306_WHITE);
             display.display();
         }
 
@@ -151,7 +153,7 @@ class Image {
             uint8_t width = 46;
             uint8_t height = 50;
             display.clearDisplay();
-            display.drawBitmap((DISPLAY_SCREEN_WIDTH/2)-(width/2),3, img, width, height, SSD1306_WHITE);
+            display.drawBitmap((Config::DisplaySettings::ScreenWidth/2)-(width/2),3, img, width, height, SSD1306_WHITE);
             display.display();
         }
             
@@ -181,7 +183,7 @@ class Image {
             uint8_t width = 46;
             uint8_t height = 50;
             display.clearDisplay();
-            display.drawBitmap((DISPLAY_SCREEN_WIDTH/2)-(width/2),3, img, width, height, SSD1306_WHITE);
+            display.drawBitmap((Config::DisplaySettings::ScreenWidth/2)-(width/2),3, img, width, height, SSD1306_WHITE);
             display.display();
         }
 
@@ -211,7 +213,7 @@ class Image {
             uint8_t width = 46;
             uint8_t height = 50;
             display.clearDisplay();
-            display.drawBitmap((DISPLAY_SCREEN_WIDTH/2)-(width/2),3, img, width, height, SSD1306_WHITE);
+            display.drawBitmap((Config::DisplaySettings::ScreenWidth/2)-(width/2),3, img, width, height, SSD1306_WHITE);
             display.display();
         }
 
@@ -240,7 +242,7 @@ class Image {
             uint8_t width = 48;
             uint8_t height = 48;
             display.clearDisplay();
-            display.drawBitmap((DISPLAY_SCREEN_WIDTH/2)-(width/2),0, img, width, height, SSD1306_WHITE);
+            display.drawBitmap((Config::DisplaySettings::ScreenWidth/2)-(width/2),0, img, width, height, SSD1306_WHITE);
         }
 
         void retry() {
@@ -269,7 +271,7 @@ class Image {
             uint8_t width = 50;
             uint8_t height = 42;
             display.clearDisplay();
-            display.drawBitmap((DISPLAY_SCREEN_WIDTH/2)-(width/2),6, img, width, height, SSD1306_WHITE);
+            display.drawBitmap((Config::DisplaySettings::ScreenWidth/2)-(width/2),6, img, width, height, SSD1306_WHITE);
         }
 
         void stopwatch() {
@@ -286,7 +288,7 @@ class Image {
             };
             uint8_t width = 26;
             uint8_t height = 31;
-            display.drawBitmap(0,((DISPLAY_SCREEN_HEIGHT/2)-(height/2))-DISPLAY_TEXT_CHAR_HEIGHT, img, width, height, SSD1306_WHITE);
+            display.drawBitmap(0,((Config::DisplaySettings::ScreenHeight/2)-(height/2))-Config::DisplaySettings::TextCharHeight, img, width, height, SSD1306_WHITE);
             display.display();
         }
 
@@ -305,7 +307,7 @@ class Image {
             };
             uint8_t width = 24;
             uint8_t height = 48;
-            display.drawBitmap(0,((DISPLAY_SCREEN_HEIGHT/2)-(height/2))-DISPLAY_TEXT_CHAR_HEIGHT, img, width, height, SSD1306_WHITE);
+            display.drawBitmap(0,((Config::DisplaySettings::ScreenHeight/2)-(height/2))-Config::DisplaySettings::TextCharHeight, img, width, height, SSD1306_WHITE);
             display.display();
         }
 
@@ -640,11 +642,11 @@ class Image {
             uint8_t width = 50;
             uint8_t height = 50;
             if (left) {
-                uint8_t leftPosition = (DISPLAY_SCREEN_WIDTH/2)-6-width;
+                uint8_t leftPosition = (Config::DisplaySettings::ScreenWidth/2)-6-width;
                 display.drawBitmap(leftPosition, 3, img, width, height, SSD1306_WHITE);
             } 
             if (right) {
-                uint8_t leftPosition = (DISPLAY_SCREEN_WIDTH/2)+6;
+                uint8_t leftPosition = (Config::DisplaySettings::ScreenWidth/2)+6;
                 display.drawBitmap(leftPosition, 3, img, width, height, SSD1306_WHITE);
             } 
 
@@ -679,11 +681,11 @@ class Image {
             uint8_t width = 50;
             uint8_t height = 50;
             if (left) {
-                uint8_t leftPosition = (DISPLAY_SCREEN_WIDTH/2)-6-width;
+                uint8_t leftPosition = (Config::DisplaySettings::ScreenWidth/2)-6-width;
                 display.drawBitmap(leftPosition, 3, img, width, height, SSD1306_INVERSE);
             } 
             if (right) {
-                uint8_t leftPosition = (DISPLAY_SCREEN_WIDTH/2)+6;
+                uint8_t leftPosition = (Config::DisplaySettings::ScreenWidth/2)+6;
                 display.drawBitmap(leftPosition, 3, img, width, height, SSD1306_INVERSE);
             } 
 
@@ -701,11 +703,11 @@ class Image {
             uint8_t height = 19;
             uint8_t y = 3 + 11;
             if (left) {
-                uint8_t x = ((DISPLAY_SCREEN_WIDTH/2)-6-25)-(width/2);
+                uint8_t x = ((Config::DisplaySettings::ScreenWidth/2)-6-25)-(width/2);
                 display.drawBitmap(x, y, img, width, height, SSD1306_WHITE);
             }
             if (right) {
-                uint8_t x = ((DISPLAY_SCREEN_WIDTH/2)+6+25)-(width/2);
+                uint8_t x = ((Config::DisplaySettings::ScreenWidth/2)+6+25)-(width/2);
                 display.drawBitmap(x, y, img, width, height, SSD1306_WHITE);
             }
 
@@ -723,11 +725,11 @@ class Image {
             uint8_t height = 18;
             uint8_t y = 3 + 11;
             if (left) {
-                uint8_t x = ((DISPLAY_SCREEN_WIDTH/2)-6-25)-(width/2);
+                uint8_t x = ((Config::DisplaySettings::ScreenWidth/2)-6-25)-(width/2);
                 display.drawBitmap(x, y, img, width, height, SSD1306_WHITE);
             }
             if (right) {
-                uint8_t x = ((DISPLAY_SCREEN_WIDTH/2)+6+25)-(width/2);
+                uint8_t x = ((Config::DisplaySettings::ScreenWidth/2)+6+25)-(width/2);
                 display.drawBitmap(x, y, img, width, height, SSD1306_WHITE);
             }
 
@@ -749,11 +751,11 @@ class Image {
             uint8_t height = 32;
             uint8_t y = 3 + (50/2) - (height/2); // (50/2) = Middle of Checkbox frama size
             if (left) {
-                uint8_t x = (DISPLAY_SCREEN_WIDTH/2)-6-(50/2)-(width/2); // (50/2) = Middle of Checkbox frama size
+                uint8_t x = (Config::DisplaySettings::ScreenWidth/2)-6-(50/2)-(width/2); // (50/2) = Middle of Checkbox frama size
                 display.drawBitmap(x, y, img, width, height, SSD1306_WHITE);
             } 
             if (right) {
-                uint8_t x = (DISPLAY_SCREEN_WIDTH/2)+6+(50/2)-(width/2); // (50/2) = Middle of Checkbox frama size 
+                uint8_t x = (Config::DisplaySettings::ScreenWidth/2)+6+(50/2)-(width/2); // (50/2) = Middle of Checkbox frama size 
                 display.drawBitmap(x, y, img, width, height, SSD1306_WHITE);
             } 
 
@@ -775,11 +777,11 @@ class Image {
             uint8_t height = 32;
             uint8_t y = 3 + (50/2) - (height/2); // (50/2) = Middle of Checkbox frama size
             if (left) {
-                uint8_t x = (DISPLAY_SCREEN_WIDTH/2)-6-(50/2)-(width/2); // (50/2) = Middle of Checkbox frama size
+                uint8_t x = (Config::DisplaySettings::ScreenWidth/2)-6-(50/2)-(width/2); // (50/2) = Middle of Checkbox frama size
                 display.drawBitmap(x, y, img, width, height, SSD1306_WHITE);
             } 
             if (right) {
-                uint8_t x = (DISPLAY_SCREEN_WIDTH/2)+6+(50/2)-(width/2); // (50/2) = Middle of Checkbox frama size 
+                uint8_t x = (Config::DisplaySettings::ScreenWidth/2)+6+(50/2)-(width/2); // (50/2) = Middle of Checkbox frama size 
                 display.drawBitmap(x, y, img, width, height, SSD1306_WHITE);
             } 
 

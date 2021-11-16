@@ -6,48 +6,49 @@ class Action {
         void receivedHandshake() {
             // If previously triggered alarm for communication falure, update display now
             if (!bikeStatus.handshakeOK) {
-                Image image = Image();
-                image.retry();
-                controlDisplay.statusTextShow("COMM RESTORED");
+                DisplayImage displayImage = DisplayImage();
+                displayImage.retry();
+                displayHelper.statusTextShow("COMM RESTORED");
                 delay(1000);
                 bikeStatus.displayMenyPageSelected = 0;
                 bikeStatus.displayMenySubPageSelected = 0;
-                controlDisplay.refreshStatusPage();
+                displayHelper.refreshStatusPage();
             }
             // Prepare next handshake
-            bikeStatus.handshakeNextTimestamp = millis() + (SYSTEM_HANDSHAKE_CHECK_INTERVAL * 1000);
+            Config config = Config();
+            bikeStatus.handshakeNextTimestamp = millis() + config.handshakeInterval;
             bikeStatus.handshakeOK = true;
         }
 
         void displayError(SerialCommunication::Data serialData) {
             display.clearDisplay();
-            Image image = Image();
-            image.warning();
+            DisplayImage displayImage = DisplayImage();
+            displayImage.warning();
             SerialCommunication::SerialValueError errorValue = SerialCommunication::SerialValueError();
             if (serialData.value == errorValue.GeneralError)
-                controlDisplay.statusTextShow("GENERAL ERROR");
+                displayHelper.statusTextShow("GENERAL ERROR");
             else if (serialData.value == errorValue.IncompleteData)
-                controlDisplay.statusTextShow("ERR DATA RECEIVED");
+                displayHelper.statusTextShow("ERR DATA RECEIVED");
             else if (serialData.value == errorValue.InvalidCRC)
-                controlDisplay.statusTextShow("ERR CRC RECEIVED");
+                displayHelper.statusTextShow("ERR CRC RECEIVED");
             else if (serialData.value == errorValue.ReceivedErrorIncompleteData)
-                controlDisplay.statusTextShow("ERR DATA SENT");
+                displayHelper.statusTextShow("ERR DATA SENT");
             else if (serialData.value == errorValue.ReceivedErrorInvalidCRC)
-                controlDisplay.statusTextShow("ERR CRC SENT");
+                displayHelper.statusTextShow("ERR CRC SENT");
             else if (serialData.value == errorValue.UnknownCode) {
                 String errMsg = "ERR CODE SENT: ";
                 errMsg += serialData.value;
-                controlDisplay.statusTextShow(errMsg);
+                displayHelper.statusTextShow(errMsg);
             }
         }
 
         void displayUnknownCode(SerialCommunication::Data serialData) {
             display.clearDisplay();
-            Image image = Image();
-            image.warning();
+            DisplayImage displayImage = DisplayImage();
+            displayImage.warning();
             String errMsg = "ERR CODE RECEIVED: ";
             errMsg += serialData.code;
-            controlDisplay.statusTextShow(errMsg);
+            displayHelper.statusTextShow(errMsg);
         }
     
     public:
@@ -75,8 +76,9 @@ class Action {
                     serialCommunication.send(output.turnSignalLeft.pin, blinkValue);
                 if (bikeStatus.indicator == indRight || bikeStatus.indicator == indHazard)
                     serialCommunication.send(output.turnSignalRight.pin, blinkValue);
-                bikeStatus.indicatorNextBlinkTimestamp = millis() + IND_BLINK_SPEED;
-                controlDisplay.refreshStatusPage();                
+                Config::Indicator ind = Config::Indicator();
+                bikeStatus.indicatorNextBlinkTimestamp = millis() + ind.blinkSpeed;
+                displayHelper.refreshStatusPage();                
             }
         }
 
@@ -87,9 +89,9 @@ class Action {
             unsigned long handshakeDelayAccepted = 3000; // Number of millliseconds after last confirmed handshake to accept before trigger alert
             if (timestampNow > bikeStatus.handshakeNextTimestamp + handshakeDelayAccepted) {
                 bikeStatus.handshakeOK = false;
-                Image image = Image();
-                image.warning();
-                controlDisplay.statusTextShow("HANDSHAKE FAILED");
+                DisplayImage displayImage = DisplayImage();
+                displayImage.warning();
+                displayHelper.statusTextShow("HANDSHAKE FAILED");
                 delay(2000);
             }
             // In frequent intervals trigger handshake request
@@ -99,9 +101,9 @@ class Action {
                 serialCommunication.sendHandshake();
                 // If communication problem, show reconnect icon
                 if (!bikeStatus.handshakeOK) {
-                    Image image = Image();
-                    image.retry();
-                    controlDisplay.statusTextShow("RECONNECTING");
+                    DisplayImage displayImage = DisplayImage();
+                    displayImage.retry();
+                    displayHelper.statusTextShow("RECONNECTING");
                     delay(1000);
                 }
             }

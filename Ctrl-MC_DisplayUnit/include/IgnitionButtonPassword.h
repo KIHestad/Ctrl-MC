@@ -10,7 +10,7 @@ class IgnitionButtonPassword {
         Button btnPwInitiate;
         Config::IgnitionButtonPassword configIgnBtnPw;
 
-        void checkPW(Button btn) {
+        void checkPW(Button& btn) {
             if (btn.enabled)
             {
                 // Check if btn is clicked
@@ -18,12 +18,12 @@ class IgnitionButtonPassword {
                 if (btnClicked) {
                     // Check if progress for goto status page is in progress, cancel now
                     if (bikeStatus.displayGotoStatusPageTimestamp > 0 || passwordTimeoutProgressStarted) {
-                        controlDisplay.gotoStatusPageCancel(); // Cancel running display off
+                        displayHelper.gotoStatusPageCancel(); // Cancel running display off
                         passwordTimeoutProgressStarted = false;
                     }
                     // Button press detected, show on display
-                    Image image = Image();
-                    image.ignOff();
+                    DisplayImage displayImage = DisplayImage();
+                    displayImage.ignOff();
                     // Check if incorrect password keypress
                     if (passwordPressCount < configIgnBtnPw.pwLength && btn.pin != configIgnBtnPw.pwButtons[passwordPressCount].pin) 
                         passwordMismatch = true;
@@ -36,27 +36,31 @@ class IgnitionButtonPassword {
                         // Trigger handshake immediately
                         bikeStatus.handshakeOK = true;
                         bikeStatus.handshakeNextTimestamp = millis(); 
-                        action.performHandshake(); 
+                        action.performHandshake();
+                        // Turn on relay
+                        SerialCommunication serialCommunication = SerialCommunication();
+                        Config::RelayUnitOutput output = Config::RelayUnitOutput();
+                        serialCommunication.send(output.mainPower.pin, 1);
                         // Show animation
-                        image.ignOffToOn1();
+                        displayImage.ignOffToOn1();
                         delay(50);
-                        image.ignOffToOn2();
+                        displayImage.ignOffToOn2();
                         delay(50);
-                        image.ignOn();
+                        displayImage.ignOn();
                         delay(900);
-                        controlDisplay.refreshStatusPage();
+                        displayHelper.refreshStatusPage();
                     }
                     else {
                         // Still not correct password entered, display dummy pw character
-                        controlDisplay.statusTextRemove();
+                        displayHelper.statusTextRemove();
                         uint8_t pwLength = passwordPressCount > 40 ? 40 : passwordPressCount;
-                        uint8_t pwCharWidthInclSeparator = DISPLAY_SCREEN_WIDTH / pwLength;
+                        uint8_t pwCharWidthInclSeparator = Config::DisplaySettings::ScreenWidth / pwLength;
                         pwCharWidthInclSeparator = pwCharWidthInclSeparator > 16 ? 16 : pwCharWidthInclSeparator;
                         uint8_t pwTotalWidht = pwCharWidthInclSeparator * pwLength;
-                        uint8_t x = (DISPLAY_SCREEN_WIDTH / 2) - (pwTotalWidht / 2) + 1;
+                        uint8_t x = (Config::DisplaySettings::ScreenWidth / 2) - (pwTotalWidht / 2) + 1;
                         for (uint8_t i = 0; i < pwLength; i++)
                         {
-                            display.fillRect(x, DISPLAY_SCREEN_HEIGHT - DISPLAY_TEXT_CHAR_HEIGHT, pwCharWidthInclSeparator-2, DISPLAY_TEXT_CHAR_HEIGHT, SSD1306_WHITE);
+                            display.fillRect(x, Config::DisplaySettings::ScreenHeight - Config::DisplaySettings::TextCharHeight, pwCharWidthInclSeparator-2, Config::DisplaySettings::TextCharHeight, SSD1306_WHITE);
                             x += pwCharWidthInclSeparator;
                         }
                         display.display();
@@ -75,7 +79,7 @@ class IgnitionButtonPassword {
             btnPwInitiate = btnHelper.getButton(configIgnBtnPw.inititateButton.pin);
         }
 
-        void run() {
+        void loopAction() {
             // Check for activating ingnition button password
             Config::IgnitionButtonPassword configIgnBtnPw = Config::IgnitionButtonPassword();
             if (configIgnBtnPw.enabled && configIgnBtnPw.inititateButton.enabled)
@@ -86,9 +90,9 @@ class IgnitionButtonPassword {
                         // Activated password feature
                         bikeStatus.ignition = ignPasswordMode;
                         // Cancel running display off
-                        controlDisplay.gotoStatusPageCancel();
-                        Image image = Image();
-                        image.ignOff();
+                        displayHelper.gotoStatusPageCancel();
+                        DisplayImage displayImage = DisplayImage();
+                        displayImage.ignOff();
                         // Reset values
                         passwordPressCount = 0;
                         passwordMismatch = false;
@@ -107,7 +111,7 @@ class IgnitionButtonPassword {
                     else {
                         // Check for initiate timeout
                         if (!passwordTimeoutProgressStarted && millis() - passwordTimeoutTimestamp > 6000) {
-                            controlDisplay.gotoStatusPageInitiate();
+                            displayHelper.gotoStatusPageInitiate();
                             passwordTimeoutProgressStarted = true;
                         }
                         // Check for password, read buttons

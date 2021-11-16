@@ -24,6 +24,8 @@ class BikeStatus {
         
         unsigned long indicatorNextBlinkTimestamp; // Timestamp for controller to know when to blink next time
         bool indicatorBlinkOn; // Flag to know to turn on or off turn signal, toggles for each ite
+        bool hornActive; // Flag set to true if signal horn is on
+        bool lightBrakeActive; // Flag set to true if brake lever is initiated
         bool neutral; // Flag set if bike gears in neutral position
         bool lightHighBeamFlash; // Flag set if hi/lo button is used as passing switch, set true when hi/lo button is pressed and holded for flashing with high beam
 
@@ -52,6 +54,8 @@ class BikeStatus {
             this->lights = BikeStatusLights::lightsOff;
             this->lightHilo = BikeStatusLightsHiLo::lightsLow;
             this->lightHighBeamFlash = false;
+            this->hornActive = false;
+            this->lightBrakeActive = false;
             this->indicator = BikeStatusIndicator::indOff;
         }
 };

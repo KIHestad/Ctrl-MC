@@ -9,6 +9,8 @@
 // Common lbraries
 #include "../../Ctrl-MC_Common/lib/SerialCommunication/SerialCommunication.h" // Ctrl-MC_Common/lib
 #include "../../Ctrl-MC_Common/lib/Config/Config.h" // Ctrl-MC_Common/lib -> To be user edited to enable/disable features and configure arduino board
+// Initiate Adafruit OLD display
+Adafruit_SSD1306 display(Config::DisplaySettings::ScreenWidth, Config::DisplaySettings::ScreenHeight, &Wire, Config::DisplaySettings::ScreenAddress);
 // Project includes
 #include <BikeStatus.h>
 BikeStatus bikeStatus;
@@ -22,25 +24,15 @@ Button btnMenuSelect;
 Button btnMenuNext;
 Button btnBrakeFront;
 #include <ButtonHelper.h>
-
-
-
-#include <models.h>
-#include <Config_OLD.h>
-#include <utils.h>
-Adafruit_SSD1306 display(DISPLAY_SCREEN_WIDTH, DISPLAY_SCREEN_HEIGHT, &Wire, DISPLAY_SCREEN_ADDRESS);
-
-#include <image.h>
-#include <controlDisplay.h>
-ControlDisplay controlDisplay;
-#include <controlDisplayMenu.h>
-ControlDisplayMenu controlDisplayMenu;
-#include <controlHandlebarButtons.h>
-ControlHandlebarButtons controlHandlebarButtons;
+#include <DisplayImage.h>
+#include <DisplayHelper.h>
+DisplayHelper displayHelper;
+#include <DisplayMenu.h>
+DisplayMenu displayMenu;
+#include <ButtonEvent.h>
+ButtonEvent buttonEvent;
 #include <Action.h>
 Action action;
-
-
 // Features
 #include <TestButtons.h>
 TestButtons testButtons;
@@ -77,22 +69,22 @@ void loop() {
     if (serialData.received) 
         action.checkReceivedData(serialData);
     // Check progress for switching back to status page
-    controlDisplay.gotoStatusPage();
+    displayHelper.gotoStatusPage();
     // Depending on ignition status allow different operations
     if (bikeStatus.ignition != BikeStatusIgnition::ignOn) {
         // Ignintion is not on, meaning it is off or in password mode
         // Check for button testing
-        testButtons.run();
+        testButtons.loopAction();
         // Check for turning on ignintion using button password
-        ignitionButtonPassword.run();
+        ignitionButtonPassword.loopAction();
     }
     else {
         // Ignition is on, allow operations, inititate handshake to check that communication to relay unit is working
         action.performHandshake();
         // Check for selected menu
-        controlDisplayMenu.checkForMenuAction();
+        displayMenu.loopAction();
         // Check handlebarbuttons
-        controlHandlebarButtons.checkForButtonAction();
+        buttonEvent.loopAction();
         // Check for runnning actions
         action.indicatorBlink();
     }
