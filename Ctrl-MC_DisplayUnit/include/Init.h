@@ -40,6 +40,7 @@ class Init {
             testButtons = TestButtons();
             ignitionButtonPassword = IgnitionButtonPassword();
             action = Action();
+            buttonEvent = ButtonEvent();
         }
 
 };

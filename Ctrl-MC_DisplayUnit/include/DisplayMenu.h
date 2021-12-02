@@ -17,15 +17,20 @@ class DisplayMenu {
             }
             // If stopwatch is selected, show as running
             if (bikeStatus.displayMenuShowRunningStopWatch > 0 && millis() > bikeStatus.displayMenuShowRunningStopWatch + 1000) {
+                bikeStatus.displayMenuShowRunningStopWatch = millis();
                 displayStopWatchTime();
             }
-            
+            // if systenm temp is selected, update temp
+            if (bikeStatus.displayMenuShowSystemTempRefreshTimestamp > 0 && millis() > bikeStatus.displayMenuShowSystemTempRefreshTimestamp + 3000) {
+                bikeStatus.displayMenuShowSystemTempRefreshTimestamp = millis();
+                displaySystemTemp();
+            }
             // Check if next menu button is pressed - PERFORM GOTO NEXT MENU ITEM
             if (btnMenuNext.isClicked())
             {
                 // Timestamp for display menu auto shutdown
                 Config::DisplayMenuSettings dms = Config::DisplayMenuSettings();
-                bikeStatus.displayMenuTimeoutTimestamp = millis() + (dms.ShutdownWait);
+                bikeStatus.displayMenuTimeoutTimestamp = millis() + (dms.shutdownWait);
                 // Check if progress for goto status page is in progress, cancel and show same menu if relevant
                 if (bikeStatus.displayGotoStatusPageProgress) {
                     // Stay on same menu, cancel goto status page
@@ -39,6 +44,7 @@ class DisplayMenu {
                     }
                 }
                 bikeStatus.displayMenuShowRunningStopWatch = 0;
+                bikeStatus.displayMenuShowSystemTempRefreshTimestamp = 0;
                 Config::DisplayMenuItemShow dmis = Config::DisplayMenuItemShow();
                 if (bikeStatus.displayMenuPageSelected >= dmis.count + 1) {
                     // Goto status screen
@@ -56,7 +62,7 @@ class DisplayMenu {
                         // Ignition
                         if (bikeStatus.displayMenuSubPageSelected == 0)
                         {
-                            // No sub level menu selected, show default ingnition onb
+                            // No sub level menu selected, show default ingnition on
                             displayImage.ignOn();
                             displayHelper.statusTextShow("IGNITION ON");
                             checkBoxSelected = checkBoxRight;
@@ -93,6 +99,8 @@ class DisplayMenu {
                         // Temp System
                         displayImage.temperature();
                         displayHelper.statusTextShow(dmiSelected.displayName);
+                        displaySystemTemp();
+                        bikeStatus.displayMenuShowSystemTempRefreshTimestamp = millis();
                     }
                     else if (dmiSelected.id == 5) {
                         // Lights
@@ -102,11 +110,11 @@ class DisplayMenu {
             }
             
             // Check if select menu item button is pressed - PERFORM ACTION
-            if (btnMenuSelect.isClicked())
+            if (bikeStatus.displayMenuPageSelected > 0 && btnMenuSelect.isClicked())
             {
                 // Timestamp for display menu auto shutdown
                 Config::DisplayMenuSettings dms = Config::DisplayMenuSettings();
-                bikeStatus.displayMenuTimeoutTimestamp = millis() + (dms.ShutdownWait);
+                bikeStatus.displayMenuTimeoutTimestamp = millis() + (dms.shutdownWait);
                 // Check if progress for goto status page is in progress, cancel it and continue if relevant
                 if (bikeStatus.displayGotoStatusPageProgress) {
                     // Stay on same menu, cancel display off and ignore action
@@ -181,7 +189,9 @@ class DisplayMenu {
                         // Temp Outside actions
                     }
                     else if (dmiSelected.id == 4) {
-                        // Temp System actions
+                        // Temp System actions, toggle celcius / farenheit
+                        bikeStatus.tempShowFarenheit = !bikeStatus.tempShowFarenheit;
+                        displaySystemTemp();
                     }
                     else if (dmiSelected.id == 5) {
                         display.clearDisplay();
@@ -233,7 +243,9 @@ class DisplayMenu {
                 else if (bikeStatus.lightHilo == lightsHigh) {
                     displayImage.lightsHighBig(imgPosMenuCenter);
                     displayHelper.statusTextShow("HIGH BEAM");
-                    serialCommunication.send(output.lightLow.pin, 0);
+                    Config::Headlight headlightConfig = Config::Headlight();
+                    uint8_t lightHighValue = headlightConfig.hiWithLow ? 1 : 0;
+                    serialCommunication.send(output.lightLow.pin, lightHighValue);
                     serialCommunication.send(output.lightHigh.pin, 1);
                 }
             }
@@ -242,20 +254,20 @@ class DisplayMenu {
     private:
 
         void clearGraphicsNotStatusText() {
-            display.fillRect(0, 0, Config::DisplaySettings::ScreenWidth, Config::DisplaySettings::ScreenHeight-Config::DisplaySettings::TextCharHeight, SSD1306_BLACK);
+            display.fillRect(0, 0, Config::DisplaySettings::screenWidth, Config::DisplaySettings::screenHeight-Config::DisplaySettings::textCharHeight, SSD1306_BLACK);
         }
 
         // Display text on menu select checkboxes, checkbox frame start on y-pos 3, sixe: 50x50, frame border 2px
         void menuSelectCheckboxText(String text, bool left, bool right) {
             uint8_t y = 3 + 35;
-            uint8_t textPixLen = text.length() * Config::DisplaySettings::TextCharHeight;
+            uint8_t textPixLen = text.length() * Config::DisplaySettings::textCharHeight;
             if (left) {
-                uint8_t x = ((Config::DisplaySettings::ScreenWidth/2)-6-25)-(textPixLen/2);
+                uint8_t x = ((Config::DisplaySettings::screenWidth/2)-6-25)-(textPixLen/2);
                 display.setCursor(x,y);
                 display.println(text);
             }
             if (right) {
-                uint8_t x = ((Config::DisplaySettings::ScreenWidth/2)+6+25)-(textPixLen/2);
+                uint8_t x = ((Config::DisplaySettings::screenWidth/2)+6+25)-(textPixLen/2);
                 display.setCursor(x,y);
                 display.println(text);
             }
@@ -278,15 +290,49 @@ class DisplayMenu {
             timeFormatted += s;
             // Display 
             int x = 32;
-            int y = (Config::DisplaySettings::ScreenHeight / 2) - (Config::DisplaySettings::TextCharHeight);
+            int y = (Config::DisplaySettings::screenHeight / 2) - (Config::DisplaySettings::textLargeCharHeight);
             // Clear first?
-            display.fillRect(x,y,Config::DisplaySettings::ScreenWidth, Config::DisplaySettings::TextCharHeight * 2, SSD1306_BLACK);
+            display.setTextSize(Config::DisplaySettings::textLargeSize); // Larger font
+            display.fillRect(x,y,Config::DisplaySettings::screenWidth, Config::DisplaySettings::textLargeCharHeight, SSD1306_BLACK);
             display.setCursor(x, y);
-            display.setTextSize(Config::DisplaySettings::TextSize + 1); // Larger font
             display.println(timeFormatted);
             display.display();
-            display.setTextSize(Config::DisplaySettings::TextSize);
+            display.setTextSize(Config::DisplaySettings::textSize);
             
+        }
+
+        void displaySystemTemp() {
+            // Format temperature
+            float temp = (float)(bikeStatus.sysTempInt);
+            temp += (float)(bikeStatus.sysTempDec) / 10;
+            String tempSubFix = " C";
+            // Alternative for Farenheit: T(°F) = T(°C) × 9/5 + 32 
+            if (bikeStatus.tempShowFarenheit) {
+                temp = (temp * 1.8) + 32;
+                tempSubFix = " F";
+            }
+            String tempFormatted = String(temp, 1) + tempSubFix;
+            // Format humidity
+            float humidity = (float)(bikeStatus.sysHumidityInt);
+            humidity += (float)(bikeStatus.sysHumidityDec) / 10;
+            String humFormatted = String(humidity,1);
+            humFormatted += "%";
+            // Display 
+            int x = 32;
+            int y = (Config::DisplaySettings::screenHeight / 2) - (Config::DisplaySettings::textLargeCharHeight);
+            // Show sys temp
+            display.setTextSize(Config::DisplaySettings::textLargeSize); // Larger font
+            display.fillRect(x,y,Config::DisplaySettings::screenWidth, Config::DisplaySettings::textLargeCharHeight, SSD1306_BLACK);
+            display.setCursor(x, y);
+            display.println(tempFormatted);
+            display.setTextSize(Config::DisplaySettings::textSize);
+            // SHow humidity in status bar
+            String statusText = String("SYS TEMP/HUM: ");
+            statusText += humFormatted;
+            displayHelper.statusTextShow(statusText);
+            // Request new temp reading
+            serialCommunication.send(SerialCommunication::SerialCode::sysTempRequest, 0);
+            serialCommunication.send(SerialCommunication::SerialCode::sysHumidityRequest, 0);
         }
 
 

@@ -1,14 +1,21 @@
 /***  Ctrl-MC // An open source Motorcycle Controller Arduino project by KI Hestad: https://github.com/KIHestad/Ctrl-MC  ***/
 
+// External libraries
 #include <Arduino.h>
+#include <Wire.h>
+#include <SPI.h>
+#include <DHT.h>
+// Common libraries
 #include "../../Ctrl-MC_Common/lib/Config/Config.h" // To be user edited to enable/disable features and configure arduino board
 #include "../../Ctrl-MC_Common/lib/SerialCommunication/SerialCommunication.h" 
 #include "../../Ctrl-MC_Common/lib/OnBoardLed/OnBoardLed.h" 
+// Initiate classes
+DHT dhtSensor(Config::RelayUnitInput::tempSensor, DHT22);
+SerialCommunication serialCommunication;
+// Project includes
 #include <Relay.h>
 #include <Action.h>
-// #include <DHT.h> // Temp/Humidity sensor lib
 
-SerialCommunication serialCommunication;
 OnBoardLed onBoardLed;
 
 void setup() {
@@ -17,6 +24,8 @@ void setup() {
     Serial.begin(config.serialCommSpeed);
     serialCommunication = SerialCommunication();
     serialCommunication.clearBuffer();
+    // Temp sensor
+    dhtSensor.begin();
     // Init relay
     Relay relay = Relay();
     relay.init();
@@ -34,6 +43,6 @@ void loop() {
         action.checkReceivedData(serialData);
     }
 
-    // Check for input signals to relay unit, send to handlebar unit when changed, ex: neutral switch, oil pressure, running/stopped engine
+    // TODO: Check for input signals to relay unit, send to handlebar unit when changed, ex: neutral switch, oil pressure, running/stopped engine
 
 }

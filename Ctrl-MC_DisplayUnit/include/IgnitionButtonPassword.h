@@ -54,13 +54,13 @@ class IgnitionButtonPassword {
                         // Still not correct password entered, display dummy pw character
                         displayHelper.statusTextRemove();
                         uint8_t pwLength = passwordPressCount > 40 ? 40 : passwordPressCount;
-                        uint8_t pwCharWidthInclSeparator = Config::DisplaySettings::ScreenWidth / pwLength;
+                        uint8_t pwCharWidthInclSeparator = Config::DisplaySettings::screenWidth / pwLength;
                         pwCharWidthInclSeparator = pwCharWidthInclSeparator > 16 ? 16 : pwCharWidthInclSeparator;
                         uint8_t pwTotalWidht = pwCharWidthInclSeparator * pwLength;
-                        uint8_t x = (Config::DisplaySettings::ScreenWidth / 2) - (pwTotalWidht / 2) + 1;
+                        uint8_t x = (Config::DisplaySettings::screenWidth / 2) - (pwTotalWidht / 2) + 1;
                         for (uint8_t i = 0; i < pwLength; i++)
                         {
-                            display.fillRect(x, Config::DisplaySettings::ScreenHeight - Config::DisplaySettings::TextCharHeight, pwCharWidthInclSeparator-2, Config::DisplaySettings::TextCharHeight, SSD1306_WHITE);
+                            display.fillRect(x, Config::DisplaySettings::screenHeight - Config::DisplaySettings::textCharHeight, pwCharWidthInclSeparator-2, Config::DisplaySettings::textCharHeight, SSD1306_WHITE);
                             x += pwCharWidthInclSeparator;
                         }
                         display.display();

@@ -1,9 +1,11 @@
 class ButtonEvent {
 
     public:
-        
+
         void loopAction() {
-            
+
+            Config::RelayUnitOutput output = Config::RelayUnitOutput();
+
             // Start / Stop engine
             if (btnStartStop.enabled)
             {
@@ -12,15 +14,11 @@ class ButtonEvent {
                     if (btnStartStopIsHold && bikeStatus.engine == engStopped) {
                         // Initiate start motor
                         bikeStatus.engine = engStartMotorEngaged;
-                        SerialCommunication serialCommunication = SerialCommunication();
-                        Config::RelayUnitOutput output = Config::RelayUnitOutput();
                         serialCommunication.send(output.starterMotor.pin,1);
                     }
                     if (!btnStartStopIsHold && bikeStatus.engine == engStartMotorEngaged) {
                         // Disengage start motor
                         bikeStatus.engine = engStopped; // engUnknownStatus; // check relay module for bike running status
-                        SerialCommunication serialCommunication = SerialCommunication();
-                        Config::RelayUnitOutput output = Config::RelayUnitOutput();
                         serialCommunication.send(output.starterMotor.pin,0);
                     }
                 }
@@ -36,17 +34,11 @@ class ButtonEvent {
                 bool btnHornIsHold = btnMenuSelect.isHold();
                 if (btnHornIsHold && !bikeStatus.hornActive) {
                     bikeStatus.hornActive = true;
-                    SerialCommunication serialCommunication = SerialCommunication();
-                    Config::RelayUnitOutput output = Config::RelayUnitOutput();
-                    serialCommunication.send(output.starterMotor.pin,1);
-                    // serialCommunication.send(output.horn.pin,1);
+                    serialCommunication.send(output.horn.pin,1);
                 }
                 else if (!btnHornIsHold && bikeStatus.hornActive) {
                     bikeStatus.hornActive = false;
-                    SerialCommunication serialCommunication = SerialCommunication();
-                    Config::RelayUnitOutput output = Config::RelayUnitOutput();
-                    serialCommunication.send(output.starterMotor.pin,0);
-                    //serialCommunication.send(output.horn.pin,0);
+                    serialCommunication.send(output.horn.pin,0);
                 }
             }
 
@@ -56,14 +48,10 @@ class ButtonEvent {
                 bool btnBrakeFrontIsHold = btnBrakeFront.isHold();
                 if (btnBrakeFrontIsHold && !bikeStatus.lightBrakeActive) {
                     bikeStatus.lightBrakeActive = true;
-                    SerialCommunication serialCommunication = SerialCommunication();
-                    Config::RelayUnitOutput output = Config::RelayUnitOutput();
                     serialCommunication.send(output.lightBrake.pin,1);
                 }
                 else if (!btnBrakeFrontIsHold && bikeStatus.lightBrakeActive) {
                     bikeStatus.lightBrakeActive = false;
-                    SerialCommunication serialCommunication = SerialCommunication();
-                    Config::RelayUnitOutput output = Config::RelayUnitOutput();
                     serialCommunication.send(output.lightBrake.pin,0);
                 }
             }
@@ -73,24 +61,27 @@ class ButtonEvent {
             {
                 if (bikeStatus.lights == BikeStatusLights::lightsMain)
                 {
+                    Config::Headlight headlightConfig = Config::Headlight();
                     if (btnLightsHiLo.isClicked())
                     {
                         // Toggle Hi/lo
-                        int low = 0;
-                        int high = 0;
+                        int lightLowValue = 0;
+                        int lightHighValue = 0;
                         if (bikeStatus.lightHilo == lightsLow) {
+                            // Toggle to Hi
                             bikeStatus.lightHilo = lightsHigh;
-                            high = 1;
+                            lightHighValue = 1;
+                            if (headlightConfig.hiWithLow)
+                                lightLowValue = 1;
                         }
                         else if (bikeStatus.lightHilo == lightsHigh) {
+                            // Toggle to Lo
                             bikeStatus.lightHilo = lightsLow;
-                            low = 1;
+                            lightLowValue = 1;
                         }
                         // Update relay
-                        SerialCommunication serialCommunication = SerialCommunication();
-                        Config::RelayUnitOutput output = Config::RelayUnitOutput();
-                        serialCommunication.send(output.lightHigh.pin,high);
-                        serialCommunication.send(output.lightLow.pin,low);
+                        serialCommunication.send(output.lightHigh.pin, lightHighValue);
+                        serialCommunication.send(output.lightLow.pin, lightLowValue);
                         // Update icon
                         if (bikeStatus.displayMenuPageSelected == 0)
                             displayHelper.refreshStatusPage();
@@ -104,7 +95,7 @@ class ButtonEvent {
                                     displayHelper.gotoStatusPageCancel();
                                 }
                                 Config::DisplayMenuSettings dmSettings = Config::DisplayMenuSettings();
-                                bikeStatus.displayMenuTimeoutTimestamp = millis() + (dmSettings.ShutdownWait);
+                                bikeStatus.displayMenuTimeoutTimestamp = millis() + (dmSettings.shutdownWait);
                                 display.clearDisplay();
                                 displayMenu.showSelectedLights();
                             }
@@ -114,17 +105,19 @@ class ButtonEvent {
                 else {
                     bool btnLightsHiLoIsHold = btnLightsHiLo.isHold();
                     if (btnLightsHiLoIsHold && !bikeStatus.lightHighBeamFlash) {
+                        Config::Headlight headlightConfig = Config::Headlight();
                         bikeStatus.lightHighBeamFlash = true;
-                        SerialCommunication serialCommunication = SerialCommunication();
-                        Config::RelayUnitOutput output = Config::RelayUnitOutput();
                         serialCommunication.send(output.lightHigh.pin,1);
+                        if (headlightConfig.hiWithLow)
+                            serialCommunication.send(output.lightLow.pin,1);
                         displayHelper.refreshStatusPage();
                     }
                     else if (!btnLightsHiLoIsHold && bikeStatus.lightHighBeamFlash) {
+                        Config::Headlight headlightConfig = Config::Headlight();
                         bikeStatus.lightHighBeamFlash = false;
-                        SerialCommunication serialCommunication = SerialCommunication();
-                        Config::RelayUnitOutput output = Config::RelayUnitOutput();
                         serialCommunication.send(output.lightHigh.pin,0);
+                        if (headlightConfig.hiWithLow)
+                            serialCommunication.send(output.lightLow.pin,0);
                         displayHelper.refreshStatusPage();
                     }
                 }
@@ -136,11 +129,9 @@ class ButtonEvent {
                 // Check for hazard first
                 if (btnIndicatorLeft.isHold() && btnIndicatorRight.isHold() && bikeStatus.indicator != BikeStatusIndicator::indHazard) {
                     // Check for hold duration before activating
-                    if (btnIndicatorLeft.holdDuration() > 3000 &&  btnIndicatorRight.holdDuration() > 3000)
+                    if (btnIndicatorLeft.holdDuration() > 2000 &&  btnIndicatorRight.holdDuration() > 2000)
                     {
                         // Activate Hazard
-                        SerialCommunication serialCommunication = SerialCommunication();
-                        Config::RelayUnitOutput output = Config::RelayUnitOutput();
                         bikeStatus.indicator = indHazard;
                         serialCommunication.send(output.turnSignalLeft.pin,1);
                         serialCommunication.send(output.turnSignalRight.pin,1);
@@ -148,6 +139,7 @@ class ButtonEvent {
                         bikeStatus.indicatorBlinkOn = true;
                         // Goto display status page and refresh
                         displayHelper.refreshStatusPage();
+                        delay(1000); // add delay after hazard is activated
                     }
                 }
                 else {
@@ -157,8 +149,6 @@ class ButtonEvent {
                     // Check if one is clicked to start indicator actions
                     if (btnIndLeftIsClicked || btnIndRightIsClicked)
                     {
-                        SerialCommunication serialCommunication = SerialCommunication();
-                        Config::RelayUnitOutput output = Config::RelayUnitOutput();
                         if (btnIndLeftIsClicked && bikeStatus.indicator == indOff) {
                             // Activate Left Turn Signal
                             bikeStatus.indicator = indLeft;

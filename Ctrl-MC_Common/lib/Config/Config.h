@@ -46,7 +46,7 @@
             // Inputs - swithes and sensors located neard relay unit
             class RelayUnitInput {
                 public:
-                    const Feature tempSensor =          { false, 0 };
+                    static const int tempSensor =       12; // set to -1 to disable, pin A0 = 14 on Arduino Nano
                     const Feature oilSensor =           { false, 0 };
                     const Feature neutralSwitch =       { false, 0 };
                     const Feature brakeRearSwitch =     { false, 0 };
@@ -86,19 +86,23 @@
             };
             class DisplaySettings {
                 public:
-                    static const uint8_t ScreenAddress = 0x3C;             // See datasheet for Address; normally 0x3D for 128x64, 0x3C for 128x32        
-                    static const int8_t  OLEDreset = -1;                    // Reset pin # (or -1 if sharing Arduino reset pin)
-                    static const uint8_t ScreenWidth = 128;                // OLED display width, in pixels
-                    static const uint8_t ScreenHeight = 64;                // OLED display height, in pixels
-                    static const uint8_t TextSize = 1;                     // Desired text size. 1 is default 6x8, 2 is 12x16, 3 is 18x24, etc these numbers include one extra pixel for space
-                    static const uint8_t TextCharWidth = 6 * TextSize;     // Width of text INCLUDING ONE PIXEL FOR SEPARATION BETWEEN CHARS written to display, adjusted according to text size
-                    static const uint8_t TextCharHeight = 7 * TextSize;    // Height of text EXCLUDING PIXEL FOR SEPARATION BETWEEB ROWS written to display, adjusted according to text size
+                    static const uint8_t screenAddress = 0x3C;                      // See datasheet for Address; normally 0x3D for 128x64, 0x3C for 128x32        
+                    static const int8_t  oledReset = -1;                            // Reset pin # (or -1 if sharing Arduino reset pin)
+                    static const uint8_t screenWidth = 128;                         // OLED display width, in pixels
+                    static const uint8_t screenHeight = 64;                         // OLED display height, in pixels
+                    static const uint8_t textSize = 1;                              // Desired text size. 1 is default 6x8, 2 is 12x16, 3 is 18x24, etc these numbers include one extra pixel for space
+                    static const uint8_t textCharWidth = 6 * textSize;              // Width of text INCLUDING ONE PIXEL FOR SEPARATION BETWEEN CHARS written to display, adjusted according to text size
+                    static const uint8_t textCharHeight = 7 * textSize;             // Height of text EXCLUDING PIXEL FOR SEPARATION BETWEEB ROWS written to display, adjusted according to text size
+                    static const uint8_t textLargeSize = 2;                         // Larger text
+                    static const uint8_t textLargeCharWidth = 6 * textLargeSize;    // Width of text INCLUDING ONE PIXEL FOR SEPARATION BETWEEN CHARS written to display, adjusted according to text size
+                    static const uint8_t textLargeCharHeight = 7 * textLargeSize;   // Height of text EXCLUDING PIXEL FOR SEPARATION BETWEEB ROWS written to display, adjusted according to text size
+                    static const bool tempShowFarenheit = false;                    // Default is Celsius, set true to show as farenheit
             };
             class DisplayMenuSettings {
                 public:
                     // Display settings
-                    static const unsigned long ShutdownWait = 6000; // Number of milliseconds a menu item is shown before automatically shut down and go back to status screen
-                    static const unsigned long StatusPageProgressbarDuration = 4000; // Delay time in ms for progressbar to be shown when initiated to switch over to show status page from another page
+                    static const unsigned long shutdownWait = 11000; // Number of milliseconds a menu item is shown before automatically shut down and go back to status screen
+                    static const unsigned long statusPageProgressbarDuration = 4000; // Delay time in ms for progressbar to be shown when initiated to switch over to show status page from another page
             };
             class DisplayMenuItem {
                 public:
@@ -159,7 +163,13 @@
             // Indicators
             class Indicator {
                 public: 
-                    static const unsigned long blinkSpeed = 700;               // Milliseconds for each blink, should be from 500 (fast) to 1500 (slow)
+                    static const unsigned long blinkSpeed = 700;        // Milliseconds for each blink, should be from 500 (fast) to 1500 (slow)
+            };
+
+            // Headlight
+            class Headlight {
+                public:
+                    static const bool hiWithLow = true;                 // Set true to keep Low Beam on togheter with High Beam, set false to turn off Low Beam when High Beam is selected
             };
 
     };

@@ -7,12 +7,12 @@ class DisplayHelper {
         // Constructor
         void init() {
             // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-            if(!display.begin(SSD1306_SWITCHCAPVCC, Config::DisplaySettings::ScreenAddress)) {
+            if(!display.begin(SSD1306_SWITCHCAPVCC, Config::DisplaySettings::screenAddress)) {
                 // TODO, use spaker to send alarm sound signal
                 // Serial.println(F("Display (SSD1306) allocation failed"));
                 for(;;); // HALT - Don't proceed, loop forever
             }
-            display.setTextSize(Config::DisplaySettings::TextSize);
+            display.setTextSize(Config::DisplaySettings::textSize);
             display.setTextColor(SSD1306_WHITE);
             showSplash();
             gotoStatusPageInitiate();
@@ -44,22 +44,23 @@ class DisplayHelper {
                 unsigned long timeElapsed = millis() - bikeStatus.displayGotoStatusPageTimestamp;
                 // Check progress
                 Config::DisplayMenuSettings dms = Config::DisplayMenuSettings();
-                if (timeElapsed > dms.StatusPageProgressbarDuration) {
+                if (timeElapsed > dms.statusPageProgressbarDuration) {
                     // Switch to status page now
                     gotoStatusPageCancel();
                     bikeStatus.displayMenuPageSelected = 0;
                     bikeStatus.displayMenuSubPageSelected = 0;
                     bikeStatus.displayMenuTimeoutTimestamp = 0;
                     bikeStatus.displayMenuShowRunningStopWatch = 0;
+                    bikeStatus.displayMenuShowSystemTempRefreshTimestamp = 0;
                     if (bikeStatus.ignition == BikeStatusIgnition::ignTestButtonsMode)
                         bikeStatus.ignition = BikeStatusIgnition::ignOff;
                     refreshStatusPage();
                 }
                 else {
                     // Show progress bar
-                    int xLineStart = Config::DisplaySettings::ScreenWidth * timeElapsed / dms.StatusPageProgressbarDuration / 2;
-                    int xLineEnd = Config::DisplaySettings::ScreenWidth - xLineStart;
-                    display.drawLine(0, 0, Config::DisplaySettings::ScreenWidth, 0, SSD1306_BLACK);
+                    int xLineStart = Config::DisplaySettings::screenWidth * timeElapsed / dms.statusPageProgressbarDuration / 2;
+                    int xLineEnd = Config::DisplaySettings::screenWidth - xLineStart;
+                    display.drawLine(0, 0, Config::DisplaySettings::screenWidth, 0, SSD1306_BLACK);
                     display.drawLine(xLineStart, 0, xLineEnd + 2, 0, SSD1306_WHITE);
                     display.display();
                     bikeStatus.displayGotoStatusPageProgress = true;
@@ -76,7 +77,7 @@ class DisplayHelper {
         void gotoStatusPageCancel() {
             bikeStatus.displayGotoStatusPageTimestamp = 0;
             bikeStatus.displayGotoStatusPageProgress = false;
-            display.drawLine(0, 0, Config::DisplaySettings::ScreenWidth, 0, SSD1306_BLACK);
+            display.drawLine(0, 0, Config::DisplaySettings::screenWidth, 0, SSD1306_BLACK);
         };
 
         // Refresh and show the status page if not a menu item is selected
@@ -140,12 +141,12 @@ class DisplayHelper {
         }
 
         void statusTextRemove() {
-            display.fillRect(0, Config::DisplaySettings::ScreenHeight - Config::DisplaySettings::TextCharHeight -1, Config::DisplaySettings::ScreenWidth, Config::DisplaySettings::TextCharHeight + 2, SSD1306_BLACK); 
+            display.fillRect(0, Config::DisplaySettings::screenHeight - Config::DisplaySettings::textCharHeight -1, Config::DisplaySettings::screenWidth, Config::DisplaySettings::textCharHeight + 2, SSD1306_BLACK); 
         };
 
         void statusTextSetCursor(uint8_t txtLength) {
-            uint8_t textPixelWidth = txtLength * Config::DisplaySettings::TextCharWidth;
-            display.setCursor((Config::DisplaySettings::ScreenWidth/2) - (textPixelWidth/2) , Config::DisplaySettings::ScreenHeight - Config::DisplaySettings::TextCharHeight); 
+            uint8_t textPixelWidth = txtLength * Config::DisplaySettings::textCharWidth;
+            display.setCursor((Config::DisplaySettings::screenWidth/2) - (textPixelWidth/2) , Config::DisplaySettings::screenHeight - Config::DisplaySettings::textCharHeight); 
         }
 
         void statusTextPrepare(uint8_t txtLength) {
@@ -163,9 +164,9 @@ class DisplayHelper {
         }
 
         void centeredTextShow(String txt, bool displayImmediately = true) {
-            uint8_t textPixelWidth = txt.length() * Config::DisplaySettings::TextCharWidth;
-            display.fillRect(0, (Config::DisplaySettings::ScreenHeight/2) - Config::DisplaySettings::TextCharHeight, Config::DisplaySettings::ScreenWidth, Config::DisplaySettings::TextCharHeight + 2, SSD1306_BLACK); 
-            display.setCursor((Config::DisplaySettings::ScreenWidth/2) - (textPixelWidth/2) , (Config::DisplaySettings::ScreenHeight/2) - Config::DisplaySettings::TextCharHeight);
+            uint8_t textPixelWidth = txt.length() * Config::DisplaySettings::textCharWidth;
+            display.fillRect(0, (Config::DisplaySettings::screenHeight/2) - Config::DisplaySettings::textCharHeight, Config::DisplaySettings::screenWidth, Config::DisplaySettings::textCharHeight + 2, SSD1306_BLACK); 
+            display.setCursor((Config::DisplaySettings::screenWidth/2) - (textPixelWidth/2) , (Config::DisplaySettings::screenHeight/2) - Config::DisplaySettings::textCharHeight);
             display.println(txt);
             display.println(F("")); // TODO: Unstable to pass String, does this help?
             if (displayImmediately)
@@ -175,11 +176,11 @@ class DisplayHelper {
         void rowTextShow(String txt, uint8_t rowNum, bool displayImmediately = true) {
             if (rowNum > 3)
                 rowNum = 3;
-            uint8_t yPos = (rowNum*(Config::DisplaySettings::TextCharHeight+5)) + 4;
-            uint8_t textPixelWidth = txt.length() * Config::DisplaySettings::TextCharWidth;
+            uint8_t yPos = (rowNum*(Config::DisplaySettings::textCharHeight+5)) + 4;
+            uint8_t textPixelWidth = txt.length() * Config::DisplaySettings::textCharWidth;
 
-            display.fillRect(0, yPos, Config::DisplaySettings::ScreenWidth, Config::DisplaySettings::TextCharHeight, SSD1306_BLACK); 
-            display.setCursor((Config::DisplaySettings::ScreenWidth/2) - (textPixelWidth/2) , yPos);
+            display.fillRect(0, yPos, Config::DisplaySettings::screenWidth, Config::DisplaySettings::textCharHeight, SSD1306_BLACK); 
+            display.setCursor((Config::DisplaySettings::screenWidth/2) - (textPixelWidth/2) , yPos);
             display.println(txt);
             //display.println(F("")); // TODO: Unstable to pass String, does this help?
             if (displayImmediately)
@@ -190,13 +191,13 @@ class DisplayHelper {
 
         // Get x position for centered text
         int getXposForCenterText(int textLength) {
-            return (Config::DisplaySettings::ScreenWidth/2)-(textLength*Config::DisplaySettings::TextCharWidth/2);
+            return (Config::DisplaySettings::screenWidth/2)-(textLength*Config::DisplaySettings::textCharWidth/2);
         }
         // Get y position for centered text, parameter num = row number; 1, 2 or 3
         int getYposForCenterText(int rowNum) {
             int rowRelativeToMid = rowNum -2; // -1 = first, 0 = second(mid), 1 third and last
-            int centerRowTopPos = (Config::DisplaySettings::ScreenHeight/2)-Config::DisplaySettings::TextCharHeight/2;
-            return (centerRowTopPos + ((Config::DisplaySettings::TextCharHeight+1)*rowRelativeToMid*2));
+            int centerRowTopPos = (Config::DisplaySettings::screenHeight/2)-Config::DisplaySettings::textCharHeight/2;
+            return (centerRowTopPos + ((Config::DisplaySettings::textCharHeight+1)*rowRelativeToMid*2));
         }
         // Write centered text at spesific row
         void setCursorForCenteredText(int rowNum, int textLength) {

@@ -58,6 +58,14 @@ class Action {
             SerialCommunication::SerialCode serialCode = SerialCommunication::SerialCode();
             if (serialData.code == serialCode.Handshake) 
                 receivedHandshake();
+            else if (serialData.code == serialCode.sysTempValueInt)
+                bikeStatus.sysTempInt = serialData.value - 55; // subtract 55 to convert to negative temp 
+            else if (serialData.code == serialCode.sysTempValueDec)
+                bikeStatus.sysTempDec = serialData.value;
+            else if (serialData.code == serialCode.sysHumidityInt)
+                bikeStatus.sysHumidityInt = serialData.value;
+            else if (serialData.code == serialCode.sysHumidityDec)
+                bikeStatus.sysHumidityDec = serialData.value;
             else if (serialData.code == serialCode.Error)
                 displayError(serialData);
             else {

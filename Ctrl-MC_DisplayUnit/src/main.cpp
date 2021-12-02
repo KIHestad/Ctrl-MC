@@ -13,7 +13,7 @@
 OnBoardLed onBoardLed;
 SerialCommunication serialCommunication;
 // Initiate Adafruit OLD display
-Adafruit_SSD1306 display(Config::DisplaySettings::ScreenWidth, Config::DisplaySettings::ScreenHeight, &Wire, Config::DisplaySettings::ScreenAddress);
+Adafruit_SSD1306 display(Config::DisplaySettings::screenWidth, Config::DisplaySettings::screenHeight, &Wire, Config::DisplaySettings::screenAddress);
 // Project includes
 #include <BikeStatus.h>
 BikeStatus bikeStatus;
@@ -51,7 +51,6 @@ void setup() {
     Config config = Config();
     Serial.begin(config.serialCommSpeed);
     serialCommunication = SerialCommunication();
-    serialCommunication.clearBuffer();
     // Setup initial values
     Init init = Init();
     init.run();
@@ -61,7 +60,8 @@ void setup() {
     onBoardLed.init(duOutput.onBoardLed);
     
     // Read bike status from relay unit
-    // TODO 
+    serialCommunication.clearBuffer();
+    // TODO: read oil, neutral switch, engine running?
 }
 
 void loop() {

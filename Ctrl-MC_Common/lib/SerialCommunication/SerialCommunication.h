@@ -11,27 +11,34 @@
             
             // Class for data sent as over serial port
             struct Data {
-                    bool received = false; // set true if data was received
-                    uint8_t code;
-                    uint8_t value;
+                bool received = false; // set true if data was received
+                uint8_t code;
+                uint8_t value;
             };
 
             // Class for codes
             struct SerialCode {
-                    // 0-15 reserved for triggering relay on/off
-                    // System codes
-                    const uint8_t Handshake = 250;
-                    const uint8_t Error = 255;
+                // 0-15 reserved for triggering relay on/off
+                // Request and return codes
+                static const uint8_t sysTempRequest = 20;
+                static const uint8_t sysTempValueInt = 21; // send temperature integer value+55 (range = -55 to +200 degrees)
+                static const uint8_t sysTempValueDec = 22; // send temperature decimal value
+                static const uint8_t sysHumidityRequest = 23;
+                static const uint8_t sysHumidityInt = 24; // send humidity integer value
+                static const uint8_t sysHumidityDec = 25; // send humidity decimal value
+                // System codes
+                static const uint8_t Handshake = 250;
+                static const uint8_t Error = 255;
             };
 
             // Class for error codes sent as value
             struct SerialValueError {
-                    const uint8_t GeneralError = 100;
-                    const uint8_t IncompleteData = 200;
-                    const uint8_t InvalidCRC = 201;
-                    const uint8_t ReceivedErrorIncompleteData = 210;
-                    const uint8_t ReceivedErrorInvalidCRC = 211;
-                    const uint8_t UnknownCode = 255;
+                static const uint8_t GeneralError = 100;
+                static const uint8_t IncompleteData = 200;
+                static const uint8_t InvalidCRC = 201;
+                static const uint8_t ReceivedErrorIncompleteData = 210;
+                static const uint8_t ReceivedErrorInvalidCRC = 211;
+                static const uint8_t UnknownCode = 255;
             };
 
             // Clear the serial buffer

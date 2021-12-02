@@ -82,8 +82,8 @@ class TestButtons {
                     checkButton(btnIndicatorLeft, "INDICATOR LEFT");
                     checkButton(btnIndicatorRight, "INDICATOR RIGHT");
                     checkButton(btnLightsHiLo, "LIGHTS HIGH<->LOW");
-                    checkButton(btnMenuNext, "HORN / MENU NEXT");
-                    checkButton(btnMenuSelect, "MENU SELECT");
+                    checkButton(btnMenuNext, "MENU NEXT");
+                    checkButton(btnMenuSelect, "MENU SELECT / HORN");
                     checkButton(btnStartStop, "START<->STOP");
                     //Check for terminate
                     if (terminateFeatureTimestamp != 0 && millis() > terminateFeatureTimestamp) {
