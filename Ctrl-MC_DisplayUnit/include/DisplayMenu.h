@@ -54,7 +54,10 @@ class DisplayMenu {
                     displayHelper.refreshStatusPage();
                 }
                 else {
-                    // Select the menu according to config
+                    // ***************************************
+                    // BUTTON: MENU NEXT BUTTON ACTIONS
+                    // Select the menu according to config 
+                    // ***************************************
                     Config::DisplayMenuItemShow dmis = Config::DisplayMenuItemShow();
                     Config::DisplayMenuItemInfo dmiSelected = dmis.item[bikeStatus.displayMenuPageSelected - 1];
                     // Show menu now
@@ -106,6 +109,11 @@ class DisplayMenu {
                         // Lights
                         showSelectedLights();
                     }
+                    else if (dmiSelected.id == 6) {
+                        // Starter
+                        //displayImage.xxx
+                        displayHelper.statusTextShow(dmiSelected.displayName);
+                    }
                 }
             }
             
@@ -122,7 +130,10 @@ class DisplayMenu {
                     display.display();
                 }
                 else {
-                    // Select the menu according to config
+                    // ***************************************
+                    // BUTTON: MENU SELECT BUTTON ACTIONS
+                    // Select the menu according to config 
+                    // ***************************************
                     Config::DisplayMenuItemShow dmis = Config::DisplayMenuItemShow();
                     Config::DisplayMenuItemInfo dmiSelected = dmis.item[bikeStatus.displayMenuPageSelected - 1];
                     // Show next menu now

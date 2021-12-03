@@ -111,19 +111,21 @@
                     const DisplayMenuItemInfo stopWatch =   { 2, "STOPWATCH" }; // Built in timer
                     const DisplayMenuItemInfo tempSystem =  { 4, "SYSTEM TEMP" }; // Read from relay unit
                     const DisplayMenuItemInfo lights =      { 5, "LIGHTS" }; // Control Ligths - OFF / PARK / ON
+                    const DisplayMenuItemInfo starter =     { 6, "STARTER" }; // Enable starter motor
             };
             class DisplayMenuItemShow {
                 public:
                     // Menu items to be shown on display
-                    int count = 4;                                      // Set number of menu items to be shown on display
-                    DisplayMenuItemInfo item[4];                        // Display items array, set same length as count set above
+                    int count = 5;                                      // Set number of menu items to be shown on display
+                    DisplayMenuItemInfo item[5];                        // Display items array, set same length as count set above
                     
                     DisplayMenuItemShow() {
                         DisplayMenuItem dmi = DisplayMenuItem();
-                        this->item[0] = dmi.lights;                     // Set menu item to be shown
+                        this->item[0] = dmi.starter;                    // Set menu item to be shown
                         this->item[1] = dmi.ignition;                   // Set menu item to be shown
-                        this->item[2] = dmi.stopWatch;                  // Set menu item to be shown
-                        this->item[3] = dmi.tempSystem;                 // Set menu item to be shown
+                        this->item[2] = dmi.lights;                     // Set menu item to be shown
+                        this->item[3] = dmi.stopWatch;                  // Set menu item to be shown
+                        this->item[4] = dmi.tempSystem;                 // Set menu item to be shown
                     }
             };
 
