@@ -4,16 +4,18 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+#include <U8g2lib.h>
+
+// Select according to OLED display used
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0); //, /* reset=*/ U8X8_PIN_NONE); // Page buffer mode
+
 // Common lbraries
 #include "../../Ctrl-MC_Common/lib/OnBoardLed/OnBoardLed.h" // Ctrl-MC_Common/lib -> onBoard LED
 #include "../../Ctrl-MC_Common/lib/SerialCommunication/SerialCommunication.h" // Ctrl-MC_Common/lib
 #include "../../Ctrl-MC_Common/lib/Config/Config.h" // Ctrl-MC_Common/lib -> To be user edited to enable/disable features and configure arduino board
 OnBoardLed onBoardLed;
 SerialCommunication serialCommunication;
-// Initiate Adafruit OLD display
-Adafruit_SSD1306 display(Config::DisplaySettings::screenWidth, Config::DisplaySettings::screenHeight, &Wire, Config::DisplaySettings::screenAddress);
+
 // Project includes
 #include <BikeStatus.h>
 BikeStatus bikeStatus;
@@ -22,10 +24,10 @@ Button btnClutch;
 Button btnIndicatorLeft;
 Button btnIndicatorRight;
 Button btnLightsHiLo;
-Button btnStartStop;
-Button btnMenuSelect;
-Button btnMenuNext;
+Button btnMenuMain;
+Button btnMenuStartStop;
 Button btnBrakeFront;
+Button btnHorn;
 #include <ButtonHelper.h>
 #include <DisplayImage.h>
 #include <DisplayHelper.h>
@@ -41,27 +43,13 @@ Action action;
 TestButtons testButtons;
 #include <IgnitionButtonPassword.h>
 IgnitionButtonPassword ignitionButtonPassword;
-
+// Iniate class
 #include <init.h>
 
-
-
 void setup() {
-    // Serial comm
-    Config config = Config();
-    Serial.begin(config.serialCommSpeed);
-    serialCommunication = SerialCommunication();
     // Setup initial values
     Init init = Init();
     init.run();
-    // Init onboard led
-    Config::DisplayUnitOutput duOutput = Config::DisplayUnitOutput();
-    onBoardLed = OnBoardLed();
-    onBoardLed.init(duOutput.onBoardLed);
-    
-    // Read bike status from relay unit
-    serialCommunication.clearBuffer();
-    // TODO: read oil, neutral switch, engine running?
 }
 
 void loop() {
@@ -71,7 +59,7 @@ void loop() {
     if (serialData.received) 
         action.checkReceivedData(serialData);
     // Check progress for switching back to status page
-    displayHelper.gotoStatusPage();
+    displayHelper.displayTimeout();
     // Depending on ignition status allow different operations
     if (bikeStatus.ignition != BikeStatusIgnition::ignOn) {
         // Ignintion is not on, meaning it is off or in password mode

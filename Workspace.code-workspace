@@ -13,6 +13,13 @@
 		},
 		{
 			"path": "Documents"
+		},
+		{
+			"path": "..\\LED TEST"
+		},
+		{
+			"name": "Test U8glib OLED library",
+			"path": "..\\Test U8glib OLED Lib\\Test U8glib OLED library"
 		}
 	],
 	"settings": {
@@ -24,7 +31,9 @@
 			"string_view": "cpp",
 			"ranges": "cpp",
 			"iosfwd": "cpp",
-			"xlocbuf": "cpp"
+			"xlocbuf": "cpp",
+			"chrono": "cpp",
+			"ostream": "cpp"
 		}
 	}
 }

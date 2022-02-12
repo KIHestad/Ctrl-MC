@@ -5,6 +5,15 @@ class Init {
     public:
         
         void run() {
+            // Init onboard led
+            Config::DisplayUnitOutput duOutput = Config::DisplayUnitOutput();
+            onBoardLed = OnBoardLed();
+            onBoardLed.init(duOutput.onBoardLed);
+            // OLED display speed
+            Wire.setClock(400000);
+            // Serial comm
+            Serial.begin(Config::serialCommSpeed);
+            serialCommunication = SerialCommunication();
             // Set initial bike status
             bikeStatus = BikeStatus();
             // Set buttons
@@ -21,26 +30,32 @@ class Init {
             btnLightsHiLo = Button();
             btnLightsHiLo.init(duInput.lightsHiLo);
 
-            btnStartStop = Button();
-            btnStartStop.init(duInput.startStop);
+            btnHorn = Button();
+            btnHorn.init(duInput.horn);
 
-            btnMenuSelect = Button();
-            btnMenuSelect.init(duInput.menuSelect);
-
-            btnMenuNext = Button();
-            btnMenuNext.init(duInput.menuNext);
+            btnMenuMain = Button();
+            btnMenuMain.init(duInput.menuMain);
             
+            btnMenuStartStop = Button();
+            btnMenuStartStop.init(duInput.menuStartStop);
+
             btnBrakeFront = Button();
             btnBrakeFront.init(duInput.brakeFront);
             
             // Set display properties
             displayHelper = DisplayHelper();
             displayHelper.init();
+
             // Initiate features
             testButtons = TestButtons();
             ignitionButtonPassword = IgnitionButtonPassword();
             action = Action();
             buttonEvent = ButtonEvent();
+
+            // Clear searial comm buffer
+            serialCommunication.clearBuffer();
+            
+            // TODO: Read bike status from relay unit
         }
 
 };

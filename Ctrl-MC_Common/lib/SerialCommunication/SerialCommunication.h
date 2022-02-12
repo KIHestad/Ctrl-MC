@@ -18,14 +18,17 @@
 
             // Class for codes
             struct SerialCode {
-                // 0-15 reserved for triggering relay on/off
-                // Request and return codes
-                static const uint8_t sysTempRequest = 20;
-                static const uint8_t sysTempValueInt = 21; // send temperature integer value+55 (range = -55 to +200 degrees)
-                static const uint8_t sysTempValueDec = 22; // send temperature decimal value
-                static const uint8_t sysHumidityRequest = 23;
-                static const uint8_t sysHumidityInt = 24; // send humidity integer value
-                static const uint8_t sysHumidityDec = 25; // send humidity decimal value
+                // 0-39 reserved for triggering relay on/off
+                // Request and return codes for temperature and humidity
+                static const uint8_t sysTempRequest = 40;
+                static const uint8_t sysTempValueInt = 41; // send temperature integer value+55 (range = -55 to +200 degrees)
+                static const uint8_t sysTempValueDec = 42; // send temperature decimal value
+                static const uint8_t sysHumidityRequest = 43;
+                static const uint8_t sysHumidityInt = 44; // send humidity integer value
+                static const uint8_t sysHumidityDec = 45; // send humidity decimal value
+                // Request and return codes for battery voltage
+                static const uint8_t batteryVoltageRequest = 50;
+                static const uint8_t batteryVoltageValue = 51; // Voltage in 10X to include one decimal
                 // System codes
                 static const uint8_t Handshake = 250;
                 static const uint8_t Error = 255;

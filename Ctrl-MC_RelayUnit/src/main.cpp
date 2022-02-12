@@ -20,8 +20,7 @@ OnBoardLed onBoardLed;
 
 void setup() {
     // Serial comm
-    Config config = Config();
-    Serial.begin(config.serialCommSpeed);
+    Serial.begin(Config::serialCommSpeed);
     serialCommunication = SerialCommunication();
     serialCommunication.clearBuffer();
     // Temp sensor

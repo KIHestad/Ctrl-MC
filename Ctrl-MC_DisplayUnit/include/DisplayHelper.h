@@ -6,78 +6,134 @@ class DisplayHelper {
         
         // Constructor
         void init() {
-            // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-            if(!display.begin(SSD1306_SWITCHCAPVCC, Config::DisplaySettings::screenAddress)) {
-                // TODO, use spaker to send alarm sound signal
-                // Serial.println(F("Display (SSD1306) allocation failed"));
-                for(;;); // HALT - Don't proceed, loop forever
-            }
-            display.setTextSize(Config::DisplaySettings::textSize);
-            display.setTextColor(SSD1306_WHITE);
+            u8g2.begin();
+            u8g2.setFont(u8g2_font_luRS08_tr);
+            u8g2.setFontRefHeightExtendedText();
+            u8g2.setDrawColor(1);
+            u8g2.setFontPosTop();
+            u8g2.setFontDirection(0);
             showSplash();
-            gotoStatusPageInitiate();
+            displayTimeoutInitiate(0);
         };
+
+        static void clearDisplay() {
+            u8g2.clearBuffer();
+        }
+
+        static void refresh() {
+            u8g2.sendBuffer();
+        }
+
+        static void fillRect(u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t w, u8g2_uint_t h, uint8_t color) {
+            // color: 0 = BLACK (erase), 1 = WHITE
+            u8g2.setDrawColor(color);
+            u8g2.drawBox(x , y , w, w);
+            u8g2.setDrawColor(1);
+        }
+
+        static void setTextSize(uint8_t size) {
+            if (size == 1)
+                u8g2.setFont(u8g2_font_luBS08_tr);
+            else if (size == 2)
+                u8g2.setFont(u8g2_font_luBS12_tr);
+            else 
+                u8g2.setFont(u8g2_font_luBS24_tr);
+        }   
+
+        static void setCursor(int x, int y) {
+            u8g2.setCursor(x, y);
+        }
+
+        static void println(String s) {
+            u8g2.print(s);
+        }
 
         // Show splash screen
         void showSplash() {
-            DisplayImage displayImage = DisplayImage();
-            displayImage.kiHestadLogo();
+            clearDisplay();
+            DisplayImage::kiHestadLogo();
             delay(1750);
-            display.clearDisplay();
+            clearDisplay();
             setCursorForCenteredText(1, 7);
-            display.println(F("Ctrl-MC"));
-            display.display();
+            println("Ctrl-MC");
+            refresh();
             delay(250);
             setCursorForCenteredText(2, 21);
-            display.println(F("Motorcycle Controller"));
-            display.display();
+            println("Motorcycle Controller");
+            refresh();
             delay(250);
             setCursorForCenteredText(3, 12);
-            display.println(F("by KI Hestad"));
-            display.display();
+            println("by KI Hestad");
+            refresh();
             delay(250);
         };
 
+        // Inititate display timeout
+        void displayTimeoutInitiate() {
+            displayTimeoutCancel();
+            bikeStatus.displayTimeoutTimestamp = millis() + Config::DisplaySettings::timeoutDelay + Config::DisplaySettings::timeoutProgressbarDuration;
+        };
+        void displayTimeoutInitiate(unsigned long delay) {
+            displayTimeoutCancel();
+            bikeStatus.displayTimeoutTimestamp = millis() + delay + Config::DisplaySettings::timeoutProgressbarDuration;
+        };
+
         // Goto status page after a timeout period, show progressbar until done
-        void gotoStatusPage() {
-            if (bikeStatus.displayGotoStatusPageTimestamp > 0) {
-                unsigned long timeElapsed = millis() - bikeStatus.displayGotoStatusPageTimestamp;
+        void displayTimeout() {
+            if (bikeStatus.displayTimeoutTimestamp > 0) {
+                unsigned long timeNow = millis();
                 // Check progress
-                Config::DisplayMenuSettings dms = Config::DisplayMenuSettings();
-                if (timeElapsed > dms.statusPageProgressbarDuration) {
-                    // Switch to status page now
-                    gotoStatusPageCancel();
-                    bikeStatus.displayMenuPageSelected = 0;
-                    bikeStatus.displayMenuSubPageSelected = 0;
-                    bikeStatus.displayMenuTimeoutTimestamp = 0;
-                    bikeStatus.displayMenuShowRunningStopWatch = 0;
-                    bikeStatus.displayMenuShowSystemTempRefreshTimestamp = 0;
-                    if (bikeStatus.ignition == BikeStatusIgnition::ignTestButtonsMode)
+                if (timeNow > bikeStatus.displayTimeoutTimestamp) {
+                    // Reset bike status
+                    bikeStatus.displayTimeoutTimestamp = 0;
+                    // Reset display
+                    if (bikeStatus.ignition != BikeStatusIgnition::ignOn) {
+                        // Iginition is not on, clear display
                         bikeStatus.ignition = BikeStatusIgnition::ignOff;
-                    refreshStatusPage();
+                        clearDisplay();
+                        refresh();
+                    }
+                    else {
+                        // Ignition is on, reset display menu parameters and switch to status page now
+                        bikeStatus.displayMenuRefreshTimestamp = 0;
+                        bikeStatus.displayMenuPageSelected = 0;
+                        bikeStatus.displayMenuSubPageSelected = 0;
+                        refreshStatusPage();
+                    }
                 }
-                else {
+                else if (timeNow > bikeStatus.displayTimeoutTimestamp - Config::DisplaySettings::timeoutProgressbarDuration) {
                     // Show progress bar
-                    int xLineStart = Config::DisplaySettings::screenWidth * timeElapsed / dms.statusPageProgressbarDuration / 2;
+                    unsigned long timeElapsed = Config::DisplaySettings::timeoutProgressbarDuration - (bikeStatus.displayTimeoutTimestamp - timeNow);
+                    int xLineStart = Config::DisplaySettings::screenWidth * timeElapsed / Config::DisplaySettings::timeoutProgressbarDuration / 2;
                     int xLineEnd = Config::DisplaySettings::screenWidth - xLineStart;
-                    display.drawLine(0, 0, Config::DisplaySettings::screenWidth, 0, SSD1306_BLACK);
-                    display.drawLine(xLineStart, 0, xLineEnd + 2, 0, SSD1306_WHITE);
-                    display.display();
-                    bikeStatus.displayGotoStatusPageProgress = true;
+                    u8g2.setDrawColor(0);
+                    u8g2.drawLine(0, progressBarY, Config::DisplaySettings::screenWidth, progressBarY);
+                    u8g2.setDrawColor(1);
+                    u8g2.drawLine(xLineStart, progressBarY, xLineEnd , progressBarY);
+                    refresh();
                 }
             }
         };
 
-        // Inititate display autosuhutdown
-        void gotoStatusPageInitiate() {
-            bikeStatus.displayGotoStatusPageTimestamp = millis();
-        };
+        // Return true if progressbar for goto status page is running
+        bool displayTimeoutProgressRunning() {
+            return (bikeStatus.displayTimeoutTimestamp > 0);
+        }
 
         // Terminate display autosuhutdown and hide progress bar
-        void gotoStatusPageCancel() {
-            bikeStatus.displayGotoStatusPageTimestamp = 0;
-            bikeStatus.displayGotoStatusPageProgress = false;
-            display.drawLine(0, 0, Config::DisplaySettings::screenWidth, 0, SSD1306_BLACK);
+        void displayTimeoutCancel() {
+            // If timeout set, cancel it
+            if (bikeStatus.displayTimeoutTimestamp > 0) {
+                // If progressbar showing, remove it
+                if (millis() > bikeStatus.displayTimeoutTimestamp - Config::DisplaySettings::timeoutProgressbarDuration) {
+                    u8g2.setDrawColor(0);
+                    u8g2.drawLine(0, progressBarY, Config::DisplaySettings::screenWidth, progressBarY);
+                    u8g2.setDrawColor(1);
+                    refresh();
+                };
+                // Cancel timeout now
+                bikeStatus.displayTimeoutTimestamp = 0;
+            }
         };
 
         // Refresh and show the status page if not a menu item is selected
@@ -85,8 +141,8 @@ class DisplayHelper {
             if (bikeStatus.displayMenuPageSelected == 0)
             {
                 // Prepare display for status page
-                gotoStatusPageCancel();
-                display.clearDisplay();
+                displayTimeoutCancel();
+                clearDisplay();
                 if (bikeStatus.ignition == ignOn)
                 {
                     DisplayImage displayImage = DisplayImage();
@@ -136,17 +192,17 @@ class DisplayHelper {
                         }
                     }
                 }
-                display.display();
+                refresh();
             }
         }
 
         void statusTextRemove() {
-            display.fillRect(0, Config::DisplaySettings::screenHeight - Config::DisplaySettings::textCharHeight -1, Config::DisplaySettings::screenWidth, Config::DisplaySettings::textCharHeight + 2, SSD1306_BLACK); 
+            fillRect(0, Config::DisplaySettings::screenHeight - Config::DisplaySettings::textCharHeight -1, Config::DisplaySettings::screenWidth, Config::DisplaySettings::textCharHeight + 2, 0); 
         };
 
         void statusTextSetCursor(uint8_t txtLength) {
             uint8_t textPixelWidth = txtLength * Config::DisplaySettings::textCharWidth;
-            display.setCursor((Config::DisplaySettings::screenWidth/2) - (textPixelWidth/2) , Config::DisplaySettings::screenHeight - Config::DisplaySettings::textCharHeight); 
+            setCursor((Config::DisplaySettings::screenWidth/2) - (textPixelWidth/2) , Config::DisplaySettings::screenHeight - Config::DisplaySettings::textCharHeight); 
         }
 
         void statusTextPrepare(uint8_t txtLength) {
@@ -157,37 +213,50 @@ class DisplayHelper {
         void statusTextShow(String txt, bool displayImmediately = true) {
             statusTextRemove();
             statusTextSetCursor(txt.length());
-            display.println(txt);
-            display.println(F("")); // TODO: Unstable to pass String, does this help?
+            println(txt);
             if (displayImmediately)
-                display.display();
+                refresh();
         }
 
         void centeredTextShow(String txt, bool displayImmediately = true) {
             uint8_t textPixelWidth = txt.length() * Config::DisplaySettings::textCharWidth;
-            display.fillRect(0, (Config::DisplaySettings::screenHeight/2) - Config::DisplaySettings::textCharHeight, Config::DisplaySettings::screenWidth, Config::DisplaySettings::textCharHeight + 2, SSD1306_BLACK); 
-            display.setCursor((Config::DisplaySettings::screenWidth/2) - (textPixelWidth/2) , (Config::DisplaySettings::screenHeight/2) - Config::DisplaySettings::textCharHeight);
-            display.println(txt);
-            display.println(F("")); // TODO: Unstable to pass String, does this help?
+            fillRect(0, (Config::DisplaySettings::screenHeight/2) - Config::DisplaySettings::textCharHeight, Config::DisplaySettings::screenWidth, Config::DisplaySettings::textCharHeight + 2, 0); 
+            setCursor((Config::DisplaySettings::screenWidth/2) - (textPixelWidth/2) , (Config::DisplaySettings::screenHeight/2) - Config::DisplaySettings::textCharHeight);
+            println(txt);
             if (displayImmediately)
-                display.display();
+                refresh();
         }
 
         void rowTextShow(String txt, uint8_t rowNum, bool displayImmediately = true) {
             if (rowNum > 3)
                 rowNum = 3;
-            uint8_t yPos = (rowNum*(Config::DisplaySettings::textCharHeight+5)) + 4;
+            uint8_t yPos = (rowNum*(Config::DisplaySettings::textCharHeight+5)) + 4 + 9;
             uint8_t textPixelWidth = txt.length() * Config::DisplaySettings::textCharWidth;
 
-            display.fillRect(0, yPos, Config::DisplaySettings::screenWidth, Config::DisplaySettings::textCharHeight, SSD1306_BLACK); 
-            display.setCursor((Config::DisplaySettings::screenWidth/2) - (textPixelWidth/2) , yPos);
-            display.println(txt);
+            fillRect(0, yPos, Config::DisplaySettings::screenWidth, Config::DisplaySettings::textCharHeight, 0); 
+            setCursor((Config::DisplaySettings::screenWidth/2) - (textPixelWidth/2) , yPos);
+            println(txt);
             //display.println(F("")); // TODO: Unstable to pass String, does this help?
             if (displayImmediately)
-                display.display();
+                refresh();
+        }
+
+        void showDebugModeInfo() {
+            uint8_t x = Config::DisplaySettings::screenWidth - 6;
+            uint8_t y = Config::DisplaySettings::screenHeight - 8;
+            fillRect(x,y,6,8,1);
+            refresh();
+            delay(100);
+            fillRect(x,y,6,8,0);
+            setCursor(x,y);
+            println("D");
+            refresh();
         }
 
     private:
+
+        // Position for progressbar
+        uint8_t progressBarY = 0;
 
         // Get x position for centered text
         int getXposForCenterText(int textLength) {
@@ -201,7 +270,7 @@ class DisplayHelper {
         }
         // Write centered text at spesific row
         void setCursorForCenteredText(int rowNum, int textLength) {
-            display.setCursor(getXposForCenterText(textLength), getYposForCenterText(rowNum)); 
+            setCursor(getXposForCenterText(textLength), getYposForCenterText(rowNum)); 
         }
         
         

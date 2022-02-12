@@ -5,8 +5,6 @@ class IgnitionButtonPassword {
     private:
         int passwordPressCount = 0;
         bool passwordMismatch = false;
-        unsigned long passwordTimeoutTimestamp = 0;
-        bool passwordTimeoutProgressStarted = false;
         Button btnPwInitiate;
         Config::IgnitionButtonPassword configIgnBtnPw;
 
@@ -16,11 +14,8 @@ class IgnitionButtonPassword {
                 // Check if btn is clicked
                 bool btnClicked = btn.isClicked();
                 if (btnClicked) {
-                    // Check if progress for goto status page is in progress, cancel now
-                    if (bikeStatus.displayGotoStatusPageTimestamp > 0 || passwordTimeoutProgressStarted) {
-                        displayHelper.gotoStatusPageCancel(); // Cancel running display off
-                        passwordTimeoutProgressStarted = false;
-                    }
+                    // Restart timeout progress
+                    displayHelper.displayTimeoutInitiate(5000); 
                     // Button press detected, show on display
                     DisplayImage displayImage = DisplayImage();
                     displayImage.ignOff();
@@ -29,7 +24,7 @@ class IgnitionButtonPassword {
                         passwordMismatch = true;
                     // Check if password complete
                     passwordPressCount++;
-                    if (passwordPressCount >= configIgnBtnPw.pwLength && !passwordMismatch) {
+                    if ((passwordPressCount >= configIgnBtnPw.pwLength && !passwordMismatch) || Config::debugMode) {
                         // Success, update bike status and show on display
                         bikeStatus.ignition = ignOn;
                         bikeStatus.ignitionOnTimestamp = millis();
@@ -47,6 +42,7 @@ class IgnitionButtonPassword {
                         displayImage.ignOffToOn2();
                         delay(50);
                         displayImage.ignOn();
+                        displayHelper.refresh();
                         delay(900);
                         displayHelper.refreshStatusPage();
                     }
@@ -60,13 +56,12 @@ class IgnitionButtonPassword {
                         uint8_t x = (Config::DisplaySettings::screenWidth / 2) - (pwTotalWidht / 2) + 1;
                         for (uint8_t i = 0; i < pwLength; i++)
                         {
-                            display.fillRect(x, Config::DisplaySettings::screenHeight - Config::DisplaySettings::textCharHeight, pwCharWidthInclSeparator-2, Config::DisplaySettings::textCharHeight, SSD1306_WHITE);
+                            displayHelper.fillRect(x, Config::DisplaySettings::screenHeight - Config::DisplaySettings::textCharHeight, pwCharWidthInclSeparator-2, Config::DisplaySettings::textCharHeight, 1);
                             x += pwCharWidthInclSeparator;
                         }
-                        display.display();
+                        displayHelper.refresh();
                         delay(200);
                     }
-                    passwordTimeoutTimestamp = millis();
                 }
             }
         };
@@ -89,41 +84,31 @@ class IgnitionButtonPassword {
                     {
                         // Activated password feature
                         bikeStatus.ignition = ignPasswordMode;
-                        // Cancel running display off
-                        displayHelper.gotoStatusPageCancel();
+                        // Show icon on display
                         DisplayImage displayImage = DisplayImage();
                         displayImage.ignOff();
                         // Reset values
                         passwordPressCount = 0;
                         passwordMismatch = false;
-                        passwordTimeoutProgressStarted = false;
-                        passwordTimeoutTimestamp = millis();
-                        delay(200);
+                        // wait until button is released
+                        while (btnPwInitiate.isHold()) {
+                            delay(100);
+                        }
+                        // Start display timeout
+                        displayHelper.displayTimeoutInitiate(5000);
                     }
                 }
                 else if (bikeStatus.ignition == ignPasswordMode)
                 {
-                    // Waiting for password, check for timeout
-                    if (passwordTimeoutProgressStarted && !bikeStatus.displayGotoStatusPageProgress) {
-                        // Timeout
-                        bikeStatus.ignition = ignOff;                        
-                    }
-                    else {
-                        // Check for initiate timeout
-                        if (!passwordTimeoutProgressStarted && millis() - passwordTimeoutTimestamp > 6000) {
-                            displayHelper.gotoStatusPageInitiate();
-                            passwordTimeoutProgressStarted = true;
-                        }
-                        // Check for password, read buttons
-                        checkPW(btnBrakeFront);
-                        checkPW(btnClutch);
-                        checkPW(btnIndicatorLeft);
-                        checkPW(btnIndicatorRight);
-                        checkPW(btnLightsHiLo);
-                        checkPW(btnMenuNext);
-                        checkPW(btnMenuSelect);
-                        checkPW(btnStartStop);
-                    }
+                    // Check for password, read buttons
+                    checkPW(btnClutch);
+                    checkPW(btnIndicatorLeft);
+                    checkPW(btnIndicatorRight);
+                    checkPW(btnLightsHiLo);
+                    checkPW(btnHorn);
+                    checkPW(btnMenuMain);
+                    checkPW(btnMenuStartStop);
+                    checkPW(btnBrakeFront);
                 }
             }
         };

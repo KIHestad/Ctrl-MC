@@ -15,13 +15,12 @@ class Action {
                 displayHelper.refreshStatusPage();
             }
             // Prepare next handshake
-            Config config = Config();
-            bikeStatus.handshakeNextTimestamp = millis() + config.handshakeInterval;
+            bikeStatus.handshakeNextTimestamp = millis() + Config::handshakeInterval;
             bikeStatus.handshakeOK = true;
         }
 
         void displayError(SerialCommunication::Data serialData) {
-            display.clearDisplay();
+            displayHelper.clearDisplay();
             DisplayImage displayImage = DisplayImage();
             displayImage.warning();
             SerialCommunication::SerialValueError errorValue = SerialCommunication::SerialValueError();
@@ -43,7 +42,7 @@ class Action {
         }
 
         void displayUnknownCode(SerialCommunication::Data serialData) {
-            display.clearDisplay();
+            displayHelper.clearDisplay();
             DisplayImage displayImage = DisplayImage();
             displayImage.warning();
             String errMsg = "ERR CODE RECEIVED: ";
@@ -66,6 +65,8 @@ class Action {
                 bikeStatus.sysHumidityInt = serialData.value;
             else if (serialData.code == serialCode.sysHumidityDec)
                 bikeStatus.sysHumidityDec = serialData.value;
+            else if (serialData.code == serialCode.batteryVoltageValue)
+                bikeStatus.batteryVoltage = serialData.value;
             else if (serialData.code == serialCode.Error)
                 displayError(serialData);
             else {
@@ -92,6 +93,9 @@ class Action {
 
         // Trigger handshake
         void performHandshake() {
+            // Ignore handshake if in debug mode
+            if (Config::debugMode) 
+                return;
             // Expect handshake response in regular intervals, if not show alert
             unsigned long timestampNow = millis();
             unsigned long handshakeDelayAccepted = 3000; // Number of millliseconds after last confirmed handshake to accept before trigger alert

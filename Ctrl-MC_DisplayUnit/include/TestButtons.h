@@ -4,7 +4,6 @@ class TestButtons {
 
     private:
 
-        unsigned long terminateFeatureTimestamp = 0; // timestamp for when to initiating progressbar for turning off feature
         Config::TestButtons configTestButtons;
         Button btnTestInitiate;
         uint8_t lastButtonHold = 0;
@@ -28,6 +27,8 @@ class TestButtons {
                 displayHelper.rowTextShow(clickInfo, 1, false);
                 lastButtonClicked = btn.pin;
                 updateDisplay = true;
+                // Display timeout
+                displayHelper.displayTimeoutInitiate();
             }
             // Check if button is hold
             if (btn.isHold()) {
@@ -37,18 +38,19 @@ class TestButtons {
                     updateDisplay = true;
                     lastButtonHold = btn.pin;
                 }
-                displayHelper.gotoStatusPageCancel();
-                terminateFeatureTimestamp = millis() + 10000;
+                displayHelper.displayTimeoutCancel();
             }
             else if(btn.pin == lastButtonHold) {
                 // Remove hold event
                 displayHelper.rowTextShow("", 2, false);
                 updateDisplay = true;
                 lastButtonHold = 0;
+                // Display timeout
+                displayHelper.displayTimeoutInitiate();
             }
             // Update disp
             if (updateDisplay)
-                display.display();
+                displayHelper.refresh();
         }
 
     public:
@@ -68,10 +70,9 @@ class TestButtons {
                     bool buttonHold = btnTestInitiate.isHold();
                     if (buttonHold && btnTestInitiate.holdDuration() > configTestButtons.longPressDuration) {
                         bikeStatus.ignition = BikeStatusIgnition::ignTestButtonsMode;
-                        displayHelper.gotoStatusPageCancel();
-                        display.clearDisplay();
+                        displayHelper.displayTimeoutCancel();
+                        displayHelper.clearDisplay();
                         displayHelper.statusTextShow("*** Test Mode ***", true);
-                        terminateFeatureTimestamp = millis() + 10000;
                         clickCount = 0;
                     }
                 }
@@ -82,14 +83,9 @@ class TestButtons {
                     checkButton(btnIndicatorLeft, "INDICATOR LEFT");
                     checkButton(btnIndicatorRight, "INDICATOR RIGHT");
                     checkButton(btnLightsHiLo, "LIGHTS HIGH<->LOW");
-                    checkButton(btnMenuNext, "MENU NEXT");
-                    checkButton(btnMenuSelect, "MENU SELECT / HORN");
-                    checkButton(btnStartStop, "START<->STOP");
-                    //Check for terminate
-                    if (terminateFeatureTimestamp != 0 && millis() > terminateFeatureTimestamp) {
-                        displayHelper.gotoStatusPageInitiate();
-                        terminateFeatureTimestamp = 0;
-                    }
+                    checkButton(btnHorn, "HORN");
+                    checkButton(btnMenuMain, "MENU MAIN");
+                    checkButton(btnMenuStartStop, "MENU START/STOP");
                 }
             }
         }

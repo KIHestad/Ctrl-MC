@@ -16,12 +16,10 @@ class ButtonHelper {
                 return btnIndicatorRight;
             else if (pin == duInput.lightsHiLo.pin)
                 return btnLightsHiLo;
-            else if (pin == duInput.startStop.pin)
-                return btnStartStop;
-            else if (pin == duInput.menuSelect.pin)
-                return btnMenuSelect;
-            else if (pin == duInput.menuNext.pin)
-                return btnMenuNext;
+            else if (pin == duInput.menuStartStop.pin)
+                return btnMenuStartStop;
+            else if (pin == duInput.menuMain.pin)
+                return btnMenuMain;
             else if (pin == duInput.brakeFront.pin)
                 return btnBrakeFront;
             else

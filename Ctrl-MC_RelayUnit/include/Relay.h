@@ -12,6 +12,12 @@ class Relay {
       }
     }
 
+    void setInputPin(int pin, uint8_t mode) {
+      if (pin != -1) {
+        pinMode(pin, mode);
+      }
+    }
+
     Config::Feature getRelayOutputFeatureFromPin(uint8_t pin) {
       Config::RelayUnitOutput ruOutput = Config::RelayUnitOutput();
       if (pin == ruOutput.mainPower.pin) return ruOutput.mainPower;
@@ -47,6 +53,8 @@ class Relay {
       setRelayPin(ruOutput.lightLow);
       setRelayPin(ruOutput.lightHigh);
       setRelayPin(ruOutput.lightBrake);
+      // Set ruInput pins
+      setInputPin(Config::RelayUnitInput::batteryVoltage, INPUT);
     }
 
     void on(Config::Feature feature) {

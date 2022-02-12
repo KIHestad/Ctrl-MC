@@ -6,37 +6,14 @@ class ButtonEvent {
 
             Config::RelayUnitOutput output = Config::RelayUnitOutput();
 
-            // Start / Stop engine
-            if (btnStartStop.enabled)
-            {
-                if (bikeStatus.engine == engStopped || bikeStatus.engine == engStartMotorEngaged) {
-                    bool btnStartStopIsHold = btnStartStop.isHold();
-                    if (btnStartStopIsHold && bikeStatus.engine == engStopped) {
-                        // Initiate start motor
-                        bikeStatus.engine = engStartMotorEngaged;
-                        serialCommunication.send(output.starterMotor.pin,1);
-                    }
-                    if (!btnStartStopIsHold && bikeStatus.engine == engStartMotorEngaged) {
-                        // Disengage start motor
-                        bikeStatus.engine = engStopped; // engUnknownStatus; // check relay module for bike running status
-                        serialCommunication.send(output.starterMotor.pin,0);
-                    }
-                }
-                else if (bikeStatus.engine == engRunning)
-                {
-                    
-                }
-            }
-
             // Horn
-            if (btnMenuSelect.enabled && bikeStatus.displayMenuPageSelected == 0)
+            if (btnHorn.enabled)
             {
-                bool btnHornIsHold = btnMenuSelect.isHold();
-                if (btnHornIsHold && !bikeStatus.hornActive) {
+                if (btnHorn.isHold() && !bikeStatus.hornActive) {
                     bikeStatus.hornActive = true;
                     serialCommunication.send(output.horn.pin,1);
                 }
-                else if (!btnHornIsHold && bikeStatus.hornActive) {
+                else if (!btnHorn.isHold() && bikeStatus.hornActive) {
                     bikeStatus.hornActive = false;
                     serialCommunication.send(output.horn.pin,0);
                 }
@@ -87,18 +64,9 @@ class ButtonEvent {
                             displayHelper.refreshStatusPage();
                         else if (bikeStatus.displayMenuPageSelected > 0) {
                             // if light menu is selected
-                            Config::DisplayMenuItemShow dmis = Config::DisplayMenuItemShow();
-                            Config::DisplayMenuItemInfo dmiSelected = dmis.item[bikeStatus.displayMenuPageSelected - 1];
-                            if (dmiSelected.id == 5) {
-                                if (bikeStatus.displayGotoStatusPageProgress) {
-                                    // Stay on same menu, cancel goto status page progress
-                                    displayHelper.gotoStatusPageCancel();
-                                }
-                                Config::DisplayMenuSettings dmSettings = Config::DisplayMenuSettings();
-                                bikeStatus.displayMenuTimeoutTimestamp = millis() + (dmSettings.shutdownWait);
-                                display.clearDisplay();
-                                displayMenu.showSelectedLights();
-                            }
+                            displayHelper.clearDisplay();
+                            displayMenu.showSelectedLights();
+                            displayHelper.displayTimeoutInitiate();
                         }
                     }
                 }

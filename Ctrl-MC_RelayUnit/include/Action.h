@@ -6,8 +6,8 @@ class Action {
         void checkReceivedData(SerialCommunication::Data serialData) {
             // Check received data and trigger action
             SerialCommunication::SerialCode serialCode = SerialCommunication::SerialCode();
-            if (serialData.code < 16) 
-                // Code 0-15, trigger on/off relay based on value
+            if (serialData.code < 40) 
+                // Code 0-39, trigger on/off relay based on value
                 relayAction(serialData);
             else if (serialData.code == serialCode.Handshake) {
                 // Handshake received, return handshake back
@@ -36,6 +36,19 @@ class Action {
                 uint8_t humDec = (uint8_t)(hum * 10); // grab one decimal
                 serialCommunication.send(serialCode.sysHumidityInt, humInt);
                 serialCommunication.send(serialCode.sysHumidityDec, humDec);
+            }
+            else if (serialData.code == serialCode.batteryVoltageRequest) {
+                // Return battery voltage according to voltage factor
+                double readValue = analogRead(Config::RelayUnitInput::batteryVoltage);
+                // Factor used to convert analog real signal to real
+                double adcVoltageFactor = Config::BatteryVoltage::adcFactor / (Config::BatteryVoltage::resistor2 / (Config::BatteryVoltage::resistor1+Config::BatteryVoltage::resistor2)); 
+                double batteryVoltage = readValue * adcVoltageFactor;
+                // Correct reading according to samples converted to expotensial curve, multiply with 10
+                double correctedBatteryVoltage = 19.12387 / ( 6.70041 * exp(-0.19703 * batteryVoltage ) +1);
+                // Send data * 10 to include one decimal, to be divided by 10 on display unit
+                uint8_t serialDataValue = (uint8_t)round(correctedBatteryVoltage * 10);
+                // Return result
+                serialCommunication.send(serialCode.batteryVoltageValue, correctedBatteryVoltage);
             }
             else {
                 // Unhandled request
