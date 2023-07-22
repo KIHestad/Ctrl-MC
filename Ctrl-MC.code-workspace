@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "Ctrl-MC_Common"
+		},
+		{
+			"path": "Ctrl-MC_DisplayUnit"
+		},
+		{
+			"path": "Ctrl-MC_RelayUnit"
+		}
+	],
+	"settings": {}
+}
