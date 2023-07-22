@@ -6,14 +6,14 @@
 #include <Wire.h>
 #include <U8g2lib.h>
 
-// Select according to OLED display used
-U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0); //, /* reset=*/ U8X8_PIN_NONE); // Page buffer mode
+// Init U8G2 library for outpur to OLED display
+// U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0); //, /* reset=*/ U8X8_PIN_NONE); // Page buffer mode - USING I2C
+U8G2_SSD1309_128X64_NONAME0_F_4W_HW_SPI u8g2(U8G2_R0, 5, 3, 1); // Using SPI, parameters: landscape rotation, pins for cs, dc and reset
+
 
 // Common lbraries
-#include "../../Ctrl-MC_Common/lib/OnBoardLed/OnBoardLed.h" // Ctrl-MC_Common/lib -> onBoard LED
 #include "../../Ctrl-MC_Common/lib/SerialCommunication/SerialCommunication.h" // Ctrl-MC_Common/lib
 #include "../../Ctrl-MC_Common/lib/Config/Config.h" // Ctrl-MC_Common/lib -> To be user edited to enable/disable features and configure arduino board
-OnBoardLed onBoardLed;
 SerialCommunication serialCommunication;
 
 // Project includes

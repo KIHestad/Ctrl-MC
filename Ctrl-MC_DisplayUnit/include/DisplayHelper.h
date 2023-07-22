@@ -7,7 +7,7 @@ class DisplayHelper {
         // Constructor
         void init() {
             u8g2.begin();
-            u8g2.setFont(u8g2_font_luRS08_tr);
+            setTextSize(1); // Normal small text
             u8g2.setFontRefHeightExtendedText();
             u8g2.setDrawColor(1);
             u8g2.setFontPosTop();
@@ -32,12 +32,18 @@ class DisplayHelper {
         }
 
         static void setTextSize(uint8_t size) {
-            if (size == 1)
+            if (size == 1) {
+                // Normal - small
                 u8g2.setFont(u8g2_font_luBS08_tr);
-            else if (size == 2)
+            }
+            else if (size == 2) {
+                // Big
                 u8g2.setFont(u8g2_font_luBS12_tr);
-            else 
+            }
+            else {
+                // Extra Big
                 u8g2.setFont(u8g2_font_luBS24_tr);
+            }
         }   
 
         static void setCursor(int x, int y) {
@@ -51,21 +57,8 @@ class DisplayHelper {
         // Show splash screen
         void showSplash() {
             clearDisplay();
-            DisplayImage::kiHestadLogo();
+            DisplayImage::splash();
             delay(1750);
-            clearDisplay();
-            setCursorForCenteredText(1, 7);
-            println("Ctrl-MC");
-            refresh();
-            delay(250);
-            setCursorForCenteredText(2, 21);
-            println("Motorcycle Controller");
-            refresh();
-            delay(250);
-            setCursorForCenteredText(3, 12);
-            println("by KI Hestad");
-            refresh();
-            delay(250);
         };
 
         // Inititate display timeout
@@ -255,23 +248,27 @@ class DisplayHelper {
 
     private:
 
+        // Text Height
+        uint8_t textHeight = 10; // set by init
+        
+        // Bottom statustext position
+        uint8_t statusbarY = Config::DisplaySettings::screenHeight - textHeight;
+
         // Position for progressbar
         uint8_t progressBarY = 0;
 
-        // Get x position for centered text
-        int getXposForCenterText(int textLength) {
-            return (Config::DisplaySettings::screenWidth/2)-(textLength*Config::DisplaySettings::textCharWidth/2);
+        // Print centered string
+        void centeredString(u8g2_uint_t y, String s)
+        {
+            int stringLength = s.length() + 1;
+            char c[stringLength];
+            s.toCharArray(c, stringLength);
+            int w = u8g2.getStrWidth(c);
+            int x = (Config::DisplaySettings::screenWidth - w) / 2;
+            u8g2.setDrawColor(0);
+            u8g2.drawBox(0, y, Config::DisplaySettings::screenWidth, textHeight);
+            u8g2.setDrawColor(1);
+            u8g2.drawStr(x, y, c);
         }
-        // Get y position for centered text, parameter num = row number; 1, 2 or 3
-        int getYposForCenterText(int rowNum) {
-            int rowRelativeToMid = rowNum -2; // -1 = first, 0 = second(mid), 1 third and last
-            int centerRowTopPos = (Config::DisplaySettings::screenHeight/2)-Config::DisplaySettings::textCharHeight/2;
-            return (centerRowTopPos + ((Config::DisplaySettings::textCharHeight+1)*rowRelativeToMid*2));
-        }
-        // Write centered text at spesific row
-        void setCursorForCenteredText(int rowNum, int textLength) {
-            setCursor(getXposForCenterText(textLength), getYposForCenterText(rowNum)); 
-        }
-        
         
 };

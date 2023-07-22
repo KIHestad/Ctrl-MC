@@ -5,14 +5,11 @@ class Init {
     public:
         
         void run() {
-            // Init onboard led
-            Config::DisplayUnitOutput duOutput = Config::DisplayUnitOutput();
-            onBoardLed = OnBoardLed();
-            onBoardLed.init(duOutput.onBoardLed);
             // OLED display speed
             Wire.setClock(400000);
             // Serial comm
-            Serial.begin(Config::serialCommSpeed);
+            HardwareSerial SerialPort(2); // use UART2
+            SerialPort.begin(Config::serialCommSpeed, SERIAL_8N1, Config::serialPort_U2_RX, Config::serialPort_U2_TX);
             serialCommunication = SerialCommunication();
             // Set initial bike status
             bikeStatus = BikeStatus();

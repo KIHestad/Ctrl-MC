@@ -56,7 +56,7 @@ class IgnitionButtonPassword {
                         uint8_t x = (Config::DisplaySettings::screenWidth / 2) - (pwTotalWidht / 2) + 1;
                         for (uint8_t i = 0; i < pwLength; i++)
                         {
-                            displayHelper.fillRect(x, Config::DisplaySettings::screenHeight - Config::DisplaySettings::textCharHeight, pwCharWidthInclSeparator-2, Config::DisplaySettings::textCharHeight, 1);
+                            displayHelper.fillRect(x, Config::DisplaySettings::screenHeight - 10, pwCharWidthInclSeparator-2, 10, 1);
                             x += pwCharWidthInclSeparator;
                         }
                         displayHelper.refresh();

@@ -18,8 +18,10 @@
                 uint8_t pin; // Pin on Arduino for the feature
             };
             static const unsigned long serialCommSpeed = 9600; // Baud rate for serial comm for both units
+            static const uint8_t serialPort_U2_RX = 16; // Pin used for UART2 RX
+            static const uint8_t serialPort_U2_TX = 17; // Pin used for UART2 TX
             static const unsigned long handshakeInterval = 15000; // Number of ms between each handshake triggered from display unit
-            static const bool debugMode = false; // Run system in debug mode, ignore handshare errors
+            static const bool debugMode = true; // Run system in debug mode, ignore handshare errors
 
             // *************************************************
             //   Relay Unit Configuration

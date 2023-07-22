@@ -20,10 +20,12 @@ OnBoardLed onBoardLed;
 
 void setup() {
     // Serial comm
-    Serial.begin(Config::serialCommSpeed);
+    // Serial.begin(Config::serialCommSpeed);
+    HardwareSerial SerialPort(2); // use UART2
+    SerialPort.begin(Config::serialCommSpeed, SERIAL_8N1, Config::serialPort_U2_RX, Config::serialPort_U2_TX);
     serialCommunication = SerialCommunication();
     serialCommunication.clearBuffer();
-    // Temp sensor
+    // Temp sensor - to be replaced with gyre/accelerometer
     dhtSensor.begin();
     // Init relay
     Relay relay = Relay();
