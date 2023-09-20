@@ -1,4 +1,5 @@
-# Ctrl-MC // Arduino Motorcycle Controller Software
+![Ctrl-MC logo](https://hestad.no/img/ctrl-mc/Ctrl-MC-LogoText-White_Blue-BG_ver1.png)
+# Arduino Motorcycle Controller Software
 
 This project is created by KI Hestad: https://youtube.com/kihestad
 
@@ -38,3 +39,4 @@ Some of the benefits the system (hopefully) will give:
 
 The software is developed using Visual Studio Code with PlatformIO
 
+![Ctrl-MC logo](https://hestad.no/img/ctrl-mc/Ctrl-MC_Keyboard.png)
