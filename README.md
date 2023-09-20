@@ -43,6 +43,6 @@ The programming language is C++
 
 ## Other info
 
-Let me know if anything is missing on the projects [Discord channel](https://discord.gg/p5pfdZxfS8) ^_^
+Let me know if anything is missing, just go to the project [Discord channel](https://discord.gg/p5pfdZxfS8) ^_^
 
 ![Ctrl-MC logo](https://hestad.no/img/ctrl-mc/Ctrl-MC_Keyboard.png)
