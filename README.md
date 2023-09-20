@@ -38,5 +38,3 @@ Some of the benefits the system (hopefully) will give:
 
 The software is developed using Visual Studio Code with PlatformIO
 
-![KI Hestad](https://yt3.ggpht.com/AfyL2EHtMX016A8ZaWLlamQa3Sf620mSN4ExcduQDDz8GaEvZFqzoQ110UnK4ACII9boa6SMsw=s88-c-k-c0x00ffffff-no-rj)
-
