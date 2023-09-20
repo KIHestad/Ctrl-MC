@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="310"
+   height="310"
+   viewBox="0 0 82.020776 82.020846"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
+   sodipodi:docname="Ctrl-MC-LogoText-Square_ver1.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="5.6568542"
+     inkscape:cx="171.84805"
+     inkscape:cy="85.768384"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="true"
+     units="px"
+     inkscape:window-width="3440"
+     inkscape:window-height="1369"
+     inkscape:window-x="2552"
+     inkscape:window-y="1072"
+     inkscape:window-maximized="1"
+     inkscape:lockguides="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid833" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:#000000;stroke:none;stroke-width:0.218181px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 2.6458356,1.3229144 -2.3e-6,23.8125026 18.5208337,0 c 0,-3.298472 2e-5,8.291489 0,-9.260417 h -5.29167 v 3.96875 l -7.9374944,-1e-6 V 6.614582 l 7.9374964,7e-7 v 3.9687503 h 5.291668 V 1.3229167 Z"
+       id="path835"
+       sodipodi:nodetypes="ccccccccccccc" />
+    <path
+       style="fill:#000000;stroke:none;stroke-width:0.218181px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 23.8125,1.3229167 v 5.2916666 h 6.614583 V 25.135417 l 5.291666,-1e-6 V 6.6145827 h 6.614584 v -5.291667 c -63.084778,5e-6 -11.112499,10e-7 -18.520833,10e-7 z"
+       id="path837"
+       sodipodi:nodetypes="ccccccccc" />
+    <path
+       style="fill:#000000;stroke:none;stroke-width:0.218181px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 44.979166,1.3229157 V 25.135416 l 5.291667,1e-6 V 6.6145833 l 6.614583,-6e-7 10e-7,5.2916673 -5.291667,0 V 15.875 l 5.291667,9.260417 H 63.5 L 58.208333,15.875 l 3.96875,0 V 1.3229167 Z"
+       id="path839"
+       sodipodi:nodetypes="cccccccccccccc" />
+    <path
+       style="fill:#000000;stroke:none;stroke-width:0.218181px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 64.822917,1.3229167 V 25.135417 l 14.552083,0 V 19.84375 l -9.260416,1e-6 V 1.3229177 Z"
+       id="path841"
+       sodipodi:nodetypes="ccccccc" />
+    <path
+       style="fill:#000000;stroke:none;stroke-width:0.391806px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 43.656251,30.427083 v 50.270834 h 35.71875 V 60.854167 H 70.114584 V 71.4375 H 52.916667 v -31.75 h 17.197917 v 11.90625 h 9.260417 L 79.375,30.427083 Z"
+       id="path835-0"
+       sodipodi:nodetypes="ccccccccccccc" />
+    <path
+       style="fill:#000000;stroke:none;stroke-width:0.391806px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 38.364584,80.697917 V 30.427083 l -9.252337,-2e-6 -8.474747,15.081252 c -0.112394,0.215935 -0.148466,0.210351 -0.264583,0 L 12.39364,30.427083 H 2.6458333 V 80.713788 L 11.90625,80.697918 V 47.625 l 8.466667,14.552083 c 0.08819,0 0.176389,0 0.264583,0 L 29.104167,47.625 v 33.088788 z"
+       id="path863"
+       sodipodi:nodetypes="ccccccccccccccc" />
+  </g>
+</svg>
