@@ -10,6 +10,9 @@ void Display::speed(int speed) {
 }
 
 void Display::rpm(float rpm) {
+    // Clear whole rpm area
+    clearArea(0, speedHeight + dividerTotalHeight, displayWidth, rpmHeight + 1);
+    backgroundRpm(); // Redraw static background elements
     // Create string with rpm value as format "0000"
     char rpmString[5]; // Buffer for 4 digits + null terminator
     snprintf(rpmString, sizeof(rpmString), "%04d", int(rpm));
@@ -18,10 +21,39 @@ void Display::rpm(float rpm) {
     int textWidth = u8g2.getStrWidth(rpmString);
     int xPos = displayWidth - contentMargin - textWidth;
     int yPos = speedHeight + dividerTotalHeight + rpmHeight + 1;
-    // Clear rpm area
-    clearArea(xPos, yPos - textStandardHeight, textWidth, textStandardHeight);
     // Write new rpm value
     u8g2.drawStr(xPos, yPos, rpmString);
+    // Prepare graph, center line on grapth = 77 pixels total
+    int rpmVerticalBarMax = 19; // 25%
+    int rpmSlantedBarMax = 7; // 10%
+    int rpmHorizontalBarMax = 51; // 65%
+    // Calculate filled length based on rpm value
+    int rpmBarLength = (int)round(rpm / rpmGaugeMax * 77);
+    // Fist part vertical bar from bottom
+    int rpmBarPart = min(rpmBarLength, rpmVerticalBarMax);
+    if (rpmBarPart >= 0) {
+        xPos = contentMargin + 2;
+        yPos = speedHeight + dividerTotalHeight + rpmHeight - 1;
+        drawRectangle(xPos, yPos, xPos + rpmGraphWidth - 3, yPos - rpmBarPart);
+        // Second part slanted bar
+        rpmBarLength -= rpmBarPart;
+        rpmBarPart = min(rpmBarLength, rpmSlantedBarMax);
+        if (rpmBarPart >= 0) {
+                
+            xPos = contentMargin + (rpmGraphWidth / 2);
+            yPos -= rpmVerticalBarMax - 2;
+            drawDiagonalLine(xPos, yPos, xPos + rpmBarPart, yPos - rpmBarPart, 9);
+            // Third part horizontal bar
+            rpmBarLength -= rpmBarPart;
+            rpmBarPart = min(rpmBarLength, rpmHorizontalBarMax);
+            if (rpmBarPart >= 0) {
+                xPos = contentMargin + rpmSlantedBarMax + 2;
+                yPos = speedHeight + dividerTotalHeight + 2;
+                u8g2.drawBox(xPos, yPos, rpmBarPart, 7);
+            }
+        }
+    }
+    
 }
 
 void Display::fuel(float fuelLevel) {

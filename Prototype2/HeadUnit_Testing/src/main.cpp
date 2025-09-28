@@ -32,6 +32,7 @@ void setup(void) {
   data.init(storage.data);
   // Initialize display hardware
   display.init(data.engineRpmMax, data.engineRpmDanger, data.engineRpmWarning, data.fuelTankCapacity, data.fuelAvgConsumption);
+  display.startupAnimation(data.fuelLevel);
   // Initialize interrupt for hall sensor
   interruptsInit();
 }

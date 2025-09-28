@@ -46,3 +46,49 @@ void Display::clearDisplay() {
     u8g2.sendBuffer();
     u8g2.setDrawColor(1);
 }
+
+void Display::startupAnimation(float fuelLevel) {
+    // Setup background
+    background();
+    backgroundRpm();
+    backgroundFuel();
+    speed(0); // Start with 0 speed
+    fuel(0); // Start with empty fuel tank
+    //backgroundMenuCheckboxes();
+    //menu(0, false); // Menu page 0, no auto pager
+    //menuName("Welcome");
+    outputNow();
+
+    // Rpm area animation, loop over rpm step by 250 from o to max rpm
+    int rpmStep = 500;
+    int rpmAnimationDelay = 50;
+    for (int animatedRpm = 0; animatedRpm <= rpmGaugeMax; animatedRpm += rpmStep) {
+        if (animatedRpm > rpmGaugeMax) animatedRpm = rpmGaugeMax; // Cap to max
+        rpm(animatedRpm);
+        outputNow();
+        delay(rpmAnimationDelay);
+    }
+    for (int animatedRpm = rpmGaugeMax; animatedRpm >= 0; animatedRpm -= rpmStep) {
+        if (animatedRpm < 0) animatedRpm = 0; // Cap to min
+        rpm(animatedRpm);
+        outputNow();
+        delay(rpmAnimationDelay);
+    }
+
+    // Fuel area animation, loop over fuel level by 1/8 tank steps
+    float fuelStep = fuelTankCapacity / 20.0;
+    int fuelAnimationDelay = 50;
+    for (float animatedFuel = 0; animatedFuel <= fuelTankCapacity; animatedFuel += fuelStep) {
+        if (animatedFuel > fuelTankCapacity) animatedFuel = fuelTankCapacity; // Cap to max
+        fuel(animatedFuel);
+        outputNow();
+        delay(fuelAnimationDelay);
+    }
+    for (float animatedFuel = fuelTankCapacity; animatedFuel >= fuelLevel; animatedFuel -= fuelStep) {
+        if (animatedFuel < fuelLevel) animatedFuel = fuelLevel; // Cap to actual fuel level
+        fuel(animatedFuel);
+        outputNow();
+        delay(fuelAnimationDelay);
+    }
+
+}

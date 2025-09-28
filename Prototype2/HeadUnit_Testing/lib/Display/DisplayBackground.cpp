@@ -10,8 +10,8 @@ void Display::backgroundRpm() {
     // Frame for rpm graphic
     int yPosTop = speedHeight + dividerTotalHeight;
     int width = displayWidth - (2 * contentMargin);
-    int slantedCorner = 9;
-    int slCornerInner = 3;
+    int slantedCorner = 8;
+    int slCornerInner = 5;
     u8g2.drawLine(contentMargin + slantedCorner, yPosTop, displayWidth - contentMargin -1, yPosTop); // top - top-horizontal
     u8g2.drawLine(displayWidth - contentMargin -1, yPosTop, displayWidth - contentMargin -1, yPosTop + rpmGraphWidth); // top - right vertical
     u8g2.drawLine(displayWidth - contentMargin -1, yPosTop + rpmGraphWidth, contentMargin + rpmGraphWidth + slCornerInner, yPosTop + rpmGraphWidth); // top - bottom horizontal

@@ -40,12 +40,15 @@ private:
     void textOrNumRowDisplay(int row, const char* text, bool isNumber);
     void textOrNumRowDisplay(int row, int xPos, const char* text);
     void textOrNumRowClear(int row);
+    void drawDiagonalLine(int x1, int y1, int x2, int y2, int thickness);
+    void drawRectangle(int x1, int y1, int x2, int y2);
     
 public:
     
     // Display Core
     void init(int rpmGaugeMax, int rpmGaugeDanger, int rpmGaugeWarning, float fuelTankCapacity, float fuelAvgConsumption);
     void splash();
+    void startupAnimation(float fuelLevel);
     void clearDisplay();
     void outputNow();
     

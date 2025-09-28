@@ -59,7 +59,34 @@ void Display::textOrNumRowDisplay(int row, int xPos, const char* text) {
     u8g2.drawStr(xPos, yPos, text);
 }
 
-void Display::divider(int yPos) {
-    yPos += dividerTotalHeight / 2; // center the line in the divider area
-    u8g2.drawHLine(0, yPos, displayWidth);
+void Display::drawDiagonalLine(int x1, int y1, int x2, int y2, int thickness) {
+    // Calculate perpendicular offsets
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+    float length = sqrt(dx*dx + dy*dy);
+    
+    float perpX = -dy / length * (thickness / 2.0);
+    float perpY = dx / length * (thickness / 2.0);
+    
+    // Calculate the four corners of the thick line
+    int x1a = x1 + (int)perpX;
+    int y1a = y1 + (int)perpY;
+    int x1b = x1 - (int)perpX;
+    int y1b = y1 - (int)perpY;
+    int x2a = x2 + (int)perpX;
+    int y2a = y2 + (int)perpY;
+    int x2b = x2 - (int)perpX;
+    int y2b = y2 - (int)perpY;
+    
+    // Draw two triangles to form the thick line
+    u8g2.drawTriangle(x1a, y1a, x1b, y1b, x2a, y2a);
+    u8g2.drawTriangle(x1b, y1b, x2a, y2a, x2b, y2b);
+}
+
+void Display::drawRectangle(int x1, int y1, int x2, int y2) {
+    int x = min(x1, x2);
+    int y = min(y1, y2);
+    int width = abs(x2 - x1);
+    int height = abs(y2 - y1);
+    u8g2.drawBox(x, y, width, height);
 }
