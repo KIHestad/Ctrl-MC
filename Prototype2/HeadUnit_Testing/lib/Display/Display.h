@@ -15,7 +15,7 @@ private:
     unsigned int displayHeight; // Height of the display in pixels
     const unsigned int textStandardHeight = 9; // Height of each text line
     // Speed display properties
-    const unsigned int contentMargin = 1; // left and right margin for content areas
+    const unsigned int contentMargin = 0; // left and right margin for content areas
     const unsigned int dividerTotalHeight = 9; // total Height for divider, margins top/bottom included
     const unsigned int speedHeight = 30; // Height of speed output
     const unsigned int rpmHeight = 30; // Height of rpm gauge area

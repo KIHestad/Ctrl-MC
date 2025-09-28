@@ -101,7 +101,7 @@ public:
                     int humidityFarenheit = (int)round(dht.convertCtoF(temperature));
                     if (forceUpdatePage || humidity != data.humidityDisplayed || temperature != data.temperatureDisplayed) {
                         char tempStr[10], humStr[10];
-                        sprintf(tempStr, "%dC*%dF", temperature, humidityFarenheit);
+                        sprintf(tempStr, "%dC  %dF", temperature, humidityFarenheit);
                         sprintf(humStr, "%d", humidity);
                         strcat(humStr, "%");
                         display.rowNum(1, tempStr);

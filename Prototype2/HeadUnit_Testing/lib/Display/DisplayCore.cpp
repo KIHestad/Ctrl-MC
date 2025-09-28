@@ -60,8 +60,8 @@ void Display::startupAnimation(float fuelLevel) {
     outputNow();
 
     // Rpm area animation, loop over rpm step by 250 from o to max rpm
-    int rpmStep = 500;
-    int rpmAnimationDelay = 35;
+    int rpmStep = 250;
+    int rpmAnimationDelay = 20;
     for (int animatedRpm = 0; animatedRpm <= rpmGaugeMax; animatedRpm += rpmStep) {
         if (animatedRpm > rpmGaugeMax) animatedRpm = rpmGaugeMax; // Cap to max
         rpm(animatedRpm);

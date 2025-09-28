@@ -62,7 +62,7 @@ class Data {
         float tempHumUpdatePreviousMs = 0.0; // previous time in milliseconds when temperature and humidity was read
 
         // Engine RPM simulation for demo purposes
-        unsigned int engineRpmMax = 10000;
+        unsigned int engineRpmMax = 11000;
         unsigned int engineRpmWarning = 7500;
         unsigned int engineRpmDanger = 8500;
         unsigned int engineRpm = 0; // Current RPM value, to be set from sensor in future

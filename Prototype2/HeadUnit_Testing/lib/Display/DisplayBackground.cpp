@@ -24,8 +24,7 @@ void Display::backgroundRpm() {
     
     // Write rpm icon
     u8g2.setFont(u8g2_font_speed_small);
-    int textWidth = u8g2.getStrWidth("<0000");
-    int xPos = displayWidth - contentMargin - textWidth;
+    int xPos = contentMargin + rpmGraphWidth + 2;
     int yPos = speedHeight + dividerTotalHeight + rpmHeight + 1;
     u8g2.drawStr(xPos, yPos, "<");
 }

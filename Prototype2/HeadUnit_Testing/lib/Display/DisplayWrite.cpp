@@ -15,9 +15,9 @@ void Display::rpm(float rpm) {
     clearArea(0, speedHeight + dividerTotalHeight, displayWidth, rpmHeight + 1);
     backgroundRpm(); // Redraw static background elements
     // Create string with rpm value as format "0000"
-    char rpmString[5]; // Buffer for 4 digits + null terminator
+    char rpmString[9]; // Buffer for 4 digits + null terminator
     snprintf(rpmString, sizeof(rpmString), "%04d", int(rpm));
-    u8g2.setFont(u8g2_font_speed_small);
+    u8g2.setFont(u8g2_font_speed_medium);
     // Righ align text in rpm area
     int textWidth = u8g2.getStrWidth(rpmString);
     int xPos = displayWidth - contentMargin - textWidth;
