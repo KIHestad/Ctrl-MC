@@ -1,4 +1,5 @@
 #include "Display.h"
+#include "ImageElefant.cpp" // Include the image data
 
 void Display::speed(int speed) {
     // Clear speed area
@@ -97,6 +98,12 @@ void Display::clearPageArea() {
     clearArea(0, yPos, displayWidth, height);
 }
 
+void Display::clearMenuArea() {
+    // Clear the menu area at the bottom of the display
+    int yPos = speedHeight + rpmHeight + 2*dividerTotalHeight + pageHeight;
+    clearArea(0, yPos, displayWidth, displayHeight - yPos);
+}
+
 void Display::rowText(int row, const char* text) {
     // Expect row to be 1 or 2
     textOrNumRowDisplay(row, text, false);
@@ -127,16 +134,27 @@ void Display::menu(int currentPage, bool autoPager) {
     // Space between menu items
     int totalWidth = displayWidth - (2 * contentMargin);
     int spacingWidth = (totalWidth - (menuItemSize * menuItemsCount)) / (menuItemsCount - 1);
+    // Page icon size
+    int offsetLeft = 5;
+    int width = 3;
+    int height = 3;
     // Find new position
     int yPos = displayHeight - menuHeight + 2; // top of menu area = y position of checkboxes + 2 for centering in menu area
-    int xPos = currentPage * (menuItemSize + spacingWidth) + 2 ; // not use contentMargin here, fixed for centering in menu area
+    int xPos = currentPage * (menuItemSize + spacingWidth) + offsetLeft; // not use contentMargin here, fixed for centering in menu area
     // Clear previous position
     int previousPage = currentPage == 0 ? menuItemsCount - 1 : currentPage - 1;
-    int xPosPrev = previousPage * (menuItemSize + spacingWidth) + 2;
+    int xPosPrev = previousPage * (menuItemSize + spacingWidth) + offsetLeft;
     // Draw previous position as empty solid box
     u8g2.setDrawColor(0);
-    u8g2.drawBox(xPosPrev + 2, yPos, menuItemSize - 4,  menuItemSize - 4);
+    u8g2.drawBox(xPosPrev, yPos, width, height);
     // Draw new position as filled solid box
     u8g2.setDrawColor(1);
-    u8g2.drawBox(xPos + 2, yPos, menuItemSize - 4,  menuItemSize - 4);
+    u8g2.drawBox(xPos, yPos, width, height);
+}
+
+void Display::drawElefant() {
+    // Draw elefant image at fixed position
+    int xPos = (int)round((displayWidth - 56) / 2.0) + 1; // Centered horizontally
+    int yPos = speedHeight + 2 * dividerTotalHeight + rpmHeight +2;
+    u8g2.drawBitmap(xPos, yPos, 56/8, 46, epd_bitmap_elefantelefant_smalle2);
 }

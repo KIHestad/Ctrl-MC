@@ -1,6 +1,7 @@
 // external libs
 #include <Arduino.h>
 #include <EEPROM.h>
+#include <DHT.h>
 
 // private libs
 #include "Display.h"
@@ -19,6 +20,7 @@ Data data; // Main data and variables
 Button button(33); // Button data and functions, set pin for button
 ButtonEvent buttonEvent; // For handling button events
 WheelSensor wheelSensor; // For detecting wheel rotation and calculating speed
+DHT dht(27, DHT22); // DHT sensor for temperature and humidity
 DisplayEvent displayEvent; // For handling display update events
 
 #include "Interrupts.h"
@@ -30,6 +32,8 @@ void setup(void) {
   storage.init(); // run: storage.reset(); to reset all stored values
   // Initialize main data, set values from storage
   data.init(storage.data);
+  // Init temp/humidity sensor
+  dht.begin();
   // Initialize display hardware
   display.init(data.engineRpmMax, data.engineRpmDanger, data.engineRpmWarning, data.fuelTankCapacity, data.fuelAvgConsumption);
   display.startupAnimation(data.fuelLevel);
@@ -49,6 +53,6 @@ void loop(void) {
     // Display needs update, first check for wheel rotation to update speed
     wheelSensor.checkForRotations(storage, data);
     // Then output to display
-    displayEvent.output(data, button);
+    displayEvent.output(data, button, dht);
   }
 }

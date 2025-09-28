@@ -55,6 +55,12 @@ class Data {
         float fuelLevel = 0.0; // in liters, how much fuel when fuelTripCounter was reset, to be read from storege
         float fuelLevelDisplayed = -1.0; // Last fuel level value displayed, to check if fuel level changed and needs update on display
         
+        // Humidity and temperature
+        int temperatureDisplayed = -100.0; // in degrees Celsius, last read temperature value, to check if changed and needs update on display
+        int humidityDisplayed = -1.0; // in percent, last read humidity value, to check if changed and needs update on display
+        float tempHumUpdateIntervalMs = 15000.0; // interval in milliseconds to read temperature and humidity, DHT22 sensor max is 0.5Hz = every 2 seconds
+        float tempHumUpdatePreviousMs = 0.0; // previous time in milliseconds when temperature and humidity was read
+
         // Engine RPM simulation for demo purposes
         unsigned int engineRpmMax = 10000;
         unsigned int engineRpmWarning = 7500;

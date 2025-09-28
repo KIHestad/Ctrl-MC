@@ -3,7 +3,7 @@
 void Display::background() {
     clearDisplay();
     backgroundRpm();
-    backgroundMenuCheckboxes();
+    //backgroundMenu();
 }
 
 void Display::backgroundRpm() {
@@ -44,7 +44,7 @@ void Display::backgroundFuel() {
     u8g2.drawFrame(barX, barY, barWidth, barHeight);
 }
 
-void Display::backgroundMenuCheckboxes() {
+void Display::backgroundMenu() {
     // Space between menu items
     int totalWidth = displayWidth - (2 * contentMargin);
     int spacingWidth = (totalWidth - (menuItemSize * menuItemsCount)) / (menuItemsCount - 1);
@@ -52,6 +52,6 @@ void Display::backgroundMenuCheckboxes() {
     // Checkbox position
     for (int i = 0; i < menuItemsCount; i++) {
         int xPos = i * (menuItemSize + spacingWidth) + 2; // not use contentMargin here, fixed for centering in menu area
-        u8g2.drawFrame(xPos, yPos, menuItemSize, menuItemSize);
+        u8g2.drawLine(xPos, yPos, xPos + menuItemSize, yPos);
     }
 }

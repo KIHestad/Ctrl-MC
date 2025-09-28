@@ -54,14 +54,14 @@ void Display::startupAnimation(float fuelLevel) {
     backgroundFuel();
     speed(0); // Start with 0 speed
     fuel(0); // Start with empty fuel tank
-    //backgroundMenuCheckboxes();
+    //backgroundMenu();
     //menu(0, false); // Menu page 0, no auto pager
-    //menuName("Welcome");
+    //menuName("WELCOME");
     outputNow();
 
     // Rpm area animation, loop over rpm step by 250 from o to max rpm
     int rpmStep = 500;
-    int rpmAnimationDelay = 50;
+    int rpmAnimationDelay = 35;
     for (int animatedRpm = 0; animatedRpm <= rpmGaugeMax; animatedRpm += rpmStep) {
         if (animatedRpm > rpmGaugeMax) animatedRpm = rpmGaugeMax; // Cap to max
         rpm(animatedRpm);
@@ -77,7 +77,7 @@ void Display::startupAnimation(float fuelLevel) {
 
     // Fuel area animation, loop over fuel level by 1/8 tank steps
     float fuelStep = fuelTankCapacity / 20.0;
-    int fuelAnimationDelay = 50;
+    int fuelAnimationDelay = 35;
     for (float animatedFuel = 0; animatedFuel <= fuelTankCapacity; animatedFuel += fuelStep) {
         if (animatedFuel > fuelTankCapacity) animatedFuel = fuelTankCapacity; // Cap to max
         fuel(animatedFuel);

@@ -1,6 +1,7 @@
 #ifndef DisplayEvent_h
 #define DisplayEvent_h
 
+
 class DisplayEvent {
 
 public:
@@ -11,7 +12,7 @@ public:
     }
 
     // Handle output to display based on current data and button state
-    void output(Data& data, Button& button) {
+    void output(Data& data, Button& button, DHT dht) {
         
         // Draw background if needed
         if (data.backgroundRedraw) {
@@ -37,13 +38,24 @@ public:
         if (data.displayPageSelected != data.displayPageSelectedLast) {
             // Page changed, clear content area
             display.clearPageArea();
+            // Deal with the menu depending on the page
+            if (data.displayPageSelected == 0) {         
+                display.clearMenuArea(); // Need to redraw menu area because coming from Elefant page
+                display.backgroundMenu();
+            }
+            if (data.displayPageSelected != 4) { // Show menu pager if not elefant page
+                display.backgroundMenu();
+                display.menu(data.displayPageSelected, false);
+            }
+            else  {
+                display.clearMenuArea(); // Clear menu area when going to elefant page
+            }
             // Add static background elements if needed
             switch (data.displayPageSelected) {
-                case 0: display.backgroundFuel(); display.menuName(""); break;
+                case 0: display.backgroundFuel(); display.menuName("FUEL"); break;
                 case 1: display.menuName("TEMP/HUM"); break;
-                case 2: display.menuName("NOW"); break;
-                case 3: display.menuName("TRIP/TOT"); break;
-                case 4: display.menuName("TBD"); break;
+                case 2: display.menuName("TIMER"); break;
+                case 3: display.menuName("TRIP/TOT"); break;                
             }
             // Set timestamp for menu name write
             data.displayMenuNameSetMs = data.currentMs;
@@ -53,8 +65,8 @@ public:
             forceUpdatePage = true;
         }
         else if (data.displayMenuNameSetMs > 0 && (data.currentMs - data.displayMenuNameSetMs) > data.displayMenuNameTimoutMs) {
-            // Clear menu name after some time
-            display.menuName("");
+            // Clear menu name and pager after some time
+            display.clearMenuArea();
             data.displayMenuNameSetMs = 0; // reset to avoid multiple clears
         }
 
@@ -62,7 +74,7 @@ public:
         switch (data.displayPageSelected) {
             case 0: {
                 // Fuel level, show data
-                if (data.fuelLevel != data.fuelLevelDisplayed || forceUpdatePage) {
+                if (forceUpdatePage || data.fuelLevel != data.fuelLevelDisplayed) {
                     display.fuel(data.fuelLevel);
                     data.fuelLevelDisplayed = data.fuelLevel;
                 }                
@@ -81,7 +93,23 @@ public:
                 break;
             }
             case 1: {
-                // Temperature and humidity, not implemented yet
+                // Temperature and humidity, not read to often, DHT22 max is 0.5Hz = every 2 seconds
+                if (forceUpdatePage || data.tempHumUpdatePreviousMs == 0 || (data.currentMs - data.tempHumUpdatePreviousMs) > data.tempHumUpdateIntervalMs) {
+                    data.tempHumUpdatePreviousMs = data.currentMs;
+                    int temperature = (int)round(dht.readTemperature()); 
+                    int humidity = (int)round(dht.readHumidity()); 
+                    int humidityFarenheit = (int)round(dht.convertCtoF(temperature));
+                    if (forceUpdatePage || humidity != data.humidityDisplayed || temperature != data.temperatureDisplayed) {
+                        char tempStr[10], humStr[10];
+                        sprintf(tempStr, "%dC*%dF", temperature, humidityFarenheit);
+                        sprintf(humStr, "%d", humidity);
+                        strcat(humStr, "%");
+                        display.rowNum(1, tempStr);
+                        display.rowNum(2, humStr);
+                        data.humidityDisplayed = humidity;
+                        data.temperatureDisplayed = temperature;
+                    }
+                }
                 break;
             }
             case 2: { 
@@ -119,11 +147,9 @@ public:
                 break;
             }
             default:
+                display.drawElefant();
                 break;
         }
-
-        // Section 4 : Menu at bottom, show current page selected
-        display.menu(data.displayPageSelected, false);
 
         // Send buffer to display
         display.outputNow();

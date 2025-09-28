@@ -19,8 +19,8 @@ private:
     const unsigned int dividerTotalHeight = 9; // total Height for divider, margins top/bottom included
     const unsigned int speedHeight = 30; // Height of speed output
     const unsigned int rpmHeight = 30; // Height of rpm gauge area
-    const unsigned int pageHeight = 30; // Height of page controlled by menu
-    const unsigned int menuHeight = 11; // Height of menu area at bottom
+    const unsigned int pageHeight = 35; // Height of page controlled by menu
+    const unsigned int menuHeight = 6; // Height of menu area at bottom
     // Menu pages (5): 0=fuel-graph, 1=fuel-numbers, 2=temp/humidity, 3=session, 4=trip/total
     const unsigned int menuItemsCount = 5; // Number of menu items/pages
     const unsigned int menuItemSize = 8; // Size of menu item check box, outer frame
@@ -43,7 +43,7 @@ private:
     void drawDiagonalLine(int x1, int y1, int x2, int y2, int thickness);
     void drawRectangle(int x1, int y1, int x2, int y2);
     
-public:
+    public:
     
     // Display Core
     void init(int rpmGaugeMax, int rpmGaugeDanger, int rpmGaugeWarning, float fuelTankCapacity, float fuelAvgConsumption);
@@ -56,15 +56,17 @@ public:
     void background();
     void backgroundRpm();
     void backgroundFuel();
-    void backgroundMenuCheckboxes();
-
+    void backgroundMenu();
+    
     // Display Write
     void speed(int speed);
     void rpm(float rpm);
     void fuel(float fuelLevel);
     void clearPageArea();
+    void clearMenuArea();
     void menuName(const char* text);
     void menu(int currentPage, bool autoPager);
+    void drawElefant();
     void rowText(int row, const char* text);
     void rowNum(int row, const char* text);
     void rowTime(int row, const char* text);
