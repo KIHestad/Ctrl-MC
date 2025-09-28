@@ -78,7 +78,17 @@ class Data {
             totalCounter = storageData.totalCounter.value;
             tripCounter = storageData.tripCounter.value;
             fuelTripCounter = storageData.fuelTripCounter.value;
-            fuelLevel = storageData.fuelLevel.value;
+            // calculate fuel level from last refuel and fuel consumption
+            if (fuelTripCounter > 0) {
+                float fuelUsed = (fuelAvgConsumption / 100.0) * fuelTripCounter; // in liters
+                fuelLevel = storageData.fuelLevelWhenRefueled.value - fuelUsed;
+                if (fuelLevel < 0) fuelLevel = 0.0;
+                if (fuelLevel > fuelTankCapacity) fuelLevel = fuelTankCapacity;
+            } 
+            else {
+                fuelLevel = storageData.fuelLevelWhenRefueled.value;
+            }
+            
         };
 
 };

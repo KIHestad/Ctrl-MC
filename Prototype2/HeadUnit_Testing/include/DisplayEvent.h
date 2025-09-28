@@ -133,7 +133,7 @@ public:
             case 3: {
                 // Trip counter
                 char str[9]; 
-                sprintf(str, "%.1fkm", data.tripCounter);
+                sprintf(str, "%.1fkm", data.tripCounter / 1000);
                 display.rowNum(1, str);
                 // Total counter
                 sprintf(str, "%dkm", (int)round(data.totalCounter));

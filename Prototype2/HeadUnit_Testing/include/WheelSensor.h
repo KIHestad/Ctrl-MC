@@ -38,7 +38,10 @@ class WheelSensor {
                 data.sessionCounter += currentWheelRotationsDistance; // add meters
                 data.tripCounter += currentWheelRotationsDistance; // add meters
                 data.totalCounter += currentWheelRotationsDistance / 1000.0;  // add km
+                // Calculate fuel consumption
                 data.fuelTripCounter += currentWheelRotationsDistance / 1000.0; // add km
+                float fuelUsed = (data.fuelAvgConsumption / 100.0) * (currentWheelRotationsDistance / 1000.0); // in liters
+                data.fuelLevel -= fuelUsed;
                 // Set flag to save to flash memory if at least 1 km is recorded since last save
                 saveDataToStorage = data.sessionCounterToUpdateFlash > 1000;
             }
@@ -55,10 +58,10 @@ class WheelSensor {
             }
             // Save to storage if needed
             if (saveDataToStorage) {
-                storage.data.totalCounter.value += (data.sessionCounterToUpdateFlash / 1000.0);  // add km
-                storage.data.tripCounter.value += data.sessionCounterToUpdateFlash; // add meters
-                storage.data.fuelTripCounter.value += data.sessionCounterToUpdateFlash; // add km
-                storage.save();
+                storage.data.totalCounter.value = data.totalCounter;  // km
+                storage.data.tripCounter.value = data.tripCounter; // m
+                storage.data.fuelTripCounter.value = data.fuelTripCounter; // km
+                storage.saveAllTripCounters();
                 data.sessionCounterToUpdateFlash = 0.0; // reset counter after saving to flash    
             }
         };
