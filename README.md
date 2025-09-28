@@ -1,4 +1,5 @@
 ![Ctrl-MC logo](https://hestad.no/img/ctrl-mc/Ctrl-MC-LogoText-White_Blue-BG_ver1.png)
+
 # Arduino Motorcycle Controller Software
 
 This project is created by Ki Hestad: https://youtube.com/kihestad
@@ -12,8 +13,8 @@ Do you want to support this project? It's easy, just [click here to subscribe to
 This project is in early stages, the idea is to:
 
 * Create an Arduino based motorcycle electronic unit for controlling electrical components for 'classic' (=older) motorcycles
-  * The project do not aim to replace or modify the motorcycle engine ignition system
-  * This system will typically "start" after the generator/alternator and rectifier/regulator on the motorcyle has done it's job
+  * The main goal is to make a intuitive and reliable system for wiring up a morocycles lights and instruments 
+  * The project do not in the first phases aim to replace or modify the motorcycle engine ignition system, but maybe later?
 * Provide software and instructions free of charge
 * Create a community for motorcycle- and Arduino enthusiasts that want to contribute
 * Make the solution universal and configurable, it should be suitable for as many motorcycle brands and models as possible
