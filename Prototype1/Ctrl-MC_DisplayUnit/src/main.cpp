@@ -15,6 +15,8 @@ U8G2_SSD1309_128X64_NONAME0_F_4W_HW_SPI u8g2(U8G2_R0, 5, 3, 1); // Using SPI, pa
 #include "../../Ctrl-MC_Common/lib/SerialCommunication/SerialCommunication.h" // Ctrl-MC_Common/lib
 #include "../../Ctrl-MC_Common/lib/Config/Config.h" // Ctrl-MC_Common/lib -> To be user edited to enable/disable features and configure arduino board
 SerialCommunication serialCommunication;
+#include "../../Ctrl-MC_Common/lib/OnBoardLed/OnBoardLed.h" // Ctrl-MC_Common/lib
+OnBoardLed onBoardLed;
 
 // Project includes
 #include <BikeStatus.h>
