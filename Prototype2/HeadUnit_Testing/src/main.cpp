@@ -13,14 +13,16 @@ Display display; // For output to display
 #include "Button.h"
 #include "ButtonEvent.h"
 #include "WheelSensor.h"
+#include "RpmSensor.h"
 #include "DisplayEvent.h"
 
 Storage storage; // For storing data to flash memory
 Data data; // Main data and variables
-Button button(33); // Button data and functions, set pin for button
+Button button(data.pinButton); // Button data and functions, set pin for button
 ButtonEvent buttonEvent; // For handling button events
 WheelSensor wheelSensor; // For detecting wheel rotation and calculating speed
-DHT dht(27, DHT22); // DHT sensor for temperature and humidity
+RpmSensor rpmSensor; // For detecting engine rpm
+DHT dht(data.pinDhtSensor, DHT22); // DHT sensor for temperature and humidity
 DisplayEvent displayEvent; // For handling display update events
 
 #include "Interrupts.h"
@@ -48,11 +50,21 @@ void loop(void) {
   buttonEvent.action(data, button, storage);
   // Normal loop code
   data.currentMs = millis();
-  // Check if display needs update
-  if (displayEvent.displayNeedsUpdate(data)) {
+  // Check if display needs regular update
+  if (displayEvent.displayNeedsRegularUpdate(data)) {
     // Display needs update, first check for wheel rotation to update speed
     wheelSensor.checkForRotations(storage, data);
+    // Then check for rpm sensor to update rpm
+    rpmSensor.checkForRotations(data);
     // Then output to display
-    displayEvent.output(data, button, dht);
+    displayEvent.mainOutput(data, button, dht);
   }
+  // Check if display needs rpm update only
+  else if (displayEvent.displayNeedsRpmUpdate(data)) {
+    // Then check for rpm sensor to update rpm
+    rpmSensor.checkForRotations(data);
+    // Then output to display
+    displayEvent.rpmOutput(data);
+  }
+
 }

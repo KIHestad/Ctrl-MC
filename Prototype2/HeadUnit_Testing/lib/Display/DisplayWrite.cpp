@@ -18,8 +18,8 @@ void Display::rpm(float rpm) {
     char rpmString[9]; // Buffer for 4 digits + null terminator
     snprintf(rpmString, sizeof(rpmString), "%04d", int(rpm));
     u8g2.setFont(u8g2_font_speed_medium);
-    // Righ align text in rpm area
-    int textWidth = u8g2.getStrWidth(rpmString);
+    // Right align text does not work for font, manually set position in rpm area
+    int textWidth = 9 * (rpm > 9999 ? 5 : 4); // Each character is 9 pixels wide * number of characters in string
     int xPos = displayWidth - contentMargin - textWidth;
     int yPos = speedHeight + dividerTotalHeight + rpmHeight + 1;
     // Write new rpm value
@@ -53,8 +53,7 @@ void Display::rpm(float rpm) {
                 u8g2.drawBox(xPos, yPos, rpmBarPart, 7);
             }
         }
-    }
-    
+    }    
 }
 
 void Display::fuel(float fuelLevel) {

@@ -18,9 +18,9 @@ class WheelSensor {
                 data.wheelRotaionDetected = false;
                 float sum = 0.0;
                 int validReadings = 0;
-                for (int i = 0; i < data.pulseReadingsCount; i++) {
-                    if (data.pulseReadings[i] > 0) { // Only average non-zero readings
-                        sum += data.pulseReadings[i];
+                for (int i = 0; i < data.pulseWheelReadingsCount; i++) {
+                    if (data.pulseWheelReadings[i] > 0) { // Only average non-zero readings
+                        sum += data.pulseWheelReadings[i];
                         validReadings++;
                     }
                 }
@@ -46,12 +46,12 @@ class WheelSensor {
                 saveDataToStorage = data.sessionCounterToUpdateFlash > 1000;
             }
             // Check if timeout has occurred to set speed to zero
-            else if (data.currentSpeed > 0.0 && (data.currentMs - (data.lastPulseTimeMicros / 1000) > data.zeroSpeedTimeoutMs)) {
+            else if (data.currentSpeed > 0.0 && (data.currentMs - (data.lastPulseWheelTimeMicros / 1000) > data.zeroSpeedTimeoutMs)) {
                 // Reset speed and readings
                 data.currentSpeed = 0.0;
                 data.wheelRotaionDetected = false;
-                for (int i = 0; i < data.pulseReadingsCount; i++) {
-                    data.pulseReadings[i] = 0;
+                for (int i = 0; i < data.pulseWheelReadingsCount; i++) {
+                    data.pulseWheelReadings[i] = 0;
                 }
                 // save to flash memory if speed drops to zero if at least 100m is recorded
                 saveDataToStorage = data.sessionCounterToUpdateFlash > 100;

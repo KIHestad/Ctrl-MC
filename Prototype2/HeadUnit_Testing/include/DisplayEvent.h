@@ -7,12 +7,25 @@ class DisplayEvent {
 public:
 
     // Decide if display update is needed based on data changes or time interval
-    bool displayNeedsUpdate(Data data) {
+    bool displayNeedsRegularUpdate(Data data) {
         return (data.currentMs - data.displayUpdatePreviousMs > data.displayUpdateIntervalMs) || data.displayUpdateNeeded;
     }
 
+    bool displayNeedsRpmUpdate(Data data) {
+        return (data.currentMs - data.displayRpmUpdatePreviousMs > data.displayRpmUpdateIntervalMs);
+    }
+
+    // Handle output to display for rpm graph only
+    void rpmOutput(Data& data) {
+        if (data.engineRpm != data.engineRpmDisplayed) {
+            display.rpm(data.engineRpm);
+            data.engineRpmDisplayed = data.engineRpm;
+        }
+        data.displayRpmUpdatePreviousMs = data.currentMs;
+    }
+
     // Handle output to display based on current data and button state
-    void output(Data& data, Button& button, DHT dht) {
+    void mainOutput(Data& data, Button& button, DHT dht) {
         
         // Draw background if needed
         if (data.backgroundRedraw) {
@@ -155,6 +168,7 @@ public:
         display.outputNow();
         // Update last update time and reset update flag
         data.displayUpdatePreviousMs = data.currentMs;
+        data.displayRpmUpdatePreviousMs = data.currentMs;
         data.displayUpdateNeeded = false;
     };
 };
