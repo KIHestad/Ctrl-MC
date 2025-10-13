@@ -37,7 +37,7 @@ class Data {
         unsigned int engineRpmDanger = 8500;
         unsigned int engineRpm = 0; // Current RPM value, to be set from sensor in future
         unsigned int engineRpmDisplayed = -1; // Last RPM value displayed, to check if RPM changed and needs update on display
-        static const int rpmFactor = 2; // Factor to multiply the rpm reading from sensor, actual enginge rotations per sensor reading = cable rotations
+        static const int rpmFactor = 4; // Factor to multiply the rpm reading from sensor, actual enginge rotations per sensor reading = cable rotations
         const float rpmMicrosToMinutes = 60000000.0; // Factor to convert rpm from microseconds per rotation
         static const int pulseRpmReadingsCount = 5; // Buffer size for rpm readings
         const unsigned long zeroRpmTimeoutMs = 500; // 1000 = 1 seconds, if no pulse is received for this duration (in milliseconds), set rpm to 0.
@@ -45,8 +45,6 @@ class Data {
         volatile int currentPulseRpmIndex = 0;
         volatile unsigned long lastPulseRpmTimeMicros = 0; // Time of last pulse in microseconds, used to calculate pulseIntervalMicros on next pulse
         bool rpmRotationDetected = false; // Set when engine rotation is detected, reset when processed, used to avoid setting rpm if no new pulse is received
-        unsigned int rpmRotations = 0; // Count of rpm rotations, for debugging
-        unsigned int currentRpmRotations = 0; // Count of rpm rotations currently processed
 
         // Speed calculations
         const float wheelCircumference = 214.6; // Wheel circumference in cm

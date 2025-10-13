@@ -32,7 +32,6 @@ void IRAM_ATTR readRpmSensor() {
     data.currentPulseRpmIndex = (data.currentPulseRpmIndex + 1) % data.pulseRpmReadingsCount;
     // Set flag that wheel rotation was detected + count rotation
     data.rpmRotationDetected = true;
-    data.rpmRotations++;
 };
 
 void interruptsInit() {

@@ -12,8 +12,6 @@ class RpmSensor {
             if (data.rpmRotationDetected) {
                 // Rpm rotation detected, disable interrupts while processing to avoid conflicts
                 noInterrupts();
-                data.currentRpmRotations = data.rpmRotations;
-                data.rpmRotations = 0;
                 data.rpmRotationDetected = false;
                 float sum = 0.0;
                 int validReadings = 0;
