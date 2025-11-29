@@ -1,8 +1,8 @@
 ![Ctrl-MC logo](https://hestad.no/img/ctrl-mc/Ctrl-MC-LogoText-White_Blue-BG_ver1.png)
 
-# Arduino Motorcycle Controller Software - PROTOTYPE 2
+# Arduino Motorcycle Controller Software - PROTOTYPE 2_STM32s
 
-This is the second prototype from September 2025, for use with ESP32 WROOM 32 dev board. 
+This is the second prototype from September 2025, but with modofocations Oct 2025 so it fits for STM32 dev board. 
 It is just for testing how to create a speedomenter and tachometer (rpm counter) using different kind of sensors.
 
 Check here for more info: https://youtu.be/J_AsExU7qkA?si=yqhxXnDfag6Xr95b
