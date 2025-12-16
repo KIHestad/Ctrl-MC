@@ -6,7 +6,7 @@ class Data {
     public:
 
         // Main properties - STM32G431CB pin assignments
-        static const int pinButton = PB11; // Pin for button input
+        static const int pinButton = PC13; // Pin for button input, this is built in button on WeAct Studio dev board, set with INPUT_PULLDOWN in Button class
         static const int pinDhtSensor = PA11; // Pin for DHT22 sensor input  
         static const int pinWheelSensor = PA12; // Pin for wheel sensor input
         static const int pinRpmSensor = PA15; // Pin for rpm sensor input

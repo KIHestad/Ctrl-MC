@@ -29,9 +29,9 @@ private:
 
 public:
     // Constructor: Initializes the button on the specified pin.
-    Button(uint8_t pin) {
+    Button(int pin) {
         _pin = pin;
-        pinMode(_pin, INPUT_PULLUP); // Use internal pull-up resistor
+        pinMode(_pin, INPUT_PULLDOWN); // Use internal pull-up resistor
     }
 
     // Read the button state and update internal flags.
