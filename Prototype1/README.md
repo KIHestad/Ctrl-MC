@@ -2,10 +2,11 @@
 
 # Arduino Motorcycle Controller Software - PROTOTYPE 1
 
-This is the first prototype from October 2021. It was based on two units: Relay Unit + Display Unit, with serial communication in between.
+This is the first prototype from October 2021. It was based on two units: Relay Unit + Display Unit, with serial communication in between. It was never made any custom PCB for this version, it was mostly about learning and testing development boards.
 
 Check here for more info: https://youtu.be/3W9Y04q-X2k?si=rUN0Ap0xaVJPVOeV
 
 This approch was abondoned in 2025 in favor of making it more flexible and by using canbus several units can be attached.
 
 The new plan was explained here: https://youtu.be/J_AsExU7qkA?si=yqhxXnDfag6Xr95b
+

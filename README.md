@@ -1,6 +1,6 @@
 ![Ctrl-MC logo](https://hestad.no/img/ctrl-mc/Ctrl-MC-LogoText-White_Blue-BG_ver1.png)
 
-# Arduino Motorcycle Controller Software
+# Motorcycle Control System Software
 
 This project is created by Ki Hestad: https://youtube.com/kihestad
 
@@ -12,10 +12,10 @@ Do you want to support this project? It's easy, just [click here to subscribe to
 
 This project is in early stages, the idea is to:
 
-* Create an Arduino based motorcycle electronic unit for controlling electrical components for 'classic' (=older) motorcycles
+* Create an motorcycle control system based on microcontrollers and cabbus to simplify and improve the wiring harness with possibility to add modern features for 'classic' (=older) motorcycles
   * The main goal is to make a intuitive and reliable system for wiring up a morocycles lights and instruments 
   * The project do not in the first phases aim to replace or modify the motorcycle engine ignition system, but maybe later?
-* Provide software and instructions free of charge
+* Provide software, schematics and instructions free of charge
 * Create a community for motorcycle- and Arduino enthusiasts that want to contribute
 * Make the solution universal and configurable, it should be suitable for as many motorcycle brands and models as possible
 
@@ -34,13 +34,15 @@ Some of the benefits the system (hopefully) will give:
   * OLED display instead of traditional speedometer, tachometer and warning lights
   * Smart functions, ex: auto turn off indicator lights, not possible to trigger start motor when engine is running
   * Alarm if bike is moved
-* Use standard components compatible with Arduino / ESP32 chip
+* Use standard components
 * Provide a budget friendly solution as an alternative to expensive commercial products
 
 ## Dev environment info
 
-The software is developed using Visual Studio Code with PlatformIO
-The programming language is C++
+The software is developed using Visual Studio Code
+The first prototypes (1 and 2) are using Platform IO, Arduino framework and C++ language
+* Prototype 1 was a first attempt having a display unit and a relay unit using serial communication to send data in between
+* Prototype 2 was a standalone display uninit for testing use of hall sensor for speedometer and IT sensor for rpm meter, one version using ESP32 was made for KI Hestad's Cagiva 750 Elefant, a second version was ported to STM32 microcontroller
 
 ## Other info
 
