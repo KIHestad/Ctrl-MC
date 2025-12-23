@@ -42,7 +42,7 @@ Some of the benefits the system (hopefully) will give:
 The software is developed using Visual Studio Code
 The first prototypes (1 and 2) are using Platform IO, Arduino framework and C++ language
 * Prototype 1 was a first attempt having a display unit and a relay unit using serial communication to send data in between
-* Prototype 2 was a standalone display uninit for testing use of hall sensor for speedometer and IT sensor for rpm meter, one version using ESP32 was made for KI Hestad's Cagiva 750 Elefant, a second version was ported to STM32 microcontroller
+* Prototype 2 was a standalone display unit for testing use of hall sensor for speedometer and IT sensor for rpm meter, one version using ESP32 was made for KI Hestad's Cagiva 750 Elefant, a second version was ported to STM32 microcontroller
 
 ## Other info
 
