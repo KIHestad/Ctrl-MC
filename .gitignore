@@ -3,13 +3,15 @@
 Thumbs.db
 desktop.ini
 
-# PlatformIO specific
-.pio/
+# VS Code / PlatformIO specific
 .vscode/
+.history/
+.pio/
 .platformio/
 *.elf
 *.bin
 *.hex
+*.code-workspace
 
 # Arduino specific
 *.ino.*
@@ -18,11 +20,24 @@ desktop.ini
 *.d
 *.o
 
+# --- STM32CubeIDE / Eclipse Metadata ---
+.settings/
+.metadata/
+RemoteSystemsTempFiles/
+.DS_Store
+*.launch
+
 # Build artifacts
+Debug/
+Release/
+build/
+bin/
+obj/
 *.a
 *.out
 *.map
 *.lst
+*.list
 *.srec
 *.sym
 *.lss
@@ -34,8 +49,8 @@ desktop.ini
 *.swp
 *.swo
 
-# Backup files
-*.zip
-*.tar.gz
-*.rar
+# Backup files, to be included
+#*.zip
+#*.tar.gz
+#*.rar
 
