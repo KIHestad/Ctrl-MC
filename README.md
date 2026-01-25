@@ -12,9 +12,9 @@ Do you want to support this project? It's easy, just [click here to subscribe to
 
 This project is in early stages, the idea is to:
 
-* Create an motorcycle control system based on microcontrollers and cabbus to simplify and improve the wiring harness with possibility to add modern features for 'classic' (=older) motorcycles
-  * The main goal is to make a intuitive and reliable system for wiring up a morocycles lights and instruments 
-  * The project do not in the first phases aim to replace or modify the motorcycle engine ignition system, but maybe later?
+* Create a motorcycle control system based on microcontrollers and canbus to simplify and improve the wiring harness with possibility to add modern features for 'classic' (=older) motorcycles
+  * The main goal is to make an intuitive and reliable system for wiring up a motorcycles lights and instruments 
+  * The project does not in the first phases aim to replace or modify the motorcycle engine ignition system, but maybe later?
 * Provide software, schematics and instructions free of charge
 * Create a community for motorcycle- and Arduino enthusiasts that want to contribute
 * Make the solution universal and configurable, it should be suitable for as many motorcycle brands and models as possible
@@ -25,7 +25,7 @@ Long term goals, depending on the success of the project:
 
 Some of the benefits the system (hopefully) will give:
 
-* Reliability: Individial solid state relays with inbuilt automatic fuses controls 12V to the bikes electrical components
+* Reliability: Individual solid state relays with inbuilt automatic fuses controls 12V to the bikes electrical components
 * Simplify wiring: Single cable per component, separat wiring for input controls on handlebar and output power to components
 * Providing customization: Setting parameters to enable features and how they should work
 * Gives posibility to improve or add new features to the motorcycle (optional): 
