@@ -2,7 +2,7 @@
 
 # Motorcycle Wiring Simulator
 
-The Motorcycle Wiring Simulator is a PCB to be used as when developing and testing motorcycle wiring solutions. The schematics and PCB layout can be found in the zipped file in this folder. It's an achived KiCad project (version 9.0.5).
+The Motorcycle Wiring Simulator is a PCB to be used for developing and testing motorcycle wiring solutions. The schematics and PCB layout can be found in the zipped file in this folder. It's an achived KiCad project (version 9.0.5).
 
 Version 1.0 is shown in the video referenced below. The included file is however version 1.1 and it has some minor improvements:
 
