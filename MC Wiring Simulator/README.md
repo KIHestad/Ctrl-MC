@@ -13,9 +13,9 @@ Version 1.0 is shown in the video referenced below. The included file is however
 
 Be aware that version 1.1 is not tested, if ordering a PCB based on this project remember to check it first.
 
-Check the YouTube video "I Turned a Motorcycle Into a Circuit Board" for more info and for a demo of version 1.0system:
+Check the YouTube video "I Turned a Motorcycle Into a Circuit Board" for more info and for a demo of version 1.0:
 
 * https://youtu.be/JKvbBq6Y1_M?si=p860frQD5cO-tTMq
 
-Version 1.1 loolks like this:
+Version 1.1 looks like this:
 ![MC Wiring Simulator](./3drender_ver1-1.png)
