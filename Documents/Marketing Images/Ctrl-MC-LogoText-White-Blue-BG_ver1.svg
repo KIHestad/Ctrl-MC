@@ -6,7 +6,10 @@
    version="1.1"
    id="svg8"
    inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
-   sodipodi:docname="Ctrl-MC-LogoText_ver1.svg"
+   sodipodi:docname="Ctrl-MC-LogoText-White-Blue-BG_ver1.svg"
+   inkscape:export-filename="Ctrl-MC-LogoText-White-Blue-BG_ver1.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -27,7 +30,7 @@
      inkscape:cx="1062.7914"
      inkscape:cy="-1.0141139"
      inkscape:document-units="mm"
-     inkscape:current-layer="g1482"
+     inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="false"
      units="px"
@@ -64,42 +67,52 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <rect
+       style="fill:#006cff;stroke:none;stroke-width:1.5703;stroke-linecap:round;fill-opacity:1"
+       id="rect1"
+       width="198.73883"
+       height="68.157227"
+       x="106.19952"
+       y="24.333597"
+       transform="matrix(2.5273905,0,0,2.5273905,-268.40767,-61.500504)"
+       inkscape:label="BG" />
     <g
        id="g1482"
        transform="matrix(2.5273905,0,0,2.5273905,-268.40767,-61.500504)"
-       style="fill:#000000">
+       style="fill:#000000"
+       inkscape:label="TEXT">
       <path
-         style="fill:#000000;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         style="fill:#ffffff;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
          d="m 261.10707,40.497293 v 35.718749 h 22.48959 V 61.663959 h -6.61459 v 7.9375 h -9.26041 V 47.111876 h 9.26041 v 7.9375 h 6.61459 V 40.497293 Z"
          id="path835-0"
          sodipodi:nodetypes="ccccccccccccc"
          inkscape:label="C" />
       <path
-         style="fill:#000000;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         style="fill:#ffffff;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
          d="M 255.55081,76.216042 V 40.497293 h -6.61458 l -5.29167,10.583333 -5.29166,-10.583333 h -6.61458 l -10e-6,35.71875 h 6.61459 v -23.8125 l 5.29166,10.583333 5.29167,-10.583333 v 23.8125 z"
          id="path863"
          sodipodi:nodetypes="ccccccccccccc"
          inkscape:label="M" />
       <path
-         style="fill:#000000;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         style="fill:#ffffff;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
          d="m 200.85306,45.69106 v 30.524982 l 17.09399,10e-7 V 70.111046 H 206.95806 V 45.69106 Z"
          id="path841"
          sodipodi:nodetypes="ccccccc"
          inkscape:label="L" />
       <path
-         style="fill:#000000;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         style="fill:#ffffff;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
          d="m 175.45627,45.69106 v 30.524982 h 6.10501 V 51.796056 h 8.54699 v 6.104998 h -6.105 v 4.883996 l 7.326,13.430993 h 6.10499 L 190.10827,62.78505 h 6.105 V 45.69106 Z"
          id="path839"
          sodipodi:nodetypes="cccccccccccccc"
          inkscape:label="R" />
       <path
-         style="fill:#000000;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         style="fill:#ffffff;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
          d="m 152.50149,45.69106 v 6.104996 h 6.10499 v 24.419986 h 6.10501 V 51.796056 h 6.10499 V 45.69106 Z"
          id="path837"
          sodipodi:nodetypes="ccccccccc"
          inkscape:label="T" />
       <path
-         style="fill:#000000;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         style="fill:#ffffff;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
          d="m 125.8223,40.497292 v 35.71875 h 22.48959 V 61.663959 h -6.61459 v 7.9375 h -9.26041 V 47.111876 h 9.26041 v 7.9375 h 6.61459 V 40.497292 Z"
          id="path835"
          sodipodi:nodetypes="ccccccccccccc"

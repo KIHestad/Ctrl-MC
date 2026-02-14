@@ -1,4 +1,4 @@
-![Ctrl-MC logo](https://hestad.no/img/ctrl-mc/Ctrl-MC-LogoText-White_Blue-BG_ver1.png)
+![Ctrl MC logo](https://hestad.no/img/ctrl-mc/Ctrl-MC-LogoText-White_Blue-BG_ver1.png)
 
 # Arduino Motorcycle Controller Software - PROTOTYPE 1
 

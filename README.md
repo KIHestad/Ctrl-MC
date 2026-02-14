@@ -1,16 +1,17 @@
 ![Ctrl-MC logo](https://hestad.no/img/ctrl-mc/Ctrl-MC-LogoText-White_Blue-BG_ver1.png)
 
-# Motorcycle Control System Software
+# Motorcycle Control System
 
-This project is created by Ki Hestad: https://youtube.com/kihestad
+Ctrl MC (pronounced: "Control MC") is a system currently in development for simplifying and modernizing the wiring for motorcycles.
 
-Do you want to contribute? Please join the projects Discord channel: [https://discord.gg/p5pfdZxfS8](https://discord.gg/p5pfdZxfS8)
+The project is being devloped by Ki Hestad: https://youtube.com/kihestad.
+For updated information about the project check the YouTube channel and feel free to participate with idead or feedback for the projects Discord channel: [https://discord.gg/p5pfdZxfS8](https://discord.gg/p5pfdZxfS8)
 
-Do you want to support this project? It's easy, just [click here to subscribe to my YouTube channel](https://youtube.com/kihestad/?sub_confirmation=1)!!!
+Do you want to support this project? It's easy, just [click here to subscribe to the YouTube channel](https://youtube.com/kihestad/?sub_confirmation=1)!!!
 
 ## Project Description
 
-This project is in early stages, the idea is to:
+This project is still in early stages, the idea is to:
 
 * Create a motorcycle control system based on microcontrollers and canbus to simplify and improve the wiring harness with possibility to add modern features for 'classic' (=older) motorcycles
   * The main goal is to make an intuitive and reliable system for wiring up a motorcycles lights and instruments 
@@ -37,12 +38,13 @@ Some of the benefits the system (hopefully) will give:
 * Use standard components
 * Provide a budget friendly solution as an alternative to expensive commercial products
 
-## Dev environment info
+## Development information
 
-The software is developed using Visual Studio Code
-The first prototypes (1 and 2) are using Platform IO, Arduino framework and C++ language
+The software is developed using Visual Studio Code. The first prototypes where using are using Platform IO, Arduino framework and C++ language. The latest prototype is using STM32CubeIDE and C language. The software is open source and available in this GitHub repository.
 * Prototype 1 was a first attempt having a display unit and a relay unit using serial communication to send data in between
 * Prototype 2 was a standalone display unit for testing use of hall sensor for speedometer and IT sensor for rpm meter, one version using ESP32 was made for KI Hestad's Cagiva 750 Elefant, a second version was ported to STM32 microcontroller
+* Prototype 3 is a simple canbus communication test using STM32 microcontroller, this is not to be used in further development but just for testing the canbus communication
+* MC Wiring Simulator is a PCB designed as a supportng tool for testing and developing purposes. 
 
 ## Other info
 
