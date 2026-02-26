@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "app_logic.h"
+#include "led_controller.h"
 
 /* USER CODE END Includes */
 
@@ -101,13 +102,15 @@ int main(void)
   MX_ADC1_Init();
   MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
-
+  app_init();
+  led_blink_multiple(5, 100, 100); // Blink 5 times fast on init to indicate startup success
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    app_process();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
