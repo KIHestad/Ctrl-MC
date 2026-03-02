@@ -12,5 +12,9 @@ The code is built using VS Code with the STM32 extensions. The setup is explaine
 
 The schematics and PCB layout for the custom PCB module can be found in the zipped file `KiCad_Schematics_SmartSwitchesModule.zip`, this is a achived KiCad project (version 9.0.5).
 
-A YouTube video for demo of the system is in the making.
+Here is the link to the YouTube video explaining it all:
+
+* [Uprade Your Motorcycle using Smart High-Side Switches](https://youtu.be/tBPsuoETR0Y?si=mi2s_HrKnGi2g0Y8)
+
+
 
