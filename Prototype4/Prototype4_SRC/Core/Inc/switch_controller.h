@@ -9,8 +9,11 @@ void switch_controller_init(void);
 
 // Power Control
 void switch_turn_on(uint8_t channel);
+void switch_turn_on_blink(uint8_t channel);
 void switch_turn_off(uint8_t channel);
 void switch_toggle(uint8_t channel);
+bool is_button_off(uint8_t channel);
+void switch_controller_process(void);
 
 // Diagnostic Control (Current Sense via IS pin)
 // Handles the DEN (Diagnostic Enable) and DSEL (Diagnostic Select) pins
