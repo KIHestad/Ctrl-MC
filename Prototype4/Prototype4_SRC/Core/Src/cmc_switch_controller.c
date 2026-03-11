@@ -1,4 +1,4 @@
-#include "switch_controller.h"
+#include "cmc_switch_controller.h"
 
 #define SWITCH_CHANNEL_MIN         1U
 #define SWITCH_CHANNEL_MAX         6U

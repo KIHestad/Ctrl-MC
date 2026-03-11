@@ -59,7 +59,6 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define BTN_DEV_BOARD_Pin GPIO_PIN_13
 #define BTN_DEV_BOARD_GPIO_Port GPIOC
-#define BTN_DEV_BOARD_EXTI_IRQn EXTI15_10_IRQn
 #define SW1_IN_Pin GPIO_PIN_0
 #define SW1_IN_GPIO_Port GPIOA
 #define SW1_DEN_Pin GPIO_PIN_1
@@ -100,7 +99,9 @@ void Error_Handler(void);
 #define BTN_10_GPIO_Port GPIOA
 #define BTN_9_Pin GPIO_PIN_9
 #define BTN_9_GPIO_Port GPIOA
-#define BTN_8_Pin GPIO_PIN_10
+#define FDCAN1_WAKE_UP_Pin GPIO_PIN_10
+#define FDCAN1_WAKE_UP_GPIO_Port GPIOA
+#define BTN_8_Pin GPIO_PIN_15
 #define BTN_8_GPIO_Port GPIOA
 #define BTN_7_Pin GPIO_PIN_10
 #define BTN_7_GPIO_Port GPIOC

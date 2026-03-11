@@ -21,8 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "app_logic.h"
-#include "led_controller.h"
+#include "cmc_app_logic.h"
+#include "cmc_led_controller.h"
 
 /* USER CODE END Includes */
 
@@ -441,11 +441,23 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : BTN_10_Pin BTN_9_Pin BTN_8_Pin */
-  GPIO_InitStruct.Pin = BTN_10_Pin|BTN_9_Pin|BTN_8_Pin;
+  /*Configure GPIO pins : BTN_10_Pin BTN_9_Pin */
+  GPIO_InitStruct.Pin = BTN_10_Pin|BTN_9_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : FDCAN1_WAKE_UP_Pin */
+  GPIO_InitStruct.Pin = FDCAN1_WAKE_UP_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(FDCAN1_WAKE_UP_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : BTN_8_Pin */
+  GPIO_InitStruct.Pin = BTN_8_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(BTN_8_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : BTN_7_Pin */
   GPIO_InitStruct.Pin = BTN_7_Pin;
@@ -460,10 +472,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 1, 0);
-  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 

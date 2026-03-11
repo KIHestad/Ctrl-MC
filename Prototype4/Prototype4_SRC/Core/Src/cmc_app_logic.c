@@ -1,8 +1,8 @@
-#include "app_logic.h"
-#include "button_handler.h"
-#include "led_controller.h"
+#include "cmc_app_logic.h"
+#include "cmc_button_handler.h"
+#include "cmc_led_controller.h"
+#include "cmc_switch_controller.h"
 #include "stm32g4xx_hal.h"
-#include "switch_controller.h"
 
 void app_init(void) {
     switch_controller_init();
