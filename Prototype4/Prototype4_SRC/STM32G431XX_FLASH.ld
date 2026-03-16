@@ -55,8 +55,9 @@ ENTRY(Reset_Handler)
 /* Specify the memory areas */
 MEMORY
 {
-RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 32K
-FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 128K
+  RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 32K
+  FLASH (rx)     : ORIGIN = 0x08000000, LENGTH = 126K /* Reduced from 128K */
+  CONFIG (r)     : ORIGIN = 0x0801F800, LENGTH = 2K   /* New protected area */
 }
 
 /* Highest address of the user mode stack */
