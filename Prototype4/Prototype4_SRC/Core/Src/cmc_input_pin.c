@@ -1,4 +1,4 @@
-#include "cmc_button_handler.h"
+#include "cmc_input_pin.h"
 
 typedef struct {
     GPIO_TypeDef* port;
@@ -7,10 +7,10 @@ typedef struct {
     bool is_pressed;
     uint32_t last_debounce_time;
     bool click_event_pending;
-} Button_t;
+} button_t;
 
 // Map the buttons 1-10 to array indices 0-9 based on your main.h
-static Button_t buttons[NUM_BUTTONS] = {
+static button_t buttons[NUM_BUTTONS] = {
     {BTN_1_GPIO_Port, BTN_1_Pin, GPIO_PIN_SET, false, 0, false},
     {BTN_2_GPIO_Port, BTN_2_Pin, GPIO_PIN_SET, false, 0, false},
     {BTN_3_GPIO_Port, BTN_3_Pin, GPIO_PIN_SET, false, 0, false},
@@ -23,11 +23,11 @@ static Button_t buttons[NUM_BUTTONS] = {
     {BTN_10_GPIO_Port, BTN_10_Pin, GPIO_PIN_SET, false, 0, false}
 };
 
-void button_handler_init(void) {
+void cmc_input_pin_init(void) {
     // Initialization handled by struct definition, code for reinitialize button state at runtime can be added here if needed
 }
 
-void button_handler_process(void) {
+void cmc_input_pin_handler(void) {
     uint32_t current_time = HAL_GetTick();
 
     for (uint8_t i = 0; i < NUM_BUTTONS; i++) {
@@ -56,12 +56,12 @@ void button_handler_process(void) {
     }
 }
 
-bool is_button_clicked(uint8_t button_number) {
+bool cmc_input_pin_button_clicked(uint8_t button_number) {
     if (button_number < 1 || button_number > NUM_BUTTONS) return false;
     return buttons[button_number - 1].click_event_pending;
 }
 
-void click_event_done(uint8_t button_number) {
+void cmc_input_pin_click_event_done(uint8_t button_number) {
     if (button_number >= 1 && button_number <= NUM_BUTTONS) {
         buttons[button_number - 1].click_event_pending = false;
     }

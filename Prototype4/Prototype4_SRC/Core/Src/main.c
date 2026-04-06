@@ -21,8 +21,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+
 #include "cmc_app_logic.h"
-#include "cmc_led_controller.h"
+#include "cmc_output_onboard_led.h"
 
 /* USER CODE END Includes */
 
@@ -101,16 +102,21 @@ int main(void)
   MX_FDCAN1_Init();
   MX_ADC1_Init();
   MX_ADC2_Init();
+  
   /* USER CODE BEGIN 2 */
-  app_init();
-  led_blink_multiple(5, 100, 100); // Blink 5 times fast on init to indicate startup success
+  
+  cmc_app_init();
+  cmc_output_onboard_led_blink_multiple(5,950,50); // LED on for 5 seconds, barely blinking to indicate all good
+  
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    app_process();
+    
+    cmc_app_process(); // Start main application logic loop
+    
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

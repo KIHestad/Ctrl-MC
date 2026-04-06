@@ -1,5 +1,5 @@
-#ifndef SWITCH_CONTROLLER_H
-#define SWITCH_CONTROLLER_H
+#ifndef CMC_OUTPUT_SWITCH_H
+#define CMC_OUTPUT_SWITCH_H
 
 #include "main.h"
 #include <stdbool.h>
@@ -20,4 +20,4 @@ void switch_controller_process(void);
 void switch_enable_diagnostic(uint8_t channel);
 void switch_disable_all_diagnostics(void);
 
-#endif /* SWITCH_CONTROLLER_H */
+#endif /* CMC_OUTPUT_SWITCH_H */

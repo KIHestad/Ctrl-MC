@@ -1,18 +1,34 @@
 #ifndef CMC_CONFIG_TYPE_H_
 #define CMC_CONFIG_TYPE_H_
 
+#include <stm32g4xx.h>
 #include <stdint.h>
 #include <stdbool.h>
+
+/* ==================================================================================
+ * HW CONFIGURATION STRUCTURES
+ * ================================================================================== */
+
+/* --- Generic Pin Structure --- */
+typedef struct {
+    GPIO_TypeDef* port;
+    uint16_t      pin;
+} cmc_config_hw_pin_t;
+
+// TODO: Consider if this makes sense
+/* --- Switches (Infineon PROFET) Channel Structure --- */
+// typedef struct {
+//     hw_pin_t in_pin;      // The IN or INx pin to turn the load on
+//     hw_pin_t den_pin;     // Shared Diagnosis Enable pin
+//     hw_pin_t is_pin;      // Shared Current Sense ADC pin
+//     hw_pin_t dsel_pin;    // Diagnosis Select pin (NULL/0 if 1-channel)
+//     bool     has_dsel;    // True if this is part of a 2-channel switch
+// } switch_ch_t;
 
 /* ==================================================================================
  * SYSTEM SETTINGS & LIMITS
  * ================================================================================== */
 #define CMC_CONFIG_SIGNATURE        0x4354524C  // Identifies if valid config exists
-#define CMC_MAX_SUPPORTED_IO_UNITS  4           // Max number of Ctrl MC I/O-units in the system (eg: Front, Rear, Entertainment, etc)
-#define CMC_MAX_SUPPORTED_RULES     64          // Max number of rules for controlling the outputs (eg: turn on light when ignition is on and light switch is on)
-#define CMC_MAX_INPUTS_D            10          // Max physical digital buttons/sensors
-#define CMC_MAX_INPUTS_A            2           // Max physical analog sensors
-#define CMC_MAX_OUTPUTS             6           // Max Infineon PROFET/SPOC channels
 
 /* ==================================================================================
  * SUPPORTED EQUIPMENT = TO BE CONNECTED TO OUTPUT +12V CHANNELS
@@ -45,7 +61,7 @@ typedef enum {
 
 // The final configuration for each output channel, linking the physical channel to the equipment it's controlling
 typedef struct {
-    uint8_t channel; // Which output channel on Infineon PROFET/SPOC switch is this equipment connected to? (1 to CMC_MAX_OUTPUTS)
+    uint8_t enabled; // Set is channel is used or not, if set false the system will ignore the channel and not try to control it
     uint8_t equipment_id; // Maps to cmc_equipment_t, what pin is connected to (eg: coil, starter, light, horn, etc)
     uint8_t reserved[2]; // Reserved to explicitly make it 4 bytes.
 } cmc_output_config_t;
@@ -88,7 +104,7 @@ typedef enum {
 
 // The final configuration for each input pin, linking the physical pin to the button/sensor it's connected to and how it should be interpreted
 typedef struct {
-    uint8_t pin; // Which physical input pin is this button/sensor connected to? (1 to CMC_MAX_INPUTS_D for digital, 1 to CMC_MAX_INPUTS_A for analog)
+    uint8_t enabled; // Set if the input is used or not, if set false the system will ignore the input and not try to read it
     uint8_t input_id; // Maps to cmc_input_t, what button/sensor is connected to (eg: ignition, clutch lever, light switch, etc)
     uint8_t button_type; // Maps to cmc_button_t, how should the system interpret the button presses? (eg: classic, toggle, ignore)
     uint8_t reserved; // Reserved to explicitly make it 4 bytes.
@@ -133,9 +149,8 @@ typedef struct {
     uint8_t output_channels_used; // How many output channels are used? (1 to CMC_MAX_OUTPUTS)
     uint8_t input_digital_pins_used; // How many digital input pins are used? (1 to CMC_MAX_INPUTS_D)
     uint8_t input_analog_pins_used; // How many analog input pins are used? (1 to CMC_MAX_INPUTS_A)
-    cmc_output_config_t output_equipment[CMC_MAX_OUTPUTS]; // What equipment is connected to each output channel?
-    cmc_input_config_t input_digital[CMC_MAX_INPUTS_D]; // What button/sensor is connected to each digital input pin?
-    cmc_input_config_t input_analog[CMC_MAX_INPUTS_A]; // What button/sensor is connected to each analog input pin?
+    cmc_output_config_t output_equipment[6]; // The equipment connected to each output channel, maps to cmc_equipment_t
+    cmc_input_config_t input_digital[10]; // The buttons/sensors connected to each digital input pin, maps to cmc_input_
 } cmc_io_unit_config_t;
 
 /* ====================================================================
@@ -147,8 +162,8 @@ typedef struct {
     uint8_t  active_unit_count;  // Number of active I/O units in the system, to tell the loops when to stop. Should be less than or equal to CMC_MAX_SUPPORTED_IO_UNITS
     uint8_t  active_rule_count;  // Number of active rules in the system, to tell the loops when to stop. Should be less than or equal to CMC_MAX_SUPPORTED_RULES
     uint8_t  reserved[2];        // Pad to 4 bytes
-    cmc_io_unit_config_t io_unit[CMC_MAX_SUPPORTED_IO_UNITS]; // Info about each Ctrl MC unit in the system (eg: Front, Rear, Entertainment, etc)
-    cmc_rule_t rule[CMC_MAX_SUPPORTED_RULES]; // What are the rules for controlling each output channel?
+    cmc_io_unit_config_t io_unit[4]; // Configuration for each I/O unit in the system, should be less than or equal to CMC_MAX_SUPPORTED_IO_UNITS
+    cmc_rule_t rule[64]; // The rules for controlling the outputs based on the inputs, should be less than or equal to CMC_MAX_SUPPORTED_RULES
 } cmc_global_config_t;
 
 /* ====================================================================

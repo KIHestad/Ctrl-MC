@@ -20,78 +20,78 @@ const cmc_global_config_t firmware_default_config = {
         
         // Output Channel Mapping
         .output_equipment[0] = {
-            .channel      = 1,              
+            .equipment_id = 1,
             .equipment_id = CMC_EQP_HORN
         },
         .output_equipment[1] = {
-            .channel      = 2,              
+            .equipment_id = 1,
             .equipment_id = CMC_EQP_TURN_LEFT
         },
         .output_equipment[2] = {
-            .channel      = 3,              
+            .equipment_id = 1,
             .equipment_id = CMC_EQP_LIGHT_PARK
         },
         .output_equipment[3] = {
-            .channel      = 4,              
+            .equipment_id = 1,
             .equipment_id = CMC_EQP_TURN_RIGHT
         },
         .output_equipment[4] = {
-            .channel      = 5,              
+            .equipment_id = 1,
             .equipment_id = CMC_EQP_LIGHT_LOW_BEAM
         },
         .output_equipment[5] = {
-            .channel      = 6,              
+            .equipment_id = 1,
             .equipment_id = CMC_EQP_LIGHT_HIGH_BEAM
         },
         
         // Input Pin Mapping
         .input_digital[0] = {
-            .pin         = 1,               
+            .enabled     = 1,
             .input_id    = CMC_INP_TURN_LEFT,
             .button_type = CMC_BTN_TOGGLE
         },
         .input_digital[1] = {
-            .pin         = 2,               
+            .enabled     = 1,
             .input_id    = CMC_INP_TURN_RIGHT,
             .button_type = CMC_BTN_TOGGLE
         },
         .input_digital[2] = {
-            .pin         = 3,               
-            .input_id    = CMC_INP_LIGHTS_HIGH_BEAM,
+            .enabled     = 1,
+            .input_id    = CMC_INP_LIGHT_HIGH_BEAM,
             .button_type = CMC_BTN_TOGGLE
         },
         .input_digital[3] = {
-            .pin         = 4,               
+            .enabled     = 1,
             .input_id    = CMC_INP_HORN,
             .button_type = CMC_BTN_CLASSIC
         },
         .input_digital[4] = {
-            .pin         = 5,               
+            .enabled     = 1,
             .input_id    = CMC_INP_CLUTCH_LEVER,
             .button_type = CMC_BTN_CLASSIC
         },
         .input_digital[5] = {
-            .pin         = 6,               
+            .enabled     = 1,
             .input_id    = CMC_INP_BRAKE_LEVER,
             .button_type = CMC_BTN_CLASSIC
         },
         .input_digital[6] = {
-            .pin         = 7,               
+            .enabled     = 1,
             .input_id    = CMC_INP_STARTER,
             .button_type = CMC_BTN_CLASSIC
         },
         .input_digital[7] = {
-            .pin         = 8,               
+            .enabled     = 1,
             .input_id    = CMC_INP_LIGHTS_MAIN,
             .button_type = CMC_BTN_TOGGLE
         },
         .input_digital[8] = {
-            .pin         = 9,               
+            .enabled     = 1,
             .input_id    = CMC_INP_MENU_LEFT,
             .button_type = CMC_BTN_TOGGLE
         },
         .input_digital[9] = {
-            .pin         = 10,              
+            .enabled     = 1,
             .input_id    = CMC_INP_MENU_RIGHT,
             .button_type = CMC_BTN_TOGGLE
         },
@@ -107,48 +107,53 @@ const cmc_global_config_t firmware_default_config = {
         
         // Output Channel Mapping
         .output_equipment[0] = {
-            .channel      = 1,              
+            .enabled      = 1,
             .equipment_id = CMC_EQP_LIGHT_BRAKE
         },
         .output_equipment[1] = {
-            .channel      = 2,              
+            .enabled      = 1,
             .equipment_id = CMC_EQP_LIGHT_TAIL
         },
         .output_equipment[2] = {
-            .channel      = 3,              
+            .enabled      = 1,
             .equipment_id = CMC_EQP_TURN_LEFT
         },
         .output_equipment[3] = {
-            .channel      = 4,              
+            .enabled      = 1,
             .equipment_id = CMC_EQP_TURN_RIGHT
         },
         .output_equipment[4] = {
-            .channel      = 5,              
+            .enabled      = 1,
             .equipment_id = CMC_EQP_STARTER
         },
         .output_equipment[5] = {
-            .channel      = 6,              
+            .enabled      = 1,
             .equipment_id = CMC_EQP_INSTR_NEUTRAL
         },
         
         // Input Pin Mapping
         .input_digital[0] = {
-            .pin         = 1,               
+            .enabled     = 1,
             .input_id    = CMC_INP_NEUTRAL_SENSOR,
             .button_type = CMC_BTN_TOGGLE
         },
         .input_digital[1] = {
-            .pin         = 2,               
+            .enabled     = 1,
             .input_id    = CMC_INP_BRAKE_PEDAL,
             .button_type = CMC_BTN_CLASSIC
         },
         .input_digital[2] = {
-            .pin         = 3,               
+            .enabled     = 1,
+            .input_id    = CMC_INP_BRAKE_PEDAL,
+            .button_type = CMC_BTN_CLASSIC
+        },
+        .input_digital[2] = {
+            .enabled     = 1,
             .input_id    = CMC_INP_OIL_SENSOR,
             .button_type = CMC_BTN_TOGGLE
         },
         .input_digital[3] = {
-            .pin         = 4,               
+            .enabled     = 1,
             .input_id    = CMC_INP_WATER_TEMP_SENSOR,
             .button_type = CMC_BTN_TOGGLE
         }

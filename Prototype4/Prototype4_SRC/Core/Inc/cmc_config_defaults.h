@@ -7,7 +7,7 @@
  * PUBLIC FUNCTION PROTOTYPES
  * ==================================================================== */
 
-void CMC_ConfigDefaults_Load(void);
+void cmc_configdefaults_load(void);
 
 #endif /* CMC_CONFIG_DEFAULTS_H_ */
 

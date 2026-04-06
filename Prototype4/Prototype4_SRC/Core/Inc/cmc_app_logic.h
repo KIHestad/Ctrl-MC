@@ -1,7 +1,7 @@
-#ifndef APP_LOGIC_H
-#define APP_LOGIC_H
+#ifndef CMC_APP_LOGIC_H
+#define CMC_APP_LOGIC_H
 
-void app_init(void);
-void app_process(void);
+void cmc_app_init(void);
+void cmc_app_process(void);
 
-#endif /* APP_LOGIC_H */
+#endif /* CMC_APP_LOGIC_H */

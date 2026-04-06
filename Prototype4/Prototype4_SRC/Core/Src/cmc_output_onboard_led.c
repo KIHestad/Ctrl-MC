@@ -1,4 +1,4 @@
-#include "cmc_led_controller.h"
+#include "cmc_output_onboard_led.h"
 
 static bool is_blinking = false;
 static uint32_t turn_off_time = 0;
@@ -8,7 +8,7 @@ static uint32_t blinks_remaining = 0;
 static uint32_t blink_on_duration_ms = 0;
 static uint32_t blink_off_duration_ms = 0;
 
-void led_controller_init(void) {
+void cmc_output_onboard_led_init(void) {
     // Ensure LED starts turned off
     HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
     is_blinking = false;
@@ -19,7 +19,7 @@ void led_controller_init(void) {
     blink_off_duration_ms = 0;
 }
 
-void led_blink_once(uint32_t duration_ms) {
+void cmc_output_onboard_led_blink_once(uint32_t duration_ms) {
     HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET); // Turn ON
     turn_off_time = HAL_GetTick() + duration_ms;             // Calculate future off-time
     is_blinking = true;
@@ -28,7 +28,7 @@ void led_blink_once(uint32_t duration_ms) {
     next_transition_time = 0;
 }
 
-void led_blink_multiple(uint32_t numOfBlinks, uint32_t duration_on_ms, uint32_t duration_off_ms) {
+void cmc_output_onboard_led_blink_multiple(uint32_t numOfBlinks, uint32_t duration_on_ms, uint32_t duration_off_ms) {
     if ((numOfBlinks == 0U) || (duration_on_ms == 0U)) {
         HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
         is_blinking = false;
@@ -41,14 +41,13 @@ void led_blink_multiple(uint32_t numOfBlinks, uint32_t duration_on_ms, uint32_t 
 
     HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
     is_blinking = true;
-    led_is_on = true;
     blinks_remaining = numOfBlinks;
     blink_on_duration_ms = duration_on_ms;
     blink_off_duration_ms = duration_off_ms;
     next_transition_time = now + duration_on_ms;
 }
 
-void led_controller_process(void) {
+void cmc_output_onboard_led_process(void) {
     if (!is_blinking) {
         return;
     }
