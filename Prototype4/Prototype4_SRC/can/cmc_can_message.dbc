@@ -1,0 +1,80 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_:
+
+
+BO_ 100 HANDSHAKE: 16 Vector__XXX
+ SG_ hw_version_major : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ hw_version_minor : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ unit_id : 16|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ unit_type : 24|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ fw_version_major : 32|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ fw_version_minor : 40|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ gc_datetime : 48|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+ SG_ gc_hash : 80|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+
+BO_ 101 HEARTBEAT: 2 Vector__XXX
+ SG_ unit_id : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ system_state : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+
+
+
+CM_ BO_ 100 "Startup init to check ID and FW for all units, inititate reset or reconfig if needed";
+CM_ SG_ 100 hw_version_major "Hardware major version";
+CM_ SG_ 100 hw_version_minor "Hardware minor version";
+CM_ SG_ 100 unit_id "Unique ID, to be set automatically if reset to 0";
+CM_ SG_ 100 unit_type "Unit type";
+CM_ SG_ 100 fw_version_major "Firmware major version, should listed for compability to ensure units can be combined";
+CM_ SG_ 100 fw_version_minor "Firmware minor version, for info only";
+CM_ SG_ 100 gc_datetime "All global configs across all units must be the same, datetime is when the config was created/updated, if not the same across units or if missing, the most recent updated config is to be used and passed over to units with old config";
+CM_ SG_ 100 gc_hash "All global configs actross all units must be the same, this hash represent global config checksum";
+CM_ BO_ 101 "Poll on system frequently to identify missing units or mishaps";
+CM_ SG_ 101 unit_id "Unique ID for the source unit";
+CM_ SG_ 101 system_state "Report system state for taking action if not OK";
+BA_DEF_ BO_  "CANFD_BRS" ENUM  "0","1";
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 10000;
+BA_DEF_ BO_  "VFrameFormat" ENUM  "StandardCAN","ExtendedCAN","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","StandardCAN_FD","ExtendedCAN_FD";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_DEF_  "CANFD_BRS" "0";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "VFrameFormat" "StandardCAN";
+BA_DEF_DEF_  "BusType" "";
+BA_ "BusType" "CAN FD";
+BA_ "VFrameFormat" BO_ 100 14;
+BA_ "CANFD_BRS" BO_ 100 1;
+VAL_ 100 unit_type 0 "UNKNOWN" 1 "I/O UNIT" ;
+VAL_ 101 system_state 0 "UNKNOWN" 1 "OK" 2 "WARNING" 3 "FAULT" ;
+
