@@ -23,7 +23,6 @@
 /* USER CODE BEGIN Includes */
 
 #include "cmc_app_logic.h"
-#include "cmc_output_onboard_led.h"
 
 /* USER CODE END Includes */
 
@@ -106,8 +105,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   
   cmc_app_init();
-  cmc_output_onboard_led_blink_multiple(5,950,50); // LED on for 5 seconds, barely blinking to indicate all good
-  
+    
   /* USER CODE END 2 */
 
   /* Infinite loop */

@@ -4,7 +4,7 @@
 /* ====================================================================
  * FIRMWARE DEFAULT CONFIGURATION
  * ==================================================================== */
-const cmc_global_config_t firmware_default_config = {
+const cmc_config_t firmware_default_config = {
     .signature          = CMC_CONFIG_SIGNATURE,
     .global_config_hash = 0x00000000, // No hash yet, it's a raw default
     .active_unit_count  = 2,          // The total number of I/O units to be used for the system (e.g., front unit, rear unit, etc.)
@@ -178,9 +178,9 @@ const cmc_global_config_t firmware_default_config = {
 /* ====================================================================
  * PUBLIC INITIALIZATION FUNCTION
  * ==================================================================== */
-void CMC_ConfigDefaults_Load(void) {
+void cmc_config_defaults_load(void) {
     // Copy firmware default from ROM into active RAM
-    for (uint32_t i = 0; i < sizeof(cmc_global_config_t); i++) {
-        ((uint8_t*)&cmc_global_config)[i] = ((uint8_t*)&firmware_default_config)[i];
+    for (uint32_t i = 0; i < sizeof(cmc_config_t); i++) {
+        ((uint8_t*)&cmc_config)[i] = ((uint8_t*)&firmware_default_config)[i];
     }
 }

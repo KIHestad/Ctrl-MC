@@ -164,11 +164,11 @@ typedef struct {
     uint8_t  reserved[2];        // Pad to 4 bytes
     cmc_io_unit_config_t io_unit[4]; // Configuration for each I/O unit in the system, should be less than or equal to CMC_MAX_SUPPORTED_IO_UNITS
     cmc_rule_t rule[64]; // The rules for controlling the outputs based on the inputs, should be less than or equal to CMC_MAX_SUPPORTED_RULES
-} cmc_global_config_t;
+} cmc_config_t;
 
 /* ====================================================================
  * GLOBAL EXTERNAL DECLARATION
  * ==================================================================== */
-extern cmc_global_config_t cmc_global_config;
+extern cmc_config_t cmc_config;
 
 #endif /* CMC_CONFIG_TYPE_H_ */

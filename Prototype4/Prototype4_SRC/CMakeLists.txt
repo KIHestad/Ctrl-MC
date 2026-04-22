@@ -1,17 +1,11 @@
 cmake_minimum_required(VERSION 3.22)
-
-#
-# This file is generated only once,
-# and is not re-generated if converter is called multiple times.
-#
+# This file is generated only once, and is not re-generated if converter is called multiple times.
 # User is free to modify the file as much as necessary
-#
 
 # Setup compiler settings
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
-
 
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -34,17 +28,22 @@ enable_language(C ASM)
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
+# Add sources to executable
+target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+    ./Core/Src/cmc_app_logic.c
+    ./Core/Src/cmc_can_message.c
+    ./Core/Src/cmc_config_defaults.c
+    ./Core/Src/cmc_config_hw_mapping.c
+    ./Core/Src/cmc_config_manager.c
+    ./Core/Src/cmc_onboard_led.c
+)
+
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
 
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined library search paths
-)
-
-# Add sources to executable
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user sources here
 )
 
 # Add include paths

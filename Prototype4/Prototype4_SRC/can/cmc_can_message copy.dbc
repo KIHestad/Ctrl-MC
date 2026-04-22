@@ -57,6 +57,8 @@ BO_ 101 HEARTBEAT: 2 Vector__XXX
  SG_ unit_id : 0|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ system_state : 8|8@1+ (1,0) [0|255] "" Vector__XXX
 
+BO_ 500 NEW_SIGNAL_TESTING: 6 Vector__XXX
+
 
 VAL_ 100 unit_type 0 "UNKNOWN" 1 "I/O UNIT" ;
 VAL_ 101 system_state 0 "UNKNOWN" 1 "OK" 2 "WARNING" 3 "FAULT" ;
@@ -69,7 +71,7 @@ CM_ SG_ 100 unit_type "Unit type";
 CM_ SG_ 100 fw_version_major "Firmware major version, should listed for compability to ensure units can be combined";
 CM_ SG_ 100 fw_version_minor "Firmware minor version, for info only";
 CM_ SG_ 100 gc_datetime "All global configs across all units must be the same, datetime is when the config was created/updated, if not the same across units or if missing, the most recent updated config is to be used and passed over to units with old config";
-CM_ SG_ 100 gc_hash "All global configs across all units must be the same, this hash represent global config checksum";
+CM_ SG_ 100 gc_hash "All global configs actross all units must be the same, this hash represent global config checksum";
 CM_ BO_ 101 "Poll on system frequently to identify missing units or mishaps";
 CM_ SG_ 101 unit_id "Unique ID for the source unit";
 CM_ SG_ 101 system_state "Report system state for taking action if not OK";
