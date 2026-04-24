@@ -1,4 +1,12 @@
-#include "stm32g4xx_hal.h"
+/**
+  *********************************************************************************************
+  * @file      cmc_app_logic.c
+  * @brief     Application logic for initialization and processing loop
+  * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
+  * @copyright KI Hestad, Complicated Productions
+  *********************************************************************************************
+  */
+
 #include "cmc_app_logic.h"
 #include "cmc_onboard_led.h"
 

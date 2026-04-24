@@ -1,3 +1,12 @@
+/**
+  *********************************************************************************************
+  * @file      cmc_config_manager.h
+  * @brief     Configuration manager for handling loading, validating, and saving system configuration
+  * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
+  * @copyright KI Hestad, Complicated Productions
+  *********************************************************************************************
+  */
+
 #ifndef CMC_CONFIG_MANAGER_H_
 #define CMC_CONFIG_MANAGER_H_
 

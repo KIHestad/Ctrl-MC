@@ -1,3 +1,12 @@
+/**
+  *********************************************************************************************
+  * @file      cmc_onboard_led.h
+  * @brief     Onboard LED control for status indication
+  * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
+  * @copyright KI Hestad, Complicated Productions
+  *********************************************************************************************
+  */
+
 #ifndef cmc_onboard_LED_H
 #define cmc_onboard_LED_H
 

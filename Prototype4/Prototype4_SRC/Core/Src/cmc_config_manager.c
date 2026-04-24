@@ -1,3 +1,12 @@
+/**
+  *********************************************************************************************
+  * @file      cmc_config_manager.c
+  * @brief     Configuration manager for handling loading, validating, and saving system configuration
+  * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
+  * @copyright KI Hestad, Complicated Productions
+  *********************************************************************************************
+  */
+
 #include "cmc_config_manager.h"
 #include "cmc_config_defaults.h" // Your hardcoded fallback
 #include "stm32g4xx_hal.h"       // For Flash and CRC access

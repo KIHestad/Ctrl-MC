@@ -31,6 +31,7 @@ add_executable(${CMAKE_PROJECT_NAME})
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ./Core/Src/cmc_app_logic.c
+    ./Core/Src/cmc_can_manager.c
     ./Core/Src/cmc_can_message.c
     ./Core/Src/cmc_config_defaults.c
     ./Core/Src/cmc_config_hw_mapping.c

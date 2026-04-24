@@ -1,9 +1,20 @@
+/**
+  *********************************************************************************************
+  * @file      cmc_config_defaults.c
+  * @brief     Configuration defaults
+  * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
+  * @copyright KI Hestad, Complicated Productions
+  *********************************************************************************************
+  */
+
 #include "cmc_config_defaults.h"
 #include "cmc_config_type.h"
 
-/* ====================================================================
- * FIRMWARE DEFAULT CONFIGURATION
- * ==================================================================== */
+// Set to true to load default config on first boot if no valid config is found in flash
+// Set false to require config to be set CAN before system is operational
+const bool cmc_config_defaults_use_on_first_boot = true; 
+
+// Default configuration values for the system, to be used used on first boot if none is found in flash and not reset
 const cmc_config_t firmware_default_config = {
     .signature          = CMC_CONFIG_SIGNATURE,
     .global_config_hash = 0x00000000, // No hash yet, it's a raw default

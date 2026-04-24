@@ -1,3 +1,12 @@
+/**
+  *********************************************************************************************
+  * @file      cmc_onboard_led.c
+  * @brief     Onboard LED control for status indication
+  * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
+  * @copyright KI Hestad, Complicated Productions
+  *********************************************************************************************
+  */
+
 #include "cmc_onboard_led.h"
 
 static bool is_blinking = false;

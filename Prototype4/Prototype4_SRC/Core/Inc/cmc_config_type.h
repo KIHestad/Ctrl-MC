@@ -1,3 +1,12 @@
+/**
+  *********************************************************************************************
+  * @file      cmc_config_type.h
+  * @brief     Configuration types and structures for the Ctrl-MC system
+  * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
+  * @copyright KI Hestad, Complicated Productions
+  *********************************************************************************************
+  */
+
 #ifndef CMC_CONFIG_TYPE_H_
 #define CMC_CONFIG_TYPE_H_
 

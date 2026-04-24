@@ -2,7 +2,8 @@
 /**
   ******************************************************************************
   * @file           : main.c
-  * @brief          : Ctrl MC - Prototype 4 - Testing Infineon Smart Switches
+  * @brief          : The main.c file.
+  *                   This file contains the common defines of the application.
   ******************************************************************************
   * @attention
   *
@@ -101,7 +102,6 @@ int main(void)
   MX_FDCAN1_Init();
   MX_ADC1_Init();
   MX_ADC2_Init();
-  
   /* USER CODE BEGIN 2 */
   
   cmc_app_init();
@@ -342,7 +342,7 @@ static void MX_FDCAN1_Init(void)
   /* USER CODE END FDCAN1_Init 1 */
   hfdcan1.Instance = FDCAN1;
   hfdcan1.Init.ClockDivider = FDCAN_CLOCK_DIV1;
-  hfdcan1.Init.FrameFormat = FDCAN_FRAME_CLASSIC;
+  hfdcan1.Init.FrameFormat = FDCAN_FRAME_FD_BRS;
   hfdcan1.Init.Mode = FDCAN_MODE_NORMAL;
   hfdcan1.Init.AutoRetransmission = ENABLE;
   hfdcan1.Init.TransmitPause = DISABLE;
