@@ -32,7 +32,7 @@ NS_ :
 
 BS_:
 
-BU_: 
+BU_: CMC_UNIT
 
 BA_DEF_ "BusType" STRING ;
 BA_DEF_DEF_ "BusType" "";
@@ -43,19 +43,19 @@ BA_DEF_DEF_ "GenMsgCycleTime" 0;
 BA_DEF_ BO_ "VFrameFormat" ENUM "StandardCAN","ExtendedCAN","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","StandardCAN_FD","ExtendedCAN_FD";
 BA_DEF_DEF_ "VFrameFormat" "StandardCAN";
 
-BO_ 100 HANDSHAKE: 16 Vector__XXX
- SG_ hw_version_major : 0|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ hw_version_minor : 8|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ unit_id : 16|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ unit_type : 24|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ fw_version_major : 32|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ fw_version_minor : 40|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ gc_datetime : 48|32@1+ (1,0) [0|4294967295] "" Vector__XXX
- SG_ gc_hash : 80|32@1+ (1,0) [0|4294967295] "" Vector__XXX
+BO_ 100 HANDSHAKE: 16 CMC_UNIT
+ SG_ hw_version_major : 0|8@1+ (1,0) [0|255] "" CMC_UNIT
+ SG_ hw_version_minor : 8|8@1+ (1,0) [0|255] "" CMC_UNIT
+ SG_ unit_id : 16|8@1+ (1,0) [0|255] "" CMC_UNIT
+ SG_ unit_type : 24|8@1+ (1,0) [0|255] "" CMC_UNIT
+ SG_ fw_version_major : 32|8@1+ (1,0) [0|255] "" CMC_UNIT
+ SG_ fw_version_minor : 40|8@1+ (1,0) [0|255] "" CMC_UNIT
+ SG_ gc_datetime : 48|32@1+ (1,0) [0|4294967295] "" CMC_UNIT
+ SG_ gc_hash : 80|32@1+ (1,0) [0|4294967295] "" CMC_UNIT
 
-BO_ 101 HEARTBEAT: 2 Vector__XXX
- SG_ unit_id : 0|8@1+ (1,0) [0|255] "" Vector__XXX
- SG_ system_state : 8|8@1+ (1,0) [0|255] "" Vector__XXX
+BO_ 101 HEARTBEAT: 2 CMC_UNIT
+ SG_ unit_id : 0|8@1+ (1,0) [0|255] "" CMC_UNIT
+ SG_ system_state : 8|8@1+ (1,0) [0|255] "" CMC_UNIT
 
 
 VAL_ 100 unit_type 0 "UNKNOWN" 1 "I/O UNIT" ;
