@@ -1,0 +1,32 @@
+/**
+  *********************************************************************************************
+  * @file      cmc_config_hw_mapping.h
+  * @brief     Hardware mapping configuration for input pins and output channels
+  * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
+  * @copyright KI Hestad, Complicated Productions
+  *********************************************************************************************
+  */
+
+// For mapping the hardware GPIO input pins
+#include <stdbool.h>
+typedef struct {
+    GPIO_TypeDef* port;
+    uint16_t pin;
+} cmc_config_gpio_pin_t; 
+
+// Hardware mapping for input pins, button 1 = item[0]
+extern const cmc_config_gpio_pin_t cmc_config_hw_digital_in_mapping[10]; // tbd, to be defined in cmc_config_hw_mapping.c
+extern const cmc_config_gpio_pin_t cmc_config_hw_analog_in_mapping[1]; // tbd, to be defined in cmc_config_hw_mapping.c
+
+// For mapping the hardware output channels, for the infineon PROFET +2 high side switches
+typedef struct {
+    cmc_config_gpio_pin_t in_pin; // The GPIO pin used to control the output channel (turn on/off)
+    cmc_config_gpio_pin_t den_pin; // The GPIO pin used to reset and control the is_pin
+    cmc_config_gpio_pin_t is_pin; // The GPIO pin for reading analog diagnostic feedback from the output channel (current sensing)
+    cmc_config_gpio_pin_t dsel_pin; // The first output pin that this channel controls (used for both single and dual channels)
+    bool dual_channel; // Set to true if this output channel is a dual channel that controls two outputs, false if it controls one output
+    GPIO_PinState dsel_value; // The pin state (high or low) that turns on the output for the dsel_pin, used only if dual_channel is true
+} cmc_config_infineon_profet_t;
+
+// Hardware mapping for output channels, channel 1 = item[0]
+extern const cmc_config_infineon_profet_t cmc_config_hw_out_channel_mapping[6]; // tbd, to be defined in cmc_config_hw_mapping.c
