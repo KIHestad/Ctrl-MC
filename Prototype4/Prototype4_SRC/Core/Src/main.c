@@ -23,7 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "cmc_app_logic.h"
+#include "app/cmc_app_logic.h"
 
 /* USER CODE END Includes */
 

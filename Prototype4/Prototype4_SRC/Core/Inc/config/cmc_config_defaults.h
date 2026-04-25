@@ -10,7 +10,7 @@
 #ifndef CMC_CONFIG_DEFAULTS_H_
 #define CMC_CONFIG_DEFAULTS_H_
 
-#include "cmc_config_type.h"
+#include "config/cmc_config_type.h"
 
 // Public variable to control if the default config should be loaded on boot if missing in flash, or if it should wait for config to be loaded over CAN
 extern const bool cmc_config_default_for_demo_use;

@@ -1,18 +1,18 @@
 /**
   *********************************************************************************************
-  * @file      cmc_runtime_store.h
-  * @brief     Runtime data storage for frequently updated values (odometer, trip counter)
-  *            Uses a rolling flash log to minimize page erases and extend flash endurance.
-  * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
-  * @copyright KI Hestad, Complicated Productions
-  *********************************************************************************************
-  */
+* @file      cmc_util_runtime_store.h
+ * @brief     Runtime data storage for frequently updated values (odometer, trip counter)
+ *            Uses a rolling flash log to minimize page erases and extend flash endurance.
+ * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
+ * @copyright KI Hestad, Complicated Productions
+ *********************************************************************************************
+ */
 
-#ifndef CMC_RUNTIME_STORE_H_
-#define CMC_RUNTIME_STORE_H_
+#ifndef CMC_UTIL_RUNTIME_STORE_H_
+#define CMC_UTIL_RUNTIME_STORE_H_
 
 #include <stdint.h>
-#include "cmc_config_manager.h" // For cmc_config_status_t
+#include "config/cmc_config_manager.h" // For cmc_config_status_t
 
 // Runtime data entry, exactly 8 bytes = one flash double-word
 typedef struct {
@@ -37,4 +37,4 @@ const cmc_runtime_data_t* cmc_runtime_store_get(void);
 // Reset the trip counter to zero and save immediately
 cmc_config_status_t cmc_runtime_store_reset_trip(void);
 
-#endif /* CMC_RUNTIME_STORE_H_ */
+#endif /* CMC_UTIL_RUNTIME_STORE_H_ */

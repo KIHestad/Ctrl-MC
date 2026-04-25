@@ -14,7 +14,7 @@
 #define CMC_CAN_MANAGER_H
 
 #include "stm32g4xx_hal.h"
-#include "cmc_can_message.h"
+#include "can/cmc_can_message.h"
 
 /**
  * Status codes for CAN manager operations.

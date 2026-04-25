@@ -13,7 +13,7 @@
 #include <stm32g4xx.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "cmc_config_type_def.h"
+#include "config/cmc_config_type_def.h"
 
 // The configuration for input buttons and sensors (3 bytes)
 typedef struct {

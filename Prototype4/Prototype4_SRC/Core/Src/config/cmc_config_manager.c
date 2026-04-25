@@ -7,8 +7,8 @@
   *********************************************************************************************
   */
 
-#include "cmc_config_manager.h"
-#include "cmc_config_defaults.h" // For demo default configuration
+#include "config/cmc_config_manager.h"
+#include "config/cmc_config_defaults.h" // For demo default configuration
 #include "stm32g4xx_hal.h"       // For Flash and CRC access
 #include <string.h>              // For memcpy
 

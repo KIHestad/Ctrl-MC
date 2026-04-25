@@ -8,7 +8,7 @@
   */
 
 #include "main.h"
-#include "cmc_config_type.h"
+#include "config/cmc_config_type.h"
 #include "stm32g4xx_hal_gpio.h"
 
 /* ====================================================================

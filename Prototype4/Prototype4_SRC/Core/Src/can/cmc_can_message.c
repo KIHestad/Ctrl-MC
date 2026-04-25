@@ -31,7 +31,7 @@
 
 #include <string.h>
 
-#include "cmc_can_message.h"
+#include "can/cmc_can_message.h"
 
 static inline uint8_t pack_left_shift_u8(
     uint8_t value,

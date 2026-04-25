@@ -10,7 +10,7 @@
 #ifndef CMC_CONFIG_MANAGER_H_
 #define CMC_CONFIG_MANAGER_H_
 
-#include "cmc_config_type.h"
+#include "config/cmc_config_type.h"
 #include <stdbool.h>
 
 typedef enum {

@@ -7,9 +7,9 @@
   *********************************************************************************************
   */
 
-#include "cmc_config_defaults.h"
-#include "cmc_config_type.h"
-#include "cmc_config_type_def.h"
+#include "config/cmc_config_defaults.h"
+#include "config/cmc_config_type.h"
+#include "config/cmc_config_type_def.h"
 
 // Set to true to load the default config on boot if missing in flash
 // Set false to ignore this, config must then be loaded over CAN

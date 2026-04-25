@@ -7,9 +7,12 @@
   *********************************************************************************************
   */
 
-#include "cmc_app_logic.h"
-#include "cmc_onboard_led.h"
-#include "cmc_config_manager.h"
+#include "app/cmc_app_logic.h"
+#include "util/cmc_util_onboard_led.h"
+#include "config/cmc_config_manager.h"
+
+// The active system configuration, loaded from flash at startup
+cmc_config_t cmc_config;
 
 // App initialization, called once at startup
 void cmc_app_init(void) {
