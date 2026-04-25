@@ -53,10 +53,14 @@
 ENTRY(Reset_Handler)
 
 /* Specify the memory areas */
+/* This custom file needs to be compared to the STM32 CubeMX generated one to ensure it's identical except for memory settings */
+/* The files: ./cmake/gcc-arm-none-eabi.cmake and ./cmake/starm-clang.cmake are customized to use this file instead of the original */
 MEMORY
 {
   RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 32K
-  FLASH (rx)     : ORIGIN = 0x08000000, LENGTH = 128K
+  FLASH (rx)     : ORIGIN = 0x08000000, LENGTH = 124K /* Reduced from 128K, reserved 4K for RUNTIME + CONFIG */
+  RUNTIME (r)    : ORIGIN = 0x0801F000, LENGTH = 2K   /* Rolling runtime data (odometer/trip) */
+  CONFIG (r)     : ORIGIN = 0x0801F800, LENGTH = 2K   /* System configuration */
 }
 
 /* Highest address of the user mode stack */
