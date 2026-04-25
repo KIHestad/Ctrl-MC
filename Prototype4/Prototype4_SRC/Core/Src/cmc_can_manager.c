@@ -42,28 +42,6 @@ static uint8_t dlc_to_length(uint32_t dlc)
     return table[idx];
 }
 
-// Pack and transmit a single CAN frame.
-static cmc_can_status_t send_frame(uint32_t frame_id, bool is_extended, const uint8_t *data, uint8_t length)
-{
-    if (data == NULL) {
-        return CMC_CAN_ERROR_PARAM;
-    }
-    FDCAN_TxHeaderTypeDef tx_header;
-    tx_header.Identifier          = frame_id;
-    tx_header.IdType              = is_extended ? FDCAN_EXTENDED_ID : FDCAN_STANDARD_ID;
-    tx_header.TxFrameType         = FDCAN_DATA_FRAME;
-    tx_header.DataLength          = length_to_dlc(length);
-    tx_header.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
-    tx_header.BitRateSwitch       = FDCAN_BRS_OFF;
-    tx_header.FDFormat            = (length > 8u) ? FDCAN_FD_CAN : FDCAN_CLASSIC_CAN;
-    tx_header.TxEventFifoControl  = FDCAN_NO_TX_EVENTS;
-    tx_header.MessageMarker       = 0;
-    if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &tx_header, (uint8_t *)data) != HAL_OK) {
-        return CMC_CAN_ERROR_TX;
-    }
-    return CMC_CAN_OK;
-}
-
 /* ---- Public functions ----------------------------------------------------------------------------- */
 
 HAL_StatusTypeDef cmc_can_manager_init(void)
@@ -94,7 +72,23 @@ HAL_StatusTypeDef cmc_can_manager_init(void)
 // Send a CAN message
 cmc_can_status_t cmc_can_manager_send(uint32_t frame_id, const uint8_t *data, uint8_t length)
 {
-    return send_frame(frame_id, false, data, length);
+    if (data == NULL) {
+        return CMC_CAN_ERROR_PARAM;
+    }
+    FDCAN_TxHeaderTypeDef tx_header;
+    tx_header.Identifier          = frame_id;
+    tx_header.IdType              = FDCAN_STANDARD_ID;
+    tx_header.TxFrameType         = FDCAN_DATA_FRAME;
+    tx_header.DataLength          = length_to_dlc(length);
+    tx_header.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+    tx_header.BitRateSwitch       = (length > 8u) ? FDCAN_BRS_ON : FDCAN_BRS_OFF; // Auto switch to BRS for FD frames
+    tx_header.FDFormat            = (length > 8u) ? FDCAN_FD_CAN : FDCAN_CLASSIC_CAN; // Auto switch to FD format for payloads > 8 bytes
+    tx_header.TxEventFifoControl  = FDCAN_NO_TX_EVENTS;
+    tx_header.MessageMarker       = 0;
+    if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &tx_header, (uint8_t *)data) != HAL_OK) {
+        return CMC_CAN_ERROR_TX;
+    }
+    return CMC_CAN_OK;
 }
 
 // Register a callback for received CAN messages. The callback is invoked from ISR context – keep processing short. 
