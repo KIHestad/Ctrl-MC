@@ -32,16 +32,19 @@ add_executable(${CMAKE_PROJECT_NAME})
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # App
     ./Core/Src/app/cmc_app_logic.c
+    ./Core/Src/app/cmc_app_state.c
+    # CAN
+    ./Core/Src/can/cmc_can_manager.c
+    ./Core/Src/can/cmc_can_message.c
     # Config
     ./Core/Src/config/cmc_config_defaults.c
     ./Core/Src/config/cmc_config_hw_mapping.c
     ./Core/Src/config/cmc_config_manager.c
+    # Feature
+    ./Core/Src/feature/cmc_feature_horn.c
     # Util
     ./Core/Src/util/cmc_util_onboard_led.c
     ./Core/Src/util/cmc_util_runtime_store.c
-    # CAN
-    ./Core/Src/can/cmc_can_manager.c
-    ./Core/Src/can/cmc_can_message.c
 )
 
 # Add STM32CubeMX generated sources
