@@ -1,17 +1,15 @@
 /**
   *********************************************************************************************
-  * @file      cmc_app_logic.h
-  * @brief     Application logic for initialization and processing loop
+  * @file      cmc_app_state.h
+  * @brief     Application state machine, stores the current state of the application 
   * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
   * @copyright KI Hestad, Complicated Productions
   *********************************************************************************************
   */
 
-#ifndef CMC_APP_LOGIC_H
-#define CMC_APP_LOGIC_H
+#ifndef CMC_APP_STATE_H
+#define CMC_APP_STATE_H
 
-// Public functions for application logic - main init and main loop 
-void cmc_app_init(void);
-void cmc_app_process(void);
 
-#endif /* CMC_APP_LOGIC_H */
+
+#endif /* CMC_APP_STATE_H */

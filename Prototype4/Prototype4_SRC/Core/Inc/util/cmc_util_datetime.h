@@ -1,3 +1,12 @@
+/**
+  *********************************************************************************************
+ * @file      cmc_util_datetime.h
+ * @brief     Date and time utility functions
+ * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
+ * @copyright KI Hestad, Complicated Productions
+ *********************************************************************************************
+ */
+
 #ifndef CMC_UTIL_DATETIME_H
 #define CMC_UTIL_DATETIME_H
 

@@ -7,6 +7,9 @@
   *********************************************************************************************
   */
 
+#ifndef CMC_CONFIG_HW_MAPPING_H_
+#define CMC_CONFIG_HW_MAPPING_H_
+
 // For mapping the hardware GPIO input pins
 #include <stdbool.h>
 typedef struct {
@@ -30,3 +33,5 @@ typedef struct {
 
 // Hardware mapping for output channels, channel 1 = item[0]
 extern const cmc_config_infineon_profet_t cmc_config_hw_out_channel_mapping[6]; // tbd, to be defined in cmc_config_hw_mapping.c
+
+#endif /* CMC_CONFIG_HW_MAPPING_H_ */   

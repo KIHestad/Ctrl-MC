@@ -1,14 +1,14 @@
 /**
   *********************************************************************************************
-  * @file      cmc_config_type_def.h
-  * @brief     Configuration types definitions 
+  * @file      cmc_config_type_unit.h
+  * @brief     Configuration types for the unit properties and settings
   * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
   * @copyright KI Hestad, Complicated Productions
   *********************************************************************************************
   */
 
-#ifndef CMC_CONFIG_TYPE_DEF_H_
-#define CMC_CONFIG_TYPE_DEF_H_
+#ifndef CMC_CONFIG_TYPE_UNIT_H_
+#define CMC_CONFIG_TYPE_UNIT_H_
 
 // Default system configuration
 #define CMC_CONFIG_SIGNATURE  0x4354524C // signature to identify if valid config exists in flash
@@ -95,4 +95,4 @@ typedef enum {
     CMC_FEATURE_HORN_SIGNALLING = 1, // Standard horn feature when horn button is pressed, turn on horn output    
 } cmc_feature_type_t;
 
-#endif /* CMC_CONFIG_TYPE_DEF_H_ */
+#endif /* CMC_CONFIG_TYPE_UNIT_H_ */

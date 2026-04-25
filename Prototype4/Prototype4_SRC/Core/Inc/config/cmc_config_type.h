@@ -13,7 +13,8 @@
 #include <stm32g4xx.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "config/cmc_config_type_def.h"
+#include "config/cmc_config_type_unit.h"
+#include "feature/cmc_feature_horn.h"
 
 // The configuration for input buttons and sensors (3 bytes)
 typedef struct {
@@ -38,21 +39,22 @@ typedef struct {
     cmc_config_out_t out[6]; // 12 bytes - The equipment connected to each output channel, maps to cmc_equipment_t
 } cmc_io_unit_config_t;
 
-// Feature configuration (2 bytes)
-typedef struct {
-    uint8_t enabled; // Set 1 if to be used, set 0 if not to be used and the system will ignore it
-    uint8_t feature_id; // Maps to cmc_feature_type_t, what feature is this configuration for (eg: horn signalling, auto headlight, etc)
-} cmc_feature_t;
-
 // Master configuration structure that holds the entire system configuration, including all I/O units and features
 typedef struct {
-    uint32_t signature;       // 4 bytes - To check if config is valid for the unit. It should be set to CMC_CONFIG_SIGNATURE if valid, if reset/newly flashed, it will be 0xFFFFFFFF or 0x00000000)
-    uint32_t config_hash;     // 4 bytes - Hash of the systems global configuration, to be compared between units at startup by doing a canbus handshake to verify same global config across all units
-    uint8_t  units_required;  // 1 byte - The number of I/O units required for the system, startup checks verifies or send alert, should be less than or equal to CMC_CONFIG_MAX_SUPPORTED_IO_UNITS
-    uint8_t  features_used;   // 1 byte - The number of features used in the system, should be less than or equal to CMC_CONFIG_MAX_SUPPORTED_FEATURES
-    uint8_t  reserved[6];     // 6 bytes - Total bytes without padding = 234 bytes, with padding = 240 bytes
-    cmc_io_unit_config_t io_unit[CMC_CONFIG_MAX_SUPPORTED_IO_UNITS];  // 4 * 46 bytes = 184 bytes - Configuration for each I/O unit in the system
-    cmc_feature_t feature[CMC_CONFIG_MAX_SUPPORTED_FEATURES];         // 20 * 2 bytes = 40 bytes - Configuration for features enabled in the system
+    uint32_t signature;                                                
+    uint32_t config_hash;                                              
+    uint8_t  units_required;                                           
+    uint8_t  features_used;                                            
+    cmc_io_unit_config_t io_unit[CMC_CONFIG_MAX_SUPPORTED_IO_UNITS];   
+    cmc_feature_horn_t feature_horn;                                   
+    // Add automatic padding to make the total size of the structure a multiple of 8 bytes for flash storage efficiency
+    uint8_t  _padding[((
+        sizeof(uint32_t)*2 
+        + sizeof(uint8_t)*2 
+        + sizeof(cmc_io_unit_config_t)*CMC_CONFIG_MAX_SUPPORTED_IO_UNITS 
+        + sizeof(cmc_feature_horn_t)
+    ) % 8) % 8];                                   
+    
 } cmc_config_t;
 
 #endif /* CMC_CONFIG_TYPE_H_ */

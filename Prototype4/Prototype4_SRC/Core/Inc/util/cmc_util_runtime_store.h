@@ -1,6 +1,6 @@
 /**
-  *********************************************************************************************
-* @file      cmc_util_runtime_store.h
+ *********************************************************************************************
+ * @file      cmc_util_runtime_store.h
  * @brief     Runtime data storage for frequently updated values (odometer, trip counter)
  *            Uses a rolling flash log to minimize page erases and extend flash endurance.
  * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC

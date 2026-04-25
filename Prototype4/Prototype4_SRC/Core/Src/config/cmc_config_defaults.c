@@ -9,7 +9,7 @@
 
 #include "config/cmc_config_defaults.h"
 #include "config/cmc_config_type.h"
-#include "config/cmc_config_type_def.h"
+#include "config/cmc_config_type_unit.h"
 
 // Set to true to load the default config on boot if missing in flash
 // Set false to ignore this, config must then be loaded over CAN
@@ -17,10 +17,9 @@ const bool cmc_config_default_for_demo_use = true;
 
 // Default configuration values for the system
 const cmc_config_t cmc_config_default_for_demo = {
-    .signature       = CMC_CONFIG_SIGNATURE,
+    .signature       = CMC_CONFIG_SIGNATURE, // Default config signature, must match CMC_CONFIG_SIGNATURE to be considered valid
     .config_hash     = 0x00000000, // No hash yet, it's a raw default
     .units_required  = 2, // The minimum number of IO units the system needs to operate
-    .features_used   = 1, // The number of features used in the system, should be less than or equal to CMC_CONFIG_MAX_SUPPORTED_FEATURES
 
     // Unit number 1: Front I/O Unit
     .io_unit[0] = {
@@ -141,10 +140,5 @@ const cmc_config_t cmc_config_default_for_demo = {
             .device_id    = CMC_OUT_INSTR_NEUTRAL
         },        
     },
-    
-    // Features
-    .feature[0] = {
-        .enabled = 1,
-        .feature_id = CMC_FEATURE_HORN_SIGNALLING
-    }
+        
 };
