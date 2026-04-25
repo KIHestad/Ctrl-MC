@@ -8,9 +8,9 @@
   */
 
 #include "config/cmc_config_manager.h"
-#include "config/cmc_config_defaults.h" // For demo default configuration
-#include "stm32g4xx_hal.h"       // For Flash and CRC access
-#include <string.h>              // For memcpy
+#include "config/cmc_config_defaults.h" 
+#include "stm32g4xx_hal.h"              
+#include <string.h>                     
 
 // Compile-time check: struct must be a multiple of 8 bytes for 64-bit flash double-word programming
 _Static_assert(sizeof(cmc_config_t) % 8 == 0, "cmc_config_t size must be a multiple of 8 bytes for flash double-word programming");
