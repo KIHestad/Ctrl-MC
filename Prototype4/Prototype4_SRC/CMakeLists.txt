@@ -37,6 +37,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ./Core/Src/cmc_config_hw_mapping.c
     ./Core/Src/cmc_config_manager.c
     ./Core/Src/cmc_onboard_led.c
+    ./Core/Src/cmc_runtime_store.c
 )
 
 # Add STM32CubeMX generated sources

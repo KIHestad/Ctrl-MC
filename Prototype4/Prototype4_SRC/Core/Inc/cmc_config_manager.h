@@ -13,17 +13,20 @@
 #include "cmc_config_type.h"
 #include <stdbool.h>
 
-/* ====================================================================
- * PUBLIC FUNCTIONS (The API for the rest of the motorcycle)
- * ==================================================================== */
+typedef enum {
+    CMC_CONFIG_STATUS_SUCCESS = 0,
+    CMC_CONFIG_STATUS_ERROR   = 1,
+    CMC_CONFIG_STATUS_INVALID_FLASH_SIGNATURE = 2,
+    CMC_CONFIG_STATUS_INVALID_RAM_SIGNATURE = 3,    
+} cmc_config_status_t;
 
-// Called exactly once when the STM32 boots up
-bool cmc_config_manager_init(void);
+// Init
+cmc_config_status_t cmc_config_manager_init(void);
 
-// Mathematically verifies the memory using the CRC hardware
-bool cmc_config_manager_validate(cmc_config_t* target_config);
-
-// Writes a newly received web configuration into the STM32 Flash
-bool cmc_config_manager_save_to_flash(cmc_config_t* new_config);
+// Manager methods
+bool cmc_config_manager_is_valid_config(void);
+cmc_config_status_t cmc_config_manager_validate(cmc_config_t* target_config);
+cmc_config_status_t cmc_config_manager_save_to_flash(const cmc_config_t* new_config);
+cmc_config_status_t cmc_config_manager_load_from_flash(cmc_config_t* target);
 
 #endif /* CMC_CONFIG_MANAGER_H_ */

@@ -1,7 +1,7 @@
 /**
   *********************************************************************************************
   * @file      cmc_config_defaults.c
-  * @brief     Configuration defaults
+  * @brief     Configuration defaults  for demo only, to be removed when a real config editor is implemented
   * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
   * @copyright KI Hestad, Complicated Productions
   *********************************************************************************************
@@ -9,189 +9,142 @@
 
 #include "cmc_config_defaults.h"
 #include "cmc_config_type.h"
+#include "cmc_config_type_def.h"
 
-// Set to true to load default config on first boot if no valid config is found in flash
-// Set false to require config to be set CAN before system is operational
-const bool cmc_config_defaults_use_on_first_boot = true; 
+// Set to true to load the default config on boot if missing in flash
+// Set false to ignore this, config must then be loaded over CAN
+const bool cmc_config_default_for_demo_use = true;
 
-// Default configuration values for the system, to be used used on first boot if none is found in flash and not reset
-const cmc_config_t firmware_default_config = {
-    .signature          = CMC_CONFIG_SIGNATURE,
-    .global_config_hash = 0x00000000, // No hash yet, it's a raw default
-    .active_unit_count  = 2,          // The total number of I/O units to be used for the system (e.g., front unit, rear unit, etc.)
-    .active_rule_count  = 1,          // The total number of rules to be used for the system
-    
-    // --- UNIT 1: FRONT I/O UNIT ---
+// Default configuration values for the system
+const cmc_config_t cmc_config_default_for_demo = {
+    .signature       = CMC_CONFIG_SIGNATURE,
+    .config_hash     = 0x00000000, // No hash yet, it's a raw default
+    .units_required  = 2, // The minimum number of IO units the system needs to operate
+    .features_used   = 1, // The number of features used in the system, should be less than or equal to CMC_CONFIG_MAX_SUPPORTED_FEATURES
+
+    // Unit number 1: Front I/O Unit
     .io_unit[0] = {
         .unit_id                 = 1,
-        .name                    = "Front Unit",
-        .output_channels_used    = 6,
-        .input_digital_pins_used = 10,
-        .input_analog_pins_used  = 0,
+        .unit_name_id            = CMC_UNIT_FRONT, 
+        .in_used                 = 8, // Number of input connectors used on this unit
+        .out_used                = 6, // Number of output channels used on this unit
         
-        // Output Channel Mapping
-        .output_equipment[0] = {
-            .equipment_id = 1,
-            .equipment_id = CMC_EQP_HORN
-        },
-        .output_equipment[1] = {
-            .equipment_id = 1,
-            .equipment_id = CMC_EQP_TURN_LEFT
-        },
-        .output_equipment[2] = {
-            .equipment_id = 1,
-            .equipment_id = CMC_EQP_LIGHT_PARK
-        },
-        .output_equipment[3] = {
-            .equipment_id = 1,
-            .equipment_id = CMC_EQP_TURN_RIGHT
-        },
-        .output_equipment[4] = {
-            .equipment_id = 1,
-            .equipment_id = CMC_EQP_LIGHT_LOW_BEAM
-        },
-        .output_equipment[5] = {
-            .equipment_id = 1,
-            .equipment_id = CMC_EQP_LIGHT_HIGH_BEAM
-        },
-        
-        // Input Pin Mapping
-        .input_digital[0] = {
+        // Input buttons and sensors
+        .in[0] = {
             .enabled     = 1,
-            .input_id    = CMC_INP_TURN_LEFT,
-            .button_type = CMC_BTN_TOGGLE
+            .device_id   = CMC_IN_TURN_LEFT,
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
         },
-        .input_digital[1] = {
+        .in[1] = {
             .enabled     = 1,
-            .input_id    = CMC_INP_TURN_RIGHT,
-            .button_type = CMC_BTN_TOGGLE
+            .device_id   = CMC_IN_TURN_RIGHT,
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
         },
-        .input_digital[2] = {
+        .in[2] = {
             .enabled     = 1,
-            .input_id    = CMC_INP_LIGHT_HIGH_BEAM,
-            .button_type = CMC_BTN_TOGGLE
+            .device_id   = CMC_IN_LIGHT_HIGH_BEAM,
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
         },
-        .input_digital[3] = {
+        .in[3] = {
             .enabled     = 1,
-            .input_id    = CMC_INP_HORN,
-            .button_type = CMC_BTN_CLASSIC
+            .device_id   = CMC_IN_HORN,
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
         },
-        .input_digital[4] = {
+        .in[4] = {
             .enabled     = 1,
-            .input_id    = CMC_INP_CLUTCH_LEVER,
-            .button_type = CMC_BTN_CLASSIC
+            .device_id   = CMC_IN_CLUTCH_LEVER,
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
         },
-        .input_digital[5] = {
+        .in[5] = {
             .enabled     = 1,
-            .input_id    = CMC_INP_BRAKE_LEVER,
-            .button_type = CMC_BTN_CLASSIC
+            .device_id   = CMC_IN_BRAKE_LEVER,
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
         },
-        .input_digital[6] = {
+        .in[6] = {
             .enabled     = 1,
-            .input_id    = CMC_INP_STARTER,
-            .button_type = CMC_BTN_CLASSIC
+            .device_id   = CMC_IN_STARTER,
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
         },
-        .input_digital[7] = {
+        .in[7] = {
             .enabled     = 1,
-            .input_id    = CMC_INP_LIGHTS_MAIN,
-            .button_type = CMC_BTN_TOGGLE
+            .device_id   = CMC_IN_LIGHTS_MAIN,
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
         },
-        .input_digital[8] = {
-            .enabled     = 1,
-            .input_id    = CMC_INP_MENU_LEFT,
-            .button_type = CMC_BTN_TOGGLE
+        .in[8] = {
+            .enabled     = 0,
+            .device_id   = CMC_IN_MENU_LEFT,
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
         },
-        .input_digital[9] = {
-            .enabled     = 1,
-            .input_id    = CMC_INP_MENU_RIGHT,
-            .button_type = CMC_BTN_TOGGLE
+        .in[9] = {
+            .enabled     = 0,
+            .device_id   = CMC_IN_MENU_RIGHT,
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
         },
 
+        // Output Channel Mapping
+        .out[0] = {
+            .enabled = 1,
+            .device_id = CMC_OUT_HORN
+        },
+        .out[1] = {
+            .enabled = 1,
+            .device_id = CMC_OUT_TURN_LEFT_FRONT
+        },
+        .out[2] = {
+            .enabled = 1,
+            .device_id = CMC_OUT_LIGHT_PARK
+        },
+        .out[3] = {
+            .enabled = 1,
+            .device_id = CMC_OUT_TURN_RIGHT_FRONT
+        },
+        .out[4] = {
+            .enabled = 1,
+            .device_id = CMC_OUT_LIGHT_LOW_BEAM
+        },
+        .out[5] = {
+            .enabled = 1,
+            .device_id = CMC_OUT_LIGHT_HIGH_BEAM
+        },
     },
-    // --- UNIT 2: REAR I/O UNIT ---
+
+    // Unit number 2: Rear I/O Unit
     .io_unit[1] = {
         .unit_id                 = 2,
-        .name                    = "Rear Unit",
-        .output_channels_used    = 6,
-        .input_digital_pins_used = 4,
-        .input_analog_pins_used  = 0,
-        
+        .unit_name_id            = CMC_UNIT_REAR,
+        .in_used                 = 0, // Number of input connectors used on this unit
+        .out_used                = 6, // Number of output channels used on this unit
+
         // Output Channel Mapping
-        .output_equipment[0] = {
+        .out[0] = {
             .enabled      = 1,
-            .equipment_id = CMC_EQP_LIGHT_BRAKE
+            .device_id = CMC_OUT_LIGHT_BRAKE
         },
-        .output_equipment[1] = {
+        .out[1] = {
             .enabled      = 1,
-            .equipment_id = CMC_EQP_LIGHT_TAIL
+            .device_id = CMC_OUT_LIGHT_TAIL
         },
-        .output_equipment[2] = {
+        .out[2] = {
             .enabled      = 1,
-            .equipment_id = CMC_EQP_TURN_LEFT
+            .device_id = CMC_OUT_TURN_LEFT_REAR
         },
-        .output_equipment[3] = {
+        .out[3] = {
             .enabled      = 1,
-            .equipment_id = CMC_EQP_TURN_RIGHT
+            .device_id = CMC_OUT_TURN_RIGHT_REAR
         },
-        .output_equipment[4] = {
+        .out[4] = {
             .enabled      = 1,
-            .equipment_id = CMC_EQP_STARTER
+            .device_id = CMC_OUT_STARTER
         },
-        .output_equipment[5] = {
+        .out[5] = {
             .enabled      = 1,
-            .equipment_id = CMC_EQP_INSTR_NEUTRAL
-        },
-        
-        // Input Pin Mapping
-        .input_digital[0] = {
-            .enabled     = 1,
-            .input_id    = CMC_INP_NEUTRAL_SENSOR,
-            .button_type = CMC_BTN_TOGGLE
-        },
-        .input_digital[1] = {
-            .enabled     = 1,
-            .input_id    = CMC_INP_BRAKE_PEDAL,
-            .button_type = CMC_BTN_CLASSIC
-        },
-        .input_digital[2] = {
-            .enabled     = 1,
-            .input_id    = CMC_INP_BRAKE_PEDAL,
-            .button_type = CMC_BTN_CLASSIC
-        },
-        .input_digital[2] = {
-            .enabled     = 1,
-            .input_id    = CMC_INP_OIL_SENSOR,
-            .button_type = CMC_BTN_TOGGLE
-        },
-        .input_digital[3] = {
-            .enabled     = 1,
-            .input_id    = CMC_INP_WATER_TEMP_SENSOR,
-            .button_type = CMC_BTN_TOGGLE
-        }
+            .device_id = CMC_OUT_INSTR_NEUTRAL
+        },        
     },
-    // --- THE RULES ENGINE (LOGIC) ---
-    .rule[0] = {
-        // "If Ignition is ON AND Horn Button is PRESSED..."
-        .cond1_input_id    = CMC_INP_IGNITION,
-        .rule_operator_id  = CMC_OP_AND,
-        .cond2_input_id    = CMC_INP_HORN,
-        
-        // "...Turn ON the Horn on Unit 1, Channel 1"
-        .rule_action_id    = CMC_ACT_TURN_ON,
-        .target_unit_id    = 1,
-        .target_output_id  = 1,
-        
-        .blink_interval_ms = 0,
-        .blink_duration_ms = 0
+    
+    // Features
+    .feature[0] = {
+        .enabled = 1,
+        .feature_id = CMC_FEATURE_HORN_SIGNALLING
     }
 };
-
-/* ====================================================================
- * PUBLIC INITIALIZATION FUNCTION
- * ==================================================================== */
-void cmc_config_defaults_load(void) {
-    // Copy firmware default from ROM into active RAM
-    for (uint32_t i = 0; i < sizeof(cmc_config_t); i++) {
-        ((uint8_t*)&cmc_config)[i] = ((uint8_t*)&firmware_default_config)[i];
-    }
-}
