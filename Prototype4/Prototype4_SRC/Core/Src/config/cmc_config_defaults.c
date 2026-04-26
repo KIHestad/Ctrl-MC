@@ -24,7 +24,8 @@ const cmc_config_t cmc_config_default_for_demo = {
     .io_unit[0] = {
         .unit_id         = 1,
         .unit_name_id    = CMC_UNIT_FRONT, 
-        .in_used         = 8, // Number of input connectors used on this unit
+        .in_digital_used = 8, // Number of input connectors used on this unit
+        .in_analog_used  = 0, // Number of analog input connectors used on this unit
         .out_used        = 6, // Number of output channels used on this unit
         
         // Input buttons and sensors
@@ -110,7 +111,8 @@ const cmc_config_t cmc_config_default_for_demo = {
     .io_unit[1] = {
         .unit_id         = 2,
         .unit_name_id    = CMC_UNIT_REAR,
-        .in_used         = 2, // Number of input connectors used on this unit
+        .in_digital_used = 2, // Number of input connectors used on this unit
+        .in_analog_used  = 0, // Number of analog input connectors used on this unit
         .out_used        = 6, // Number of output channels used on this unit
 
         // Input buttons and sensors

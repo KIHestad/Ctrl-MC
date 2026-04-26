@@ -53,6 +53,9 @@ void cmc_app_state_init(void) {
         cmc_onboard_led_startup(); 
     }
 
+    // Config and unit info should be valid at this point, set this_unit
+    this_unit = &cmc_config.io_unit[cmc_app_state.unit_info.unit_id - 1];
+
     // Set CANBUS interrupts to update app_state when relevant messages are received, not implemented yet
 
 

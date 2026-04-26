@@ -17,6 +17,8 @@
 
 // The global configuration variable that holds the active configuration for the system, loaded at startup from flash or defaults
 cmc_config_t cmc_config;
+// Pointer to the config for this unit, set at init based on unit id to point to the correct section of the config.io_unit array
+const cmc_config_io_unit_t* this_unit = NULL;
 
 // Define where the Flash storage starts (The "Archive")
 static const cmc_config_t* flash_config = (cmc_config_t*)0x0801F800; // Last 2KB of Flash for config storage
