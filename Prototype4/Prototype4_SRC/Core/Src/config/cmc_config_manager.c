@@ -32,9 +32,9 @@ static uint32_t flash_get_page(uint32_t address) {
 // Init the configuration manager, called at startup to load and validate the configuration
 void cmc_config_manager_init(void) {
 
-    // Set cofig status as progess happens
-    app_state.system_status = CMC_SYSTEM_STATUS_ERROR_GENERIC;
-    app_state.config_status = CMC_CONFIG_STATUS_LOADING; 
+    // Set config status as progess happens
+    app_state.system_status = CMC_SYSTEM_STATUS_ERROR_CONFIG; // Default to config error until we verify it's good
+    app_state.config_status = CMC_CONFIG_STATUS_LOADING; // Prepare spesific congig status
 
     // Check if the config in flash is valid/exists
     if (flash_config->signature != CMC_CONFIG_SIGNATURE) {
@@ -65,6 +65,7 @@ void cmc_config_manager_init(void) {
 
     // Validate the loaded config
     // TODO: Consider implementing more thorough validation of the config values
+    app_state.system_status = CMC_SYSTEM_STATUS_SUCCESS;
     app_state.config_status = CMC_CONFIG_STATUS_SUCCESS; 
 }
 

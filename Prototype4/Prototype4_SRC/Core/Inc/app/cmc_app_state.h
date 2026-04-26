@@ -18,6 +18,7 @@
 typedef enum {
     CMC_SYSTEM_STATUS_SUCCESS = 0,
     CMC_SYSTEM_STATUS_ERROR_GENERIC = 10,
+    CMC_SYSTEM_STATUS_ERROR_CONFIG = 11,
 } state_system_status_t;
 
 // Button state structure for debouncing and event detection

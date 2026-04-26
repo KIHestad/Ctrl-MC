@@ -24,8 +24,8 @@ void cmc_app_init(void) {
     // Prepare app state machine
     cmc_app_state_init();
 
-
     // Inititate CAN manager, set up interrupts to update state machine when relevant incoming messages happens (not implemented yet)
+    
 
 }
 

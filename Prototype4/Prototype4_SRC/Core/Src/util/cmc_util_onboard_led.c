@@ -29,7 +29,7 @@ void cmc_onboard_led_init(void) {
     blink_on_duration_ms = 0;
     blink_off_duration_ms = 0;
     // Show startup is running by inititate onboard LED blinking pattern that will change according to final results of initialization steps
-    cmc_onboard_led_blink(100, 400); // Startup initiated, indicate with slow tiny blinking
+    cmc_onboard_led_blink(100, 100); // Startup initiated, indicate very fast blinking
 }
 
 // Turn LED on/off 
