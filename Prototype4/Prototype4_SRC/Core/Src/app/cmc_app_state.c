@@ -44,7 +44,7 @@ void cmc_app_state_init(void) {
                     // Add correct signature to indicated valid unit info and save to flash
                     cmc_app_state.unit_info.signature = CMC_UNIT_INFO_SIGNATURE;
                     // save to flash now
-                    cmc_unit_info_save(&cmc_app_state.unit_info);
+                    cmc_unit_info_save();
                     break;                    
                 }
             }

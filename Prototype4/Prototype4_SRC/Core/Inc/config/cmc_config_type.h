@@ -54,13 +54,14 @@ typedef struct {
 
 // Master configuration structure that holds the entire system configuration, including all I/O units and features
 typedef struct {
-    uint32_t signature;
+    uint32_t signature;      // Must be CMC_CONFIG_SIGNATURE for the data to be considered valid
+    uint32_t crc;          // CRC of all subsequent data for integrity verification
     uint8_t  units_required; // Number of units required/expected on the configured system
     cmc_config_io_unit_t io_unit[CMC_CONFIG_MAX_SUPPORTED_IO_UNITS];
     cmc_feature_horn_t feature_horn;
     // Add automatic padding to make the total size of the structure a multiple of 8 bytes for flash storage efficiency
     uint8_t  _padding[((
-        sizeof(uint32_t)*1
+        sizeof(uint32_t)*2
         + sizeof(uint8_t)*1
         + sizeof(cmc_config_io_unit_t)*CMC_CONFIG_MAX_SUPPORTED_IO_UNITS
         + sizeof(cmc_feature_horn_t)

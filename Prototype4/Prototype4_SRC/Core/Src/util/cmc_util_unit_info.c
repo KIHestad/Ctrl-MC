@@ -1,7 +1,7 @@
 /**
   *********************************************************************************************
-  * @file      cmc_util_unit_store.c
-  * @brief     Unit store — persistent flash storage for static unit-specific data
+  * @file      cmc_util_unit_info.c
+  * @brief     Unit info — persistent flash storage for static unit-specific data
   *            Simple erase-and-write approach (no rolling log) since data changes very rarely.
   * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
   * @copyright KI Hestad, Complicated Productions
@@ -9,12 +9,9 @@
   */
 
 #include "util/cmc_util_unit_info.h"
+#include "util/cmc_util_crc.h"
 #include "app/cmc_app_state.h"
 #include "stm32g4xx_hal.h"
-
-// Compile-time check: struct must be exactly one double-word for a single flash write
-_Static_assert(sizeof(cmc_unit_info_t) == sizeof(uint64_t),
-    "cmc_unit_info_t must be exactly 8 bytes (one flash double-word)");
 
 // Pointer to the flash page (memory-mapped, read directly)
 static const cmc_unit_info_t* flash_unit_info = (const cmc_unit_info_t*)CMC_UNIT_INFO_FLASH_ADDR;
@@ -46,68 +43,76 @@ static bool unit_info_erase_page(void) {
 }
 
 // Helper: write the struct to the start of the page
-static bool unit_store_write(const cmc_unit_info_t* data) {
-    uint64_t dword;
-    const uint32_t* src = (const uint32_t*)data;
-    uint32_t* dst = (uint32_t*)&dword;
-    dst[0] = src[0];
-    dst[1] = src[1];
-
+static bool unit_info_write(const cmc_unit_info_t* data) {
     HAL_StatusTypeDef hal_status = HAL_FLASH_Unlock();
-    if (hal_status != HAL_OK) {
-        return false;
-    }
+    if (hal_status != HAL_OK) return false;
 
-    // Clear any pending flash error flags before programming
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
 
-    hal_status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, CMC_UNIT_INFO_FLASH_ADDR, dword);
-    HAL_FLASH_Lock();
+    const uint64_t* src = (const uint64_t*)data;
+    const size_t dwords = sizeof(cmc_unit_info_t) / 8U;
 
+    for (size_t i = 0; i < dwords; i++) {
+        hal_status = HAL_FLASH_Program(
+            FLASH_TYPEPROGRAM_DOUBLEWORD,
+            CMC_UNIT_INFO_FLASH_ADDR + (i * 8U),
+            src[i]);
+        if (hal_status != HAL_OK) break;
+    }
+
+    HAL_FLASH_Lock();
     return (hal_status == HAL_OK);
 }
 
 // Init: read flash and load into app_state.unit_info if valid
 void cmc_unit_info_init(void) {
-    if (flash_unit_info->signature == CMC_UNIT_INFO_SIGNATURE) {
-        cmc_app_state.unit_info.signature      = flash_unit_info->signature;
-        cmc_app_state.unit_info.unit_id        = flash_unit_info->unit_id;
-        cmc_app_state.unit_info._reserved[0]   = 0;
-        cmc_app_state.unit_info._reserved[1]   = 0;
-        cmc_app_state.unit_info._reserved[2]   = 0;
-        cmc_app_state.unit_info_valid = true;
-    } else {
-        cmc_app_state.unit_info.signature      = 0;
-        cmc_app_state.unit_info.unit_id        = 0;
-        cmc_app_state.unit_info._reserved[0]   = 0;
-        cmc_app_state.unit_info._reserved[1]   = 0;
-        cmc_app_state.unit_info._reserved[2]   = 0;
-        cmc_app_state.unit_info_valid = false;
-    }    
+    cmc_app_state.unit_info_valid = false;
+
+    // Check signature
+    if (flash_unit_info->signature != CMC_UNIT_INFO_SIGNATURE) {
+        cmc_app_state.unit_info = (cmc_unit_info_t){0};
+        return;
+    }
+
+    // Copy whole struct (including _pad, so CRC verify is consistent)
+    cmc_app_state.unit_info = *flash_unit_info;
+
+    // Verify CRC over payload (everything after the crc field)
+    if (CMC_UTIL_CRC_CALCULATE_PAYLOAD(&cmc_app_state.unit_info) != cmc_app_state.unit_info.crc) {
+        cmc_app_state.unit_info = (cmc_unit_info_t){0};
+        return;
+    }
+
+    cmc_app_state.unit_info_valid = true;
 }
 
 // Save: erase page then write new data
-void cmc_unit_info_save(const cmc_unit_info_t* data) {
+void cmc_unit_info_save(void) {
     // Full page save since this is to be updated very rare, minimal flash wear, no need for a rolling log or multiple slots
     // Check valid unit_id is set before saving
     if (cmc_app_state.unit_info.unit_id < 1 || cmc_app_state.unit_info.unit_id > CMC_CONFIG_MAX_SUPPORTED_IO_UNITS) {
-        cmc_app_state.unit_info.signature = 0;
+        cmc_app_state.unit_info = (cmc_unit_info_t){0};
         cmc_app_state.unit_info_valid = false;
         return; 
     }
     // Try erase flash
     if (!unit_info_erase_page()) {
-        cmc_app_state.unit_info.signature = 0;
+        cmc_app_state.unit_info = (cmc_unit_info_t){0};
         cmc_app_state.unit_info_valid = false;
         return;
     }
     // Try write new data to flash
-    if (!unit_store_write(data)) {
-        cmc_app_state.unit_info.signature = 0;
+    cmc_unit_info_t data_to_write = cmc_app_state.unit_info;
+    data_to_write.signature = CMC_UNIT_INFO_SIGNATURE;
+    data_to_write.crc       = CMC_UTIL_CRC_CALCULATE_PAYLOAD(&data_to_write);   // covers subsequent data after signature and crc fields = unit_id and more if added
+    if (!unit_info_write(&data_to_write)) {
+        cmc_app_state.unit_info = (cmc_unit_info_t){0};
         cmc_app_state.unit_info_valid = false;
         return;
     }
     // Done
+    cmc_app_state.unit_info = data_to_write;   // sync RAM with flash
     cmc_app_state.unit_info_valid = true;  
 }
+
 

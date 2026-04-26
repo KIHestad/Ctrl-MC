@@ -10,11 +10,9 @@
   */
 
 #include "util/cmc_util_usage_journal.h"
+#include "util/cmc_util_crc.h"
 #include "stm32g4xx_hal.h"
 #include <stdbool.h>
-
-// Compile-time check: entry must be exactly one double-word for single flash write
-_Static_assert(sizeof(cmc_usage_journal_data_t) == sizeof(uint64_t), "cmc_usage_journal_data_t must be exactly 8 bytes (one flash double-word)");
 
 // Pointer to the usage journal flash page (memory-mapped, read directly)
 static const cmc_usage_journal_data_t* journal_page = (const cmc_usage_journal_data_t*)CMC_USAGE_JOURNAL_FLASH_ADDR;
@@ -25,7 +23,7 @@ static cmc_usage_journal_data_t journal_current = {0};
 // Index of the next free slot in the flash page (0 to CMC_USAGE_JOURNAL_MAX_ENTRIES)
 static uint32_t next_free_slot = 0;
 
-// Erased flash reads as 0xFFFFFFFF, so an erased entry has total_km == 0xFFFFFFFF
+// Erased flash reads as 0xFFFFFFFF — detect end-of-log via the (now first) crc field
 #define CMC_USAGE_JOURNAL_ERASED_MARKER  0xFFFFFFFFU
 
 // Helper: compute flash page number from address
@@ -55,78 +53,77 @@ static bool journal_erase_page(void) {
     return (hal_status == HAL_OK);
 }
 
-// Helper: write one entry to a specific slot
+// Helper: write one entry to a specific slot (writes ALL double-words of the struct)
 static bool journal_write_slot(uint32_t slot, const cmc_usage_journal_data_t* data) {
-    HAL_StatusTypeDef hal_status;
-
-    uint32_t dest_addr = CMC_USAGE_JOURNAL_FLASH_ADDR + (slot * sizeof(cmc_usage_journal_data_t));
-    uint64_t dword;
-    // Copy the struct into a uint64_t for the double-word flash write
-    const uint32_t* src = (const uint32_t*)data;
-    uint32_t* dst = (uint32_t*)&dword;
-    dst[0] = src[0];
-    dst[1] = src[1];
-
-    hal_status = HAL_FLASH_Unlock();
+    HAL_StatusTypeDef hal_status = HAL_FLASH_Unlock();
     if (hal_status != HAL_OK) {
         return false;
     }
 
-    hal_status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, dest_addr, dword);
-    HAL_FLASH_Lock();
+    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
 
+    const uint32_t base_addr = CMC_USAGE_JOURNAL_FLASH_ADDR + (slot * sizeof(cmc_usage_journal_data_t));
+    const uint64_t* src = (const uint64_t*)data;
+    const size_t dwords = sizeof(cmc_usage_journal_data_t) / 8U;
+
+    for (size_t i = 0; i < dwords; i++) {
+        hal_status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, base_addr + (i * 8U), src[i]);
+        if (hal_status != HAL_OK) {
+            break;
+        }
+    }
+
+    HAL_FLASH_Lock();
     return (hal_status == HAL_OK);
 }
 
 // Init: scan flash page to find the latest valid entry and the next free slot
 bool cmc_usage_journal_init(void) {
-
-    // Scan forward to find the first erased slot
     next_free_slot = 0;
+    journal_current = (cmc_usage_journal_data_t){0};
+
     for (uint32_t i = 0; i < CMC_USAGE_JOURNAL_MAX_ENTRIES; i++) {
-        if (journal_page[i].total_km == CMC_USAGE_JOURNAL_ERASED_MARKER) {
+        // End-of-log: erased slot
+        if (journal_page[i].crc == CMC_USAGE_JOURNAL_ERASED_MARKER) {
             break;
         }
-        next_free_slot = i + 1;
-    }
 
-    if (next_free_slot > 0) {
-        // Load the last written entry into RAM
-        journal_current.total_km = journal_page[next_free_slot - 1].total_km;
-        journal_current.trip_km  = journal_page[next_free_slot - 1].trip_km;
-    } else {
-        // Page is fully erased (fresh chip or after reset), start at zero
-        journal_current.total_km = 0;
-        journal_current.trip_km  = 0;
+        // Verify CRC; corrupted entries are skipped (do not advance journal_current)
+        cmc_usage_journal_data_t entry = journal_page[i];
+        if (CMC_UTIL_CRC_CALCULATE_PAYLOAD(&entry) == entry.crc) {
+            journal_current = entry;
+        }
+        next_free_slot = i + 1;
     }
 
     return true;
 }
 
 // Save usage journal data to the next available flash slot
-bool cmc_usage_journal_save(const cmc_usage_journal_data_t* data) {
-    if (data == NULL) {
-        return false;
-    }
-
+bool cmc_usage_journal_save(uint32_t total_km, uint32_t trip_km) {
     // If the page is full, erase it and start from slot 0
     if (next_free_slot >= CMC_USAGE_JOURNAL_MAX_ENTRIES) {
-        bool erase_status = journal_erase_page();
-        if (!erase_status) {
+        if (!journal_erase_page()) {
             return false;
         }
         next_free_slot = 0;
     }
 
-    // Write the entry to the next free slot
-    bool write_status = journal_write_slot(next_free_slot, data);
-    if (!write_status) {
+    // Build entry, compute CRC over payload (total_km + trip_km + _pad)
+    cmc_usage_journal_data_t entry = {
+        .crc      = 0,
+        .total_km = total_km,
+        .trip_km  = trip_km,
+        ._pad     = 0,
+    };
+    entry.crc = CMC_UTIL_CRC_CALCULATE_PAYLOAD(&entry);
+
+    if (!journal_write_slot(next_free_slot, &entry)) {
         return false;
     }
 
     // Update RAM copy and advance the slot pointer
-    journal_current.total_km = data->total_km;
-    journal_current.trip_km  = data->trip_km;
+    journal_current = entry;
     next_free_slot++;
 
     return true;
@@ -139,9 +136,5 @@ const cmc_usage_journal_data_t* cmc_usage_journal_get(void) {
 
 // Reset trip counter and save immediately
 bool cmc_usage_journal_reset_trip(void) {
-    cmc_usage_journal_data_t updated = {
-        .total_km = journal_current.total_km,
-        .trip_km  = 0
-    };
-    return cmc_usage_journal_save(&updated);
+    return cmc_usage_journal_save(journal_current.total_km, 0);
 }

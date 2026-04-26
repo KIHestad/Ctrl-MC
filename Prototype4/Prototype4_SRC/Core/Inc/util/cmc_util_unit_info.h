@@ -20,20 +20,24 @@
 #define CMC_UNIT_INFO_PAGE_SIZE    0x800U       // 2KB page
 
 // Marker to identify a valid unit store entry (ASCII "UNID")
-#define CMC_UNIT_INFO_SIGNATURE       0x554E4944U
+#define CMC_UNIT_INFO_SIGNATURE    0x554E4944U
 
 // Unit store data, padded to 8 bytes (one flash double-word) per field group
 // Add future static fields here, keeping the struct size a multiple of 8 bytes
 typedef struct {
-    uint32_t signature;     // Must be CMC_UNIT_INFO_SIGNATURE for the data to be considered valid
-    uint8_t  unit_id;       // Unit ID (1 to CMC_CONFIG_MAX_SUPPORTED_IO_UNITS)
-    uint8_t  _reserved[3];  // Reserved for future use, pad to 8-byte boundary
+    uint32_t signature;  // Must be CMC_UNIT_INFO_SIGNATURE for the data to be considered valid
+    uint32_t crc;      // CRC of all subsequent data for integrity verification
+    uint32_t unit_id;    // Unit ID (1 to CMC_CONFIG_MAX_SUPPORTED_IO_UNITS)
+    uint32_t _pad;       // Pad to 16 bytes (2 dwords)
 } cmc_unit_info_t;
 
-// Init: read flash page, load data into RAM if valid. Returns true if a valid entry was found.
+// Compile-time check: struct must be exactly one double-word for a single flash write
+_Static_assert(sizeof(cmc_unit_info_t) % 8 == 0, "cmc_unit_info_t size must be a multiple of 8 bytes for flash double-word programming");
+
+// Init: read flash page, load data into RAM if valid. 
 void cmc_unit_info_init(void);
 
-// Save unit info data to flash (erases page, then writes). Returns true on success.
-void cmc_unit_info_save(const cmc_unit_info_t* data);
+// Save unit info data to flash (erases page, then writes).
+void cmc_unit_info_save(void);
 
 #endif /* CMC_UTIL_UNIT_INFO_H_ */
