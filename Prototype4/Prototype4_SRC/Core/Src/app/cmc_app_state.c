@@ -65,7 +65,7 @@ void cmc_app_state_init(void) {
     // Set onboard LED to indicate success if no errors occured
     if (cmc_app_state.system_status == CMC_SYSTEM_STATUS_SUCCESS) {
         // Keep LED on for 10 sec to indicate success
-        cmc_onboard_led_normal_operation();
+        cmc_onboard_led_blink_interval(cmc_app_state.unit_info.unit_id, 5000); // Blink unit id every minute
     } 
 }
 

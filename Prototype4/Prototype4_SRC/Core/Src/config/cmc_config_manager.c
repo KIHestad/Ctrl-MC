@@ -42,7 +42,7 @@ void cmc_config_manager_init(void) {
             // Copy firmware default from ROM into flash
             cmc_app_state.config_status = cmc_config_manager_save_to_flash(&cmc_config_default_for_demo);
             if (cmc_app_state.config_status != CMC_CONFIG_STATUS_SUCCESS) {
-                cmc_onboard_led_blink_error(cmc_app_state.config_status); // Config save failed, indicate error with fast blinking
+                cmc_onboard_led_blink_interval(cmc_app_state.config_status, 1000); // Config save failed, indicate error with fast blinking
                 return;
             }
         }
@@ -51,14 +51,14 @@ void cmc_config_manager_init(void) {
     // Check again if config in flash is valig, now possibly after loading defaults
     if (flash_config->signature != CMC_CONFIG_SIGNATURE) {
         cmc_app_state.config_status = CMC_CONFIG_STATUS_INVALID_FLASH_SIGNATURE;
-        cmc_onboard_led_blink_error(cmc_app_state.config_status); // Config save failed, indicate error with fast blinking
+        cmc_onboard_led_blink_interval(cmc_app_state.config_status, 1000); // Config save failed, indicate error with fast blinking
         return;
     }
 
     // Load from flash into the active RAM config
     cmc_app_state.config_status = cmc_config_manager_load_from_flash(&cmc_config);
     if (cmc_app_state.config_status != CMC_CONFIG_STATUS_SUCCESS) {
-        cmc_onboard_led_blink_error(cmc_app_state.config_status); // Config load failed, indicate error with fast blinking
+        cmc_onboard_led_blink_interval(cmc_app_state.config_status, 1000    ); // Config load failed, indicate error with fast blinking
         return;
     }
 

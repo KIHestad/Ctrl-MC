@@ -23,7 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "app/cmc_app_logic.h"
+#include "app/cmc_app_logic.h" // CMC Include app logic header
 
 /* USER CODE END Includes */
 
@@ -104,7 +104,7 @@ int main(void)
   MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
   
-  cmc_app_init();
+  cmc_app_init(); // CMC Main application logic init
     
   /* USER CODE END 2 */
 
@@ -113,7 +113,7 @@ int main(void)
   while (1)
   {
     
-    cmc_app_process(); // Start main application logic loop
+    cmc_app_process(); // CMC Start main application logic loop
     
     /* USER CODE END WHILE */
 
