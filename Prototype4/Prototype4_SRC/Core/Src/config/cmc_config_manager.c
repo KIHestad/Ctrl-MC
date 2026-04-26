@@ -33,17 +33,17 @@ static uint32_t flash_get_page(uint32_t address) {
 void cmc_config_manager_init(void) {
 
     // Set config status as progess happens
-    app_state.system_status = CMC_SYSTEM_STATUS_ERROR_CONFIG; // Default to config error until we verify it's good
-    app_state.config_status = CMC_CONFIG_STATUS_LOADING; // Prepare spesific congig status
+    cmc_app_state.system_status = CMC_SYSTEM_STATUS_ERROR_CONFIG; // Default to config error until we verify it's good
+    cmc_app_state.config_status = CMC_CONFIG_STATUS_LOADING; // Prepare spesific congig status
 
     // Check if the config in flash is valid/exists
     if (flash_config->signature != CMC_CONFIG_SIGNATURE) {
         // Signature mismatch, should halt for receiving config over CAN, but for now use local demo defaults
         if (cmc_config_default_for_demo_use) {
             // Copy firmware default from ROM into flash
-            app_state.config_status = cmc_config_manager_save_to_flash(&cmc_config_default_for_demo);
-            if (app_state.config_status != CMC_CONFIG_STATUS_SUCCESS) {
-                cmc_onboard_led_blink_error(app_state.config_status); // Config save failed, indicate error with fast blinking
+            cmc_app_state.config_status = cmc_config_manager_save_to_flash(&cmc_config_default_for_demo);
+            if (cmc_app_state.config_status != CMC_CONFIG_STATUS_SUCCESS) {
+                cmc_onboard_led_blink_error(cmc_app_state.config_status); // Config save failed, indicate error with fast blinking
                 return;
             }
         }
@@ -51,22 +51,22 @@ void cmc_config_manager_init(void) {
     
     // Check again if config in flash is valig, now possibly after loading defaults
     if (flash_config->signature != CMC_CONFIG_SIGNATURE) {
-        app_state.config_status = CMC_CONFIG_STATUS_INVALID_FLASH_SIGNATURE;
-        cmc_onboard_led_blink_error(app_state.config_status); // Config save failed, indicate error with fast blinking
+        cmc_app_state.config_status = CMC_CONFIG_STATUS_INVALID_FLASH_SIGNATURE;
+        cmc_onboard_led_blink_error(cmc_app_state.config_status); // Config save failed, indicate error with fast blinking
         return;
     }
 
     // Load from flash into the active RAM config
-    app_state.config_status = cmc_config_manager_load_from_flash(&cmc_config);
-    if (app_state.config_status != CMC_CONFIG_STATUS_SUCCESS) {
-        cmc_onboard_led_blink_error(app_state.config_status); // Config load failed, indicate error with fast blinking
+    cmc_app_state.config_status = cmc_config_manager_load_from_flash(&cmc_config);
+    if (cmc_app_state.config_status != CMC_CONFIG_STATUS_SUCCESS) {
+        cmc_onboard_led_blink_error(cmc_app_state.config_status); // Config load failed, indicate error with fast blinking
         return;
     }
 
     // Validate the loaded config
     // TODO: Consider implementing more thorough validation of the config values
-    app_state.system_status = CMC_SYSTEM_STATUS_SUCCESS;
-    app_state.config_status = CMC_CONFIG_STATUS_SUCCESS; 
+    cmc_app_state.system_status = CMC_SYSTEM_STATUS_SUCCESS;
+    cmc_app_state.config_status = CMC_CONFIG_STATUS_SUCCESS; 
 }
 
 // Save configuration struct to flash using 64-bit double-word programming (STM32G4 requirement)

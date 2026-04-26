@@ -38,13 +38,13 @@ void cmc_util_button_init(void) {
     uint32_t now = HAL_GetTick();
     for (uint8_t i = 0; i < CMC_BTN_COUNT; i++) {
         bool pressed = read_button_raw(i);
-        app_state.button[i].raw                = pressed;
-        app_state.button[i].raw_last_change_ms = now;
-        app_state.button[i].is_pressed         = pressed;
-        app_state.button[i].is_held            = false;
-        app_state.button[i].click_count        = 0;
-        app_state.button[i].double_click_count = 0;
-        app_state.button[i].hold_count         = 0;
+        cmc_app_state.button[i].raw                = pressed;
+        cmc_app_state.button[i].raw_last_change_ms = now;
+        cmc_app_state.button[i].is_pressed         = pressed;
+        cmc_app_state.button[i].is_held            = false;
+        cmc_app_state.button[i].click_count        = 0;
+        cmc_app_state.button[i].double_click_count = 0;
+        cmc_app_state.button[i].hold_count         = 0;
 
         btn_int[i].press_start_ms     = 0;
         btn_int[i].last_release_ms    = 0;
@@ -59,7 +59,7 @@ void cmc_util_button_scan(void) {
     uint32_t now = HAL_GetTick();
 
     for (uint8_t i = 0; i < CMC_BTN_COUNT; i++) {
-        cmc_button_state_t* btn = &app_state.button[i];
+        cmc_button_state_t* btn = &cmc_app_state.button[i];
         cmc_btn_internal_t* bi  = &btn_int[i];
 
         // --- Step 1: Read raw and track last change time ---

@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "config/cmc_config_type.h"
+#include "util/cmc_util_unit_info.h"
 
 // Overall system status, used to track if the system is fully operational or if there are errors that need to be addressed, can be used to gate certain logic in the app processing loop
 typedef enum {
@@ -38,15 +39,17 @@ typedef struct {
 
 // The main application state machine struct, holds the current state of the application
 typedef struct {
-  cmc_config_status_t config_status; // The status of the configuration set at startup
+  cmc_config_status_t config_status;   // The status of the configuration set at startup
   state_system_status_t system_status; // The status of the system
-  uint32_t system_init_time_ms;   // The time for the system to do fully statup
+  bool unit_info_valid;                // True if unit_info was loaded from flash with a valid signature
+  cmc_unit_info_t unit_info;           // This units info, espicially the unit id
+  uint32_t system_init_time_ms;        // The time for the system to do fully statup
   
   cmc_button_state_t button[10];  // Button states
 } cmc_app_state_t;
 
 // Global application state machine instance
-extern cmc_app_state_t app_state; 
+extern cmc_app_state_t cmc_app_state; 
  
 // Initialize the application state machine, set all fields to default values (false/0)
 void cmc_app_state_init(void);

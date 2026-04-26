@@ -57,11 +57,11 @@ ENTRY(Reset_Handler)
 /* The files: ./cmake/gcc-arm-none-eabi.cmake and ./cmake/starm-clang.cmake are customized to use this file instead of the original */
 MEMORY
 {
-  RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 32K
-  FLASH (rx)     : ORIGIN = 0x08000000, LENGTH = 122K /* Reduced from 128K, reserved 6K for UNIT_STORE + RUNTIME + CONFIG */
-  UNIT (r)       : ORIGIN = 0x0801E800, LENGTH = 2K   /* Static unit-specific data (unit ID, etc.) */
-  RUNTIME (r)    : ORIGIN = 0x0801F000, LENGTH = 2K   /* Rolling runtime data (odometer/trip) */
-  CONFIG (r)     : ORIGIN = 0x0801F800, LENGTH = 2K   /* System configuration */
+  RAM (xrw)         : ORIGIN = 0x20000000, LENGTH = 32K
+  FLASH (rx)        : ORIGIN = 0x08000000, LENGTH = 122K /* Reduced from 128K, reserved 6K for UNIT_STORE + RUNTIME + CONFIG */
+  UNIT_INFO (r)     : ORIGIN = 0x0801E800, LENGTH = 2K   /* Static unit-specific data (unit ID, etc.) */
+  USAGE_JOURNAL (r) : ORIGIN = 0x0801F000, LENGTH = 2K   /* Rolling usage data (odometer/trip) */
+  CONFIG (r)        : ORIGIN = 0x0801F800, LENGTH = 2K   /* Glabal system configuration, same across all units */
 }
 
 /* Highest address of the user mode stack */
