@@ -26,15 +26,15 @@ typedef struct {
 #define CMC_RUNTIME_MAX_ENTRIES   (CMC_RUNTIME_PAGE_SIZE / sizeof(cmc_runtime_data_t)) // 256 entries per page
 
 // Init: scans flash page and loads the latest entry into RAM, call at startup
-cmc_config_status_t cmc_runtime_store_init(void);
+bool cmc_runtime_store_init(void);
 
 // Save current runtime data to the next available flash slot (call every km and before shutdown)
-cmc_config_status_t cmc_runtime_store_save(const cmc_runtime_data_t* data);
+bool cmc_runtime_store_save(const cmc_runtime_data_t* data);
 
 // Get the current runtime data loaded into RAM at init
 const cmc_runtime_data_t* cmc_runtime_store_get(void);
 
 // Reset the trip counter to zero and save immediately
-cmc_config_status_t cmc_runtime_store_reset_trip(void);
+bool cmc_runtime_store_reset_trip(void);
 
 #endif /* CMC_UTIL_RUNTIME_STORE_H_ */

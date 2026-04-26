@@ -14,7 +14,7 @@
 #include <stdbool.h>
 
 // Init
-cmc_config_status_t cmc_config_manager_init(void);
+void cmc_config_manager_init(void);
 
 // Manager methods
 bool cmc_config_manager_is_valid_config(void);

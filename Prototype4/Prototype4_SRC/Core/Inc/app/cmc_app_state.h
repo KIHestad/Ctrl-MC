@@ -14,6 +14,12 @@
 #include <stdbool.h>
 #include "config/cmc_config_type.h"
 
+// Overall system status, used to track if the system is fully operational or if there are errors that need to be addressed, can be used to gate certain logic in the app processing loop
+typedef enum {
+    CMC_SYSTEM_STATUS_SUCCESS = 0,
+    CMC_SYSTEM_STATUS_ERROR_GENERIC = 10,
+} state_system_status_t;
+
 // Button state structure for debouncing and event detection
 typedef struct {
   // Debounce internals
@@ -32,6 +38,7 @@ typedef struct {
 // The main application state machine struct, holds the current state of the application
 typedef struct {
   cmc_config_status_t config_status; // The status of the configuration set at startup
+  state_system_status_t system_status; // The status of the system
   uint32_t system_init_time_ms;   // The time for the system to do fully statup
   
   cmc_button_state_t button[10];  // Button states

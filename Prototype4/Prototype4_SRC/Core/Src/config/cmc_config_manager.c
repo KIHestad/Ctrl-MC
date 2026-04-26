@@ -9,6 +9,9 @@
 
 #include "config/cmc_config_manager.h"
 #include "config/cmc_config_defaults.h" 
+#include "app/cmc_app_state.h"
+#include "config/cmc_config_type.h"
+#include "util/cmc_util_onboard_led.h"
 #include "stm32g4xx_hal.h"              
 #include <string.h>                     
 
@@ -27,33 +30,48 @@ static uint32_t flash_get_page(uint32_t address) {
 }
 
 // Init the configuration manager, called at startup to load and validate the configuration
-cmc_config_status_t cmc_config_manager_init(void) {
-    
-    // Check if the config in flash is valid
+void cmc_config_manager_init(void) {
+
+    // Set cofig status as progess happens
+    app_state.system_status = CMC_SYSTEM_STATUS_ERROR_GENERIC;
+    app_state.config_status = CMC_CONFIG_STATUS_LOADING; 
+
+    // Check if the config in flash is valid/exists
     if (flash_config->signature != CMC_CONFIG_SIGNATURE) {
         // Signature mismatch, should halt for receiving config over CAN, but for now use local demo defaults
         if (cmc_config_default_for_demo_use) {
             // Copy firmware default from ROM into flash
-            cmc_config_status_t save_status = cmc_config_manager_save_to_flash(&cmc_config_default_for_demo);
-            if (save_status != CMC_CONFIG_STATUS_SUCCESS) {
-                return CMC_CONFIG_STATUS_ERROR; // Failed to save default config to flash, should halt and wait for config over CAN, but for now just return error
+            app_state.config_status = cmc_config_manager_save_to_flash(&cmc_config_default_for_demo);
+            if (app_state.config_status != CMC_CONFIG_STATUS_SUCCESS) {
+                cmc_onboard_led_blink_error(app_state.config_status); // Config save failed, indicate error with fast blinking
+                return;
             }
         }
     }
     
-    // Check if config in flash is still valid
+    // Check again if config in flash is valig, now possibly after loading defaults
     if (flash_config->signature != CMC_CONFIG_SIGNATURE) {
-        return CMC_CONFIG_STATUS_INVALID_FLASH_SIGNATURE; 
+        app_state.config_status = CMC_CONFIG_STATUS_INVALID_FLASH_SIGNATURE;
+        cmc_onboard_led_blink_error(app_state.config_status); // Config save failed, indicate error with fast blinking
+        return;
     }
 
     // Load from flash into the active RAM config
-    return cmc_config_manager_load_from_flash(&cmc_config);
+    app_state.config_status = cmc_config_manager_load_from_flash(&cmc_config);
+    if (app_state.config_status != CMC_CONFIG_STATUS_SUCCESS) {
+        cmc_onboard_led_blink_error(app_state.config_status); // Config load failed, indicate error with fast blinking
+        return;
+    }
+
+    // Validate the loaded config
+    // TODO: Consider implementing more thorough validation of the config values
+    app_state.config_status = CMC_CONFIG_STATUS_SUCCESS; 
 }
 
 // Save configuration struct to flash using 64-bit double-word programming (STM32G4 requirement)
 cmc_config_status_t cmc_config_manager_save_to_flash(const cmc_config_t* new_config) {
     if (new_config == NULL) {
-        return CMC_CONFIG_STATUS_ERROR;
+        return CMC_CONFIG_STATUS_ERROR_SAVE_TO_FLASH;
     }
 
     HAL_StatusTypeDef hal_status;
@@ -61,7 +79,7 @@ cmc_config_status_t cmc_config_manager_save_to_flash(const cmc_config_t* new_con
     // Unlock flash
     hal_status = HAL_FLASH_Unlock();
     if (hal_status != HAL_OK) {
-        return CMC_CONFIG_STATUS_ERROR;
+        return CMC_CONFIG_STATUS_ERROR_SAVE_TO_FLASH;
     }
 
     // Erase the config page
@@ -75,7 +93,7 @@ cmc_config_status_t cmc_config_manager_save_to_flash(const cmc_config_t* new_con
     hal_status = HAL_FLASHEx_Erase(&erase_init, &page_error);
     if (hal_status != HAL_OK) {
         HAL_FLASH_Lock();
-        return CMC_CONFIG_STATUS_ERROR;
+        return CMC_CONFIG_STATUS_ERROR_SAVE_TO_FLASH;
     }
 
     // Program config as 64-bit double-words
@@ -87,7 +105,7 @@ cmc_config_status_t cmc_config_manager_save_to_flash(const cmc_config_t* new_con
         hal_status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, dest_addr, src[i]);
         if (hal_status != HAL_OK) {
             HAL_FLASH_Lock();
-            return CMC_CONFIG_STATUS_ERROR;
+            return CMC_CONFIG_STATUS_ERROR_SAVE_TO_FLASH;
         }
         dest_addr += sizeof(uint64_t);
     }
@@ -99,7 +117,7 @@ cmc_config_status_t cmc_config_manager_save_to_flash(const cmc_config_t* new_con
 // Load configuration from flash into RAM using 32-bit word copy for safe aligned access
 cmc_config_status_t cmc_config_manager_load_from_flash(cmc_config_t* target) {
     if (target == NULL) {
-        return CMC_CONFIG_STATUS_ERROR;
+        return CMC_CONFIG_STATUS_ERROR_LOAD_FROM_FLASH;
     }
 
     // Verify flash contains a valid config before copying

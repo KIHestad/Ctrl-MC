@@ -11,6 +11,7 @@
 
 #include "util/cmc_util_runtime_store.h"
 #include "stm32g4xx_hal.h"
+#include <stdbool.h>
 
 // Compile-time check: entry must be exactly one double-word for single flash write
 _Static_assert(sizeof(cmc_runtime_data_t) == sizeof(uint64_t), "cmc_runtime_data_t must be exactly 8 bytes (one flash double-word)");
@@ -33,12 +34,12 @@ static uint32_t runtime_get_page(uint32_t address) {
 }
 
 // Helper: erase the runtime flash page
-static cmc_config_status_t runtime_erase_page(void) {
+static bool runtime_erase_page(void) {
     HAL_StatusTypeDef hal_status;
 
     hal_status = HAL_FLASH_Unlock();
     if (hal_status != HAL_OK) {
-        return CMC_CONFIG_STATUS_ERROR;
+        return false;
     }
 
     FLASH_EraseInitTypeDef erase_init = {0};
@@ -51,11 +52,11 @@ static cmc_config_status_t runtime_erase_page(void) {
     hal_status = HAL_FLASHEx_Erase(&erase_init, &page_error);
     HAL_FLASH_Lock();
 
-    return (hal_status == HAL_OK) ? CMC_CONFIG_STATUS_SUCCESS : CMC_CONFIG_STATUS_ERROR;
+    return (hal_status == HAL_OK);
 }
 
 // Helper: write one entry to a specific slot
-static cmc_config_status_t runtime_write_slot(uint32_t slot, const cmc_runtime_data_t* data) {
+static bool runtime_write_slot(uint32_t slot, const cmc_runtime_data_t* data) {
     HAL_StatusTypeDef hal_status;
 
     uint32_t dest_addr = CMC_RUNTIME_FLASH_ADDR + (slot * sizeof(cmc_runtime_data_t));
@@ -68,17 +69,17 @@ static cmc_config_status_t runtime_write_slot(uint32_t slot, const cmc_runtime_d
 
     hal_status = HAL_FLASH_Unlock();
     if (hal_status != HAL_OK) {
-        return CMC_CONFIG_STATUS_ERROR;
+        return false;
     }
 
     hal_status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, dest_addr, dword);
     HAL_FLASH_Lock();
 
-    return (hal_status == HAL_OK) ? CMC_CONFIG_STATUS_SUCCESS : CMC_CONFIG_STATUS_ERROR;
+    return (hal_status == HAL_OK);
 }
 
 // Init: scan flash page to find the latest valid entry and the next free slot
-cmc_config_status_t cmc_runtime_store_init(void) {
+bool cmc_runtime_store_init(void) {
 
     // Scan forward to find the first erased slot
     next_free_slot = 0;
@@ -99,28 +100,28 @@ cmc_config_status_t cmc_runtime_store_init(void) {
         cmc_runtime_current.trip_km  = 0;
     }
 
-    return CMC_CONFIG_STATUS_SUCCESS;
+    return true;
 }
 
 // Save runtime data to the next available flash slot
-cmc_config_status_t cmc_runtime_store_save(const cmc_runtime_data_t* data) {
+bool cmc_runtime_store_save(const cmc_runtime_data_t* data) {
     if (data == NULL) {
-        return CMC_CONFIG_STATUS_ERROR;
+        return false;
     }
 
     // If the page is full, erase it and start from slot 0
     if (next_free_slot >= CMC_RUNTIME_MAX_ENTRIES) {
-        cmc_config_status_t erase_status = runtime_erase_page();
-        if (erase_status != CMC_CONFIG_STATUS_SUCCESS) {
-            return CMC_CONFIG_STATUS_ERROR;
+        bool erase_status = runtime_erase_page();
+        if (!erase_status) {
+            return false;
         }
         next_free_slot = 0;
     }
 
     // Write the entry to the next free slot
-    cmc_config_status_t write_status = runtime_write_slot(next_free_slot, data);
-    if (write_status != CMC_CONFIG_STATUS_SUCCESS) {
-        return CMC_CONFIG_STATUS_ERROR;
+    bool write_status = runtime_write_slot(next_free_slot, data);
+    if (!write_status) {
+        return false;
     }
 
     // Update RAM copy and advance the slot pointer
@@ -128,7 +129,7 @@ cmc_config_status_t cmc_runtime_store_save(const cmc_runtime_data_t* data) {
     cmc_runtime_current.trip_km  = data->trip_km;
     next_free_slot++;
 
-    return CMC_CONFIG_STATUS_SUCCESS;
+    return true;
 }
 
 // Get pointer to the current runtime data in RAM
@@ -137,7 +138,7 @@ const cmc_runtime_data_t* cmc_runtime_store_get(void) {
 }
 
 // Reset trip counter and save immediately
-cmc_config_status_t cmc_runtime_store_reset_trip(void) {
+bool cmc_runtime_store_reset_trip(void) {
     cmc_runtime_data_t updated = {
         .total_km = cmc_runtime_current.total_km,
         .trip_km  = 0

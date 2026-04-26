@@ -16,6 +16,7 @@ static uint32_t next_transition_time = 0;
 static uint32_t blinks_remaining = 0;
 static uint32_t blink_on_duration_ms = 0;
 static uint32_t blink_off_duration_ms = 0;
+static uint32_t error_blink_total = 0; // >0 means error-blink mode: burst of N blinks then 2s pause, repeat
 
 // Init
 void cmc_onboard_led_init(void) {
@@ -27,6 +28,8 @@ void cmc_onboard_led_init(void) {
     blinks_remaining = 0;
     blink_on_duration_ms = 0;
     blink_off_duration_ms = 0;
+    // Show startup is running by inititate onboard LED blinking pattern that will change according to final results of initialization steps
+    cmc_onboard_led_blink(100, 400); // Startup initiated, indicate with slow tiny blinking
 }
 
 // Turn LED on/off 
@@ -40,6 +43,7 @@ void cmc_onboard_led_set(bool on) {
         is_blinking = false;
         led_is_on = false;
         blinks_remaining = 0;
+        error_blink_total = 0;
     }
 }
 
@@ -54,18 +58,35 @@ void cmc_onboard_led_blink_once(uint32_t duration_ms) {
 }
 
 // Blink multiple times with specified on/off durations
-void cmc_onboard_led_blink_multiple(uint32_t numOfBlinks, uint32_t duration_on_ms, uint32_t duration_off_ms) {
-    if ((numOfBlinks == 0U) || (duration_on_ms == 0U)) {
+void cmc_onboard_led_blink_multiple(uint32_t num_of_blinks, uint32_t duration_on_ms, uint32_t duration_off_ms) {
+    if ((num_of_blinks == 0U) || (duration_on_ms == 0U)) {
         cmc_onboard_led_set(false); // Invalid durations, turn off LED
         return;
     }
+    error_blink_total = 0; // Cancel any active error blink mode
     uint32_t now = HAL_GetTick();
     HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
     is_blinking = true;
-    blinks_remaining = numOfBlinks;
+    blinks_remaining = num_of_blinks;
     blink_on_duration_ms = duration_on_ms;
     blink_off_duration_ms = duration_off_ms;
     next_transition_time = now + duration_on_ms;
+}
+
+// Error blinking pattern, will blink infinite but a repeating pattern of x quick blinks followed by a 2 second pause, where x is the error code number (e.g., 3 blinks for error code 3)
+void cmc_onboard_led_blink_error(uint32_t num_of_error_blinks) {
+    if (num_of_error_blinks == 0U) {
+        num_of_error_blinks = 1; // Avoid zero blinks, use 1 blink for error code 0
+    }
+    error_blink_total = num_of_error_blinks;
+    uint32_t now = HAL_GetTick();
+    HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+    is_blinking = true;
+    led_is_on = true;
+    blinks_remaining = num_of_error_blinks;
+    blink_on_duration_ms = 100;
+    blink_off_duration_ms = 400;
+    next_transition_time = now + 100;
 }
 
 // process function to be called regularly from main loop to handle LED state updates
@@ -90,8 +111,14 @@ void cmc_onboard_led_process(void) {
         led_is_on = false;
         blinks_remaining--;
         if (blinks_remaining == 0U) {
-            is_blinking = false;
-            next_transition_time = 0;
+            if (error_blink_total > 0U) {
+                // Error mode: pause 2 seconds then restart the burst
+                blinks_remaining = error_blink_total;
+                next_transition_time = now + 2000;
+            } else {
+                is_blinking = false;
+                next_transition_time = 0;
+            }
         } else {
             next_transition_time = now + blink_off_duration_ms;
         }
