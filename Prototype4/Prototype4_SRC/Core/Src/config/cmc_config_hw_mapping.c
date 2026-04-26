@@ -12,7 +12,7 @@
 #include "stm32g4xx_hal_gpio.h"
 
 // Hardware mapping for input pins, button 1 = item[0]
-const cmc_config_gpio_pin_t cmc_config_hw_digital_in_mapping[10] = {
+const cmc_config_gpio_pin_t cmc_config_hw_digital_in_mapping[CMC_CONFIG_HW_IN_DIGITAL_COUNT] = {
     [0] = {.port = BTN_1_GPIO_Port,  .pin = BTN_1_Pin},  // Input 1
     [1] = {.port = BTN_2_GPIO_Port,  .pin = BTN_2_Pin},  // Input 2
     [2] = {.port = BTN_3_GPIO_Port,  .pin = BTN_3_Pin},  // Input 3
@@ -26,12 +26,12 @@ const cmc_config_gpio_pin_t cmc_config_hw_digital_in_mapping[10] = {
 };
 
 // Hardware mapping for analog input pins, item[0] = first analog input pin
-const cmc_config_gpio_pin_t cmc_config_hw_analog_in_mapping[1] = {
+const cmc_config_gpio_pin_t cmc_config_hw_analog_in_mapping[CMC_CONFIG_HW_IN_ANALOG_COUNT] = {
     [0] = {.port = SENSOR_ANALOG_GPIO_Port, .pin = SENSOR_ANALOG_Pin} // Analog Input 1
 };
 
 
-const cmc_config_infineon_profet_t cmc_config_hw_out_channel_mapping[6] = {
+const cmc_config_infineon_profet_t cmc_config_hw_out_channel_mapping[CMC_CONFIG_HW_OUT_COUNT] = {
     [0] = { // Output channel 1 - Switch 1
         .in_pin =       {.port = SW1_IN_GPIO_Port, .pin = SW1_IN_Pin},
         .den_pin =      {.port = SW1_DEN_GPIO_Port, .pin = SW1_DEN_Pin},

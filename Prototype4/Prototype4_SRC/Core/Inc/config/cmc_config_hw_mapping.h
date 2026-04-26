@@ -10,16 +10,21 @@
 #ifndef CMC_CONFIG_HW_MAPPING_H_
 #define CMC_CONFIG_HW_MAPPING_H_
 
-// For mapping the hardware GPIO input pins
 #include <stdbool.h>
+
+#define CMC_CONFIG_HW_IN_DIGITAL_COUNT 10 // Physical number of buttons possible for usage
+#define CMC_CONFIG_HW_IN_ANALOG_COUNT 1 // Physical number of analog input channels possible for usage
+#define CMC_CONFIG_HW_OUT_COUNT 6 // Physical number of output channels possible for usage
+
+// For mapping the hardware GPIO input pins
 typedef struct {
     GPIO_TypeDef* port;
     uint16_t pin;
 } cmc_config_gpio_pin_t; 
 
 // Hardware mapping for input pins, button 1 = item[0]
-extern const cmc_config_gpio_pin_t cmc_config_hw_digital_in_mapping[10]; // tbd, to be defined in cmc_config_hw_mapping.c
-extern const cmc_config_gpio_pin_t cmc_config_hw_analog_in_mapping[1]; // tbd, to be defined in cmc_config_hw_mapping.c
+extern const cmc_config_gpio_pin_t cmc_config_hw_digital_in_mapping[CMC_CONFIG_HW_IN_DIGITAL_COUNT]; // tbd, to be defined in cmc_config_hw_mapping.c
+extern const cmc_config_gpio_pin_t cmc_config_hw_analog_in_mapping[CMC_CONFIG_HW_IN_ANALOG_COUNT]; // tbd, to be defined in cmc_config_hw_mapping.c
 
 // For mapping the hardware output channels, for the infineon PROFET +2 high side switches
 typedef struct {
@@ -32,6 +37,6 @@ typedef struct {
 } cmc_config_infineon_profet_t;
 
 // Hardware mapping for output channels, channel 1 = item[0]
-extern const cmc_config_infineon_profet_t cmc_config_hw_out_channel_mapping[6]; // tbd, to be defined in cmc_config_hw_mapping.c
+extern const cmc_config_infineon_profet_t cmc_config_hw_out_channel_mapping[CMC_CONFIG_HW_OUT_COUNT]; // tbd, to be defined in cmc_config_hw_mapping.c
 
 #endif /* CMC_CONFIG_HW_MAPPING_H_ */   

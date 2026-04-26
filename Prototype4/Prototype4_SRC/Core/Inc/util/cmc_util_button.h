@@ -18,10 +18,6 @@
 #define CMC_BTN_DBLCLICK_GAP_MS    300  // Max gap between two clicks to count as double-click
 #define CMC_BTN_CLICK_MAX_MS       400  // Max press duration that still counts as a click (vs hold)
 
-// Number of buttons handled
-// TODO: This could be made dynamic, read from config, based on what unit this is
-#define CMC_BTN_COUNT              10
-
 // Initialize button states, read initial GPIO levels into raw/debounced fields
 void cmc_util_button_init(void);
 

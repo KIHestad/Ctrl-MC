@@ -13,6 +13,7 @@
 #include <stm32g4xx.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "config/cmc_config_hw_mapping.h"
 #include "config/cmc_config_type_unit.h"
 #include "feature/cmc_feature_horn.h"
 
@@ -44,25 +45,26 @@ typedef struct {
 typedef struct {
     uint8_t unit_id; // The number of the I/O units configures, (1 to CMC_CONFIG_MAX_SUPPORTED_IO_UNITS)
     uint8_t unit_name_id; // Maps to cmc_unit_name_t, used to identify the unit (eg: rear devices, front devices, instruments, auxiliary)
-    uint8_t in_used; // The number of input pins used on this unit, should be less than or equal to 10
-    uint8_t out_used; // The number of output channels used on this unit, should be less than or equal to 6
-    cmc_config_in_t in[10]; // 30 bytes - The buttons/sensors connected to each digital input pin, maps to cmc_input_
-    cmc_config_out_t out[6]; // 12 bytes - The equipment connected to each output channel, maps to cmc_equipment_t
-} cmc_io_unit_config_t;
+    uint8_t in_digital_used; // The number of input pins used on this unit, should be less than or equal to CMC_CONFIG_HW_IN_DIGITAL_COUNT
+    uint8_t in_analog_used; // The number of analog input pins used on this unit, should be less than or equal to CMC_CONFIG_HW_IN_ANALOG_COUNT
+    uint8_t out_used; // The number of output channels used on this unit, should be less than or equal to CMC_CONFIG_HW_OUT_COUNT
+    cmc_config_in_t in[CMC_CONFIG_HW_IN_DIGITAL_COUNT]; // 30 bytes - The buttons/sensors connected to each digital input pin, maps to cmc_input_
+    cmc_config_out_t out[CMC_CONFIG_HW_OUT_COUNT]; // 12 bytes - The equipment connected to each output channel, maps to cmc_equipment_t
+} cmc_config_io_unit_t;
 
 // Master configuration structure that holds the entire system configuration, including all I/O units and features
 typedef struct {
     uint32_t signature;
     uint8_t  units_required; // Number of units required/expected on the configured system
-    cmc_io_unit_config_t io_unit[CMC_CONFIG_MAX_SUPPORTED_IO_UNITS];
+    cmc_config_io_unit_t io_unit[CMC_CONFIG_MAX_SUPPORTED_IO_UNITS];
     cmc_feature_horn_t feature_horn;
     // Add automatic padding to make the total size of the structure a multiple of 8 bytes for flash storage efficiency
-    // uint8_t  _padding[((
-    //     sizeof(uint32_t)*2
-    //     + sizeof(uint8_t)*2
-    //     + sizeof(cmc_io_unit_config_t)*CMC_CONFIG_MAX_SUPPORTED_IO_UNITS
-    //     + sizeof(cmc_feature_horn_t)
-    // ) % 8) % 8];               
+    uint8_t  _padding[((
+        sizeof(uint32_t)*1
+        + sizeof(uint8_t)*1
+        + sizeof(cmc_config_io_unit_t)*CMC_CONFIG_MAX_SUPPORTED_IO_UNITS
+        + sizeof(cmc_feature_horn_t)
+    ) % 8) % 8];           
     
 } cmc_config_t;
 
@@ -71,5 +73,6 @@ _Static_assert(sizeof(cmc_config_t) % 8 == 0, "cmc_config_t size must be a multi
 
 // The active system configuration, loaded from flash at startup
 extern cmc_config_t cmc_config;
+extern const cmc_config_io_unit_t* this_unit;
 
 #endif /* CMC_CONFIG_TYPE_H_ */

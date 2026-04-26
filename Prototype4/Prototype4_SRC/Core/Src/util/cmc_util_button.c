@@ -23,7 +23,7 @@ typedef struct {
     uint32_t pending_click_ms;    // Tick when the first click released (start of dblclick window)
 } cmc_btn_internal_t;
 
-static cmc_btn_internal_t btn_int[CMC_BTN_COUNT];
+static cmc_btn_internal_t btn_int[CMC_CONFIG_HW_IN_DIGITAL_COUNT];
 
 // Read one button GPIO, returns true if button is physically pressed (active-low)
 static bool read_button_raw(uint8_t index) {
@@ -36,7 +36,7 @@ static bool read_button_raw(uint8_t index) {
 // Initialize: sample current GPIO state as both raw and debounced, clear all counters
 void cmc_util_button_init(void) {
     uint32_t now = HAL_GetTick();
-    for (uint8_t i = 0; i < CMC_BTN_COUNT; i++) {
+    for (uint8_t i = 0; i < CMC_CONFIG_HW_IN_DIGITAL_COUNT; i++) {
         bool pressed = read_button_raw(i);
         cmc_app_state.button[i].raw                = pressed;
         cmc_app_state.button[i].raw_last_change_ms = now;
@@ -54,11 +54,12 @@ void cmc_util_button_init(void) {
     }
 }
 
-// Scan all buttons: debounce, then detect press/release/hold/click/double-click
+// Scan all configured buttons: debounce, then detect press/release/hold/click/double-click
 void cmc_util_button_scan(void) {
     uint32_t now = HAL_GetTick();
 
-    for (uint8_t i = 0; i < CMC_BTN_COUNT; i++) {
+    // only loop over configured buttons
+    for (uint8_t i = 0; i < this_unit->in_digital_used; i++) {
         cmc_button_state_t* btn = &cmc_app_state.button[i];
         cmc_btn_internal_t* bi  = &btn_int[i];
 

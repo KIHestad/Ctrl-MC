@@ -49,7 +49,7 @@ typedef struct {
 } cmc_app_state_t;
 
 // Global application state machine instance
-extern cmc_app_state_t cmc_app_state; 
+extern cmc_app_state_t cmc_app_state;
  
 // Initialize the application state machine, set all fields to default values (false/0)
 void cmc_app_state_init(void);
