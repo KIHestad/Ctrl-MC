@@ -88,6 +88,7 @@ void cmc_unit_info_init(void) {
 
 // Save: erase page then write new data
 void cmc_unit_info_save(const cmc_unit_info_t* data) {
+    // Full page save since this is to be updated very rare, minimal flash wear, no need for a rolling log or multiple slots
     // Check valid unit_id is set before saving
     if (cmc_app_state.unit_info.unit_id < 1 || cmc_app_state.unit_info.unit_id > CMC_CONFIG_MAX_SUPPORTED_IO_UNITS) {
         cmc_app_state.unit_info.signature = 0;

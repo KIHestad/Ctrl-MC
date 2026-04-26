@@ -33,7 +33,8 @@ void cmc_app_state_init(void) {
     // If unit info is not valid, blink LED and wait for user to set it via button presses before proceeding with the rest of initialization, this ensures we have a valid unit id to work with for the rest of the system
     if (!cmc_app_state.unit_info_valid) {
         cmc_onboard_led_blink(50, 950); 
-        // Unit info invalid, run loop until id is set from button press
+        // Unit info invalid, run loop until unid_id is set from button press. Needs to ever lasting busy-wait loop unitl button press detected.
+        // Without valid unit_id we can't proceed with the rest of initialization that relies on it.
         while (!cmc_app_state.unit_info_valid) {
             // Check buttons 1 to CMC_CONFIG_MAX_SUPPORTED_IO_UNITS to allow user to set unit id via button presses
             for (uint8_t i = 0; i < CMC_CONFIG_MAX_SUPPORTED_IO_UNITS; i++) {

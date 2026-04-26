@@ -1,7 +1,7 @@
 /**
   *********************************************************************************************
-  * @file      cmc_util_unit_store.h
-  * @brief     Unit store — persistent flash storage for static unit-specific data
+  * @file      cmc_util_unit_info.h
+  * @brief     Unit info — persistent flash storage for static unit-specific data
   *            Occupies a dedicated 2KB flash page that survives firmware re-flashing.
   *            Data is written as a single struct, page is erased only when saving new data.
   * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
@@ -9,13 +9,13 @@
   *********************************************************************************************
   */
 
-#ifndef CMC_UTIL_UNIT_STORE_H_
-#define CMC_UTIL_UNIT_STORE_H_
+#ifndef CMC_UTIL_UNIT_INFO_H_
+#define CMC_UTIL_UNIT_INFO_H_
 
 #include <stdint.h>
 #include <stdbool.h>
 
-// Flash page configuration for unit store
+// Flash page configuration for unit info
 #define CMC_UNIT_INFO_FLASH_ADDR   0x0801E800U  // Page before RUNTIME page
 #define CMC_UNIT_INFO_PAGE_SIZE    0x800U       // 2KB page
 
@@ -33,7 +33,7 @@ typedef struct {
 // Init: read flash page, load data into RAM if valid. Returns true if a valid entry was found.
 void cmc_unit_info_init(void);
 
-// Save unit store data to flash (erases page, then writes). Returns true on success.
+// Save unit info data to flash (erases page, then writes). Returns true on success.
 void cmc_unit_info_save(const cmc_unit_info_t* data);
 
-#endif /* CMC_UTIL_UNIT_STORE_H_ */
+#endif /* CMC_UTIL_UNIT_INFO_H_ */

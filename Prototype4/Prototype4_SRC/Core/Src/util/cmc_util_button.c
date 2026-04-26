@@ -57,7 +57,10 @@ void cmc_util_button_init(void) {
 // Scan all configured buttons: debounce, then detect press/release/hold/click/double-click
 void cmc_util_button_scan(void) {
     uint32_t now = HAL_GetTick();
-
+    if (this_unit == NULL) {
+        // Safety check, should not happen since we should have a valid unit after initialization
+        return; 
+    }
     // only loop over configured buttons
     for (uint8_t i = 0; i < this_unit->in_digital_used; i++) {
         cmc_button_state_t* btn = &cmc_app_state.button[i];
