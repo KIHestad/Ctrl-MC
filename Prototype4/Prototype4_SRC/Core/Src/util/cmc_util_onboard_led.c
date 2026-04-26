@@ -22,29 +22,21 @@ static uint32_t error_blink_total = 0; // >0 means error-blink mode: burst of N 
 void cmc_onboard_led_init(void) {
     // Ensure LED starts turned off
     HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-    is_blinking = false;
-    led_is_on = false;
-    next_transition_time = 0;
-    blinks_remaining = 0;
-    blink_on_duration_ms = 0;
-    blink_off_duration_ms = 0;
-    // Show startup is running by inititate onboard LED blinking pattern that will change according to final results of initialization steps
+    // Show startup LED blinking pattern, to be changed according to results of initialization steps
     cmc_onboard_led_startup(); 
 }
 
 // Turn LED on/off 
 void cmc_onboard_led_set(bool on) {
-    if (on) {
+    if (on) { // turn on
         HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
-        is_blinking = false;
-        led_is_on = true;
-    } else {
+    } else { // turn off
         HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-        is_blinking = false;
-        led_is_on = false;
         blinks_remaining = 0;
         error_blink_total = 0;
     }
+    led_is_on = on;
+    is_blinking = false;
 }
 
 // Normal startup patter, tiny fast blinking
