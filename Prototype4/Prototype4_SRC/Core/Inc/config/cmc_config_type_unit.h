@@ -13,7 +13,6 @@
 // Default system configuration
 #define CMC_CONFIG_SIGNATURE  0x4354524C // signature to identify if valid config exists in flash
 #define CMC_CONFIG_MAX_SUPPORTED_IO_UNITS 4 // Max number of I/O units supported by the system
-#define CMC_CONFIG_MAX_SUPPORTED_FEATURES 20 // Max number of features supported by the system
 
 // Unit names
 typedef enum {

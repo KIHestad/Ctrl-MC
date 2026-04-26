@@ -39,6 +39,7 @@ static bool unit_info_erase_page(void) {
     uint32_t page_error  = 0;
 
     hal_status = HAL_FLASHEx_Erase(&erase_init, &page_error);
+
     HAL_FLASH_Lock();
 
     return (hal_status == HAL_OK);
@@ -56,6 +57,9 @@ static bool unit_store_write(const cmc_unit_info_t* data) {
     if (hal_status != HAL_OK) {
         return false;
     }
+
+    // Clear any pending flash error flags before programming
+    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
 
     hal_status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, CMC_UNIT_INFO_FLASH_ADDR, dword);
     HAL_FLASH_Lock();
@@ -83,20 +87,26 @@ void cmc_unit_info_init(void) {
 }
 
 // Save: erase page then write new data
-bool cmc_unit_info_save(const cmc_unit_info_t* data) {
+void cmc_unit_info_save(const cmc_unit_info_t* data) {
+    // Check valid unit_id is set before saving
+    if (cmc_app_state.unit_info.unit_id < 1 || cmc_app_state.unit_info.unit_id > CMC_CONFIG_MAX_SUPPORTED_IO_UNITS) {
+        cmc_app_state.unit_info.signature = 0;
+        cmc_app_state.unit_info_valid = false;
+        return; 
+    }
+    // Try erase flash
     if (!unit_info_erase_page()) {
-        return false;
+        cmc_app_state.unit_info.signature = 0;
+        cmc_app_state.unit_info_valid = false;
+        return;
     }
+    // Try write new data to flash
     if (!unit_store_write(data)) {
-        return false;
+        cmc_app_state.unit_info.signature = 0;
+        cmc_app_state.unit_info_valid = false;
+        return;
     }
-    // Update app_state
-    cmc_app_state.unit_info.signature      = data->signature;
-    cmc_app_state.unit_info.unit_id        = data->unit_id;
-    cmc_app_state.unit_info._reserved[0]   = 0;
-    cmc_app_state.unit_info._reserved[1]   = 0;
-    cmc_app_state.unit_info._reserved[2]   = 0;
-    cmc_app_state.unit_info_valid = (data->signature == CMC_UNIT_INFO_SIGNATURE);
-    return true;
+    // Done
+    cmc_app_state.unit_info_valid = true;  
 }
 

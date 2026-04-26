@@ -18,7 +18,6 @@ const bool cmc_config_default_for_demo_use = true;
 // Default configuration values for the system
 const cmc_config_t cmc_config_default_for_demo = {
     .signature       = CMC_CONFIG_SIGNATURE, // Default config signature, must match CMC_CONFIG_SIGNATURE to be considered valid
-    .config_hash     = 0x00000000, // No hash yet, it's a raw default
     .units_required  = 2, // The minimum number of IO units the system needs to operate
 
     // Unit number 1: Front I/O Unit

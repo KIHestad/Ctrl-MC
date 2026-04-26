@@ -29,7 +29,7 @@ void cmc_onboard_led_init(void) {
     blink_on_duration_ms = 0;
     blink_off_duration_ms = 0;
     // Show startup is running by inititate onboard LED blinking pattern that will change according to final results of initialization steps
-    cmc_onboard_led_blink(100, 100); // Startup initiated, indicate very fast blinking
+    cmc_onboard_led_startup(); 
 }
 
 // Turn LED on/off 
@@ -45,6 +45,16 @@ void cmc_onboard_led_set(bool on) {
         blinks_remaining = 0;
         error_blink_total = 0;
     }
+}
+
+// Normal startup patter, tiny fast blinking
+void cmc_onboard_led_startup(void) {
+    cmc_onboard_led_blink(50,150); 
+}
+
+// Normal operation pattern, tiny blink once every minute
+void cmc_onboard_led_normal_operation(void) {
+    cmc_onboard_led_blink(50, 4950); 
 }
 
 // Blink repeatedly with specified on/off durations

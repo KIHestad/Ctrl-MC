@@ -41,7 +41,7 @@ static bool journal_erase_page(void) {
     if (hal_status != HAL_OK) {
         return false;
     }
-
+    
     FLASH_EraseInitTypeDef erase_init = {0};
     erase_init.TypeErase = FLASH_TYPEERASE_PAGES;
     erase_init.Banks     = FLASH_BANK_1;

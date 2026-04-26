@@ -53,20 +53,21 @@ typedef struct {
 // Master configuration structure that holds the entire system configuration, including all I/O units and features
 typedef struct {
     uint32_t signature;
-    uint32_t config_hash;
     uint8_t  units_required; // Number of units required/expected on the configured system
-    uint8_t  features_used;
     cmc_io_unit_config_t io_unit[CMC_CONFIG_MAX_SUPPORTED_IO_UNITS];
     cmc_feature_horn_t feature_horn;
     // Add automatic padding to make the total size of the structure a multiple of 8 bytes for flash storage efficiency
-    uint8_t  _padding[((
-        sizeof(uint32_t)*2
-        + sizeof(uint8_t)*2
-        + sizeof(cmc_io_unit_config_t)*CMC_CONFIG_MAX_SUPPORTED_IO_UNITS
-        + sizeof(cmc_feature_horn_t)
-    ) % 8) % 8];               
+    // uint8_t  _padding[((
+    //     sizeof(uint32_t)*2
+    //     + sizeof(uint8_t)*2
+    //     + sizeof(cmc_io_unit_config_t)*CMC_CONFIG_MAX_SUPPORTED_IO_UNITS
+    //     + sizeof(cmc_feature_horn_t)
+    // ) % 8) % 8];               
     
 } cmc_config_t;
+
+// Compile-time check: struct must be a multiple of 8 bytes for 64-bit flash double-word programming
+_Static_assert(sizeof(cmc_config_t) % 8 == 0, "cmc_config_t size must be a multiple of 8 bytes for flash double-word programming");
 
 // The active system configuration, loaded from flash at startup
 extern cmc_config_t cmc_config;

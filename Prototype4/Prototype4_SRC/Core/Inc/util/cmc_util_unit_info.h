@@ -34,6 +34,6 @@ typedef struct {
 void cmc_unit_info_init(void);
 
 // Save unit store data to flash (erases page, then writes). Returns true on success.
-bool cmc_unit_info_save(const cmc_unit_info_t* data);
+void cmc_unit_info_save(const cmc_unit_info_t* data);
 
 #endif /* CMC_UTIL_UNIT_STORE_H_ */

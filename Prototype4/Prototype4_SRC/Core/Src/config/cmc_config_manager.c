@@ -15,9 +15,6 @@
 #include "stm32g4xx_hal.h"              
 #include <string.h>                     
 
-// Compile-time check: struct must be a multiple of 8 bytes for 64-bit flash double-word programming
-_Static_assert(sizeof(cmc_config_t) % 8 == 0, "cmc_config_t size must be a multiple of 8 bytes for flash double-word programming");
-
 // The global configuration variable that holds the active configuration for the system, loaded at startup from flash or defaults
 cmc_config_t cmc_config;
 
