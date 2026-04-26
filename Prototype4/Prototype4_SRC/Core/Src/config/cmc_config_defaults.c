@@ -23,10 +23,10 @@ const cmc_config_t cmc_config_default_for_demo = {
 
     // Unit number 1: Front I/O Unit
     .io_unit[0] = {
-        .unit_id                 = 1,
-        .unit_name_id            = CMC_UNIT_FRONT, 
-        .in_used                 = 8, // Number of input connectors used on this unit
-        .out_used                = 6, // Number of output channels used on this unit
+        .unit_id         = 1,
+        .unit_name_id    = CMC_UNIT_FRONT, 
+        .in_used         = 8, // Number of input connectors used on this unit
+        .out_used        = 6, // Number of output channels used on this unit
         
         // Input buttons and sensors
         .in[0] = {       // Input button 1
@@ -47,22 +47,22 @@ const cmc_config_t cmc_config_default_for_demo = {
         .in[3] = {       // Input button 4
             .enabled     = 1,
             .device_id   = CMC_IN_HORN,
-            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_DIRECT
         },
         .in[4] = {       // Input button 5
             .enabled     = 1,
             .device_id   = CMC_IN_CLUTCH_LEVER,
-            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_DIRECT
         },
         .in[5] = {       // Input button 6
             .enabled     = 1,
             .device_id   = CMC_IN_BRAKE_LEVER,
-            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_DIRECT
         },
         .in[6] = {       // Input button 7
             .enabled     = 1,
             .device_id   = CMC_IN_STARTER,
-            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_DIRECT
         },
         .in[7] = {       // Input button 8
             .enabled     = 1,
@@ -70,12 +70,12 @@ const cmc_config_t cmc_config_default_for_demo = {
             .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
         },
         .in[8] = {       // Input button 9
-            .enabled     = 0,
+            .enabled     = 1,
             .device_id   = CMC_IN_MENU_LEFT,
             .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
         },
         .in[9] = {       // Input button 10
-            .enabled     = 0,
+            .enabled     = 1,
             .device_id   = CMC_IN_MENU_RIGHT,
             .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
         },
@@ -109,10 +109,27 @@ const cmc_config_t cmc_config_default_for_demo = {
 
     // Unit number 2: Rear I/O Unit
     .io_unit[1] = {
-        .unit_id                 = 2,
-        .unit_name_id            = CMC_UNIT_REAR,
-        .in_used                 = 0, // Number of input connectors used on this unit
-        .out_used                = 6, // Number of output channels used on this unit
+        .unit_id         = 2,
+        .unit_name_id    = CMC_UNIT_REAR,
+        .in_used         = 2, // Number of input connectors used on this unit
+        .out_used        = 6, // Number of output channels used on this unit
+
+        // Input buttons and sensors
+        .in[0] = {       // Input button 1
+            .enabled     = 1,
+            .device_id   = CMC_IN_BRAKE_PEDAL,
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_DIRECT
+        },
+        .in[1] = {       // Input button 2
+            .enabled     = 1,
+            .device_id   = CMC_IN_NEUTRAL_SENSOR,
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
+        },
+        .in[2] = {       // Input button 3
+            .enabled     = 0, // Not used
+            .device_id   = CMC_IN_OIL_SENSOR,
+            .btn_type_id = CMC_IN_DEV_TYPE_DIGITAL_TOGGLE
+        },
 
         // Output Channel Mapping
         .out[0] = {       // Output channel 1

@@ -13,13 +13,6 @@
 #include "config/cmc_config_type.h"
 #include <stdbool.h>
 
-typedef enum {
-    CMC_CONFIG_STATUS_SUCCESS = 0,
-    CMC_CONFIG_STATUS_ERROR   = 1,
-    CMC_CONFIG_STATUS_INVALID_FLASH_SIGNATURE = 2,
-    CMC_CONFIG_STATUS_INVALID_RAM_SIGNATURE = 3,    
-} cmc_config_status_t;
-
 // Init
 cmc_config_status_t cmc_config_manager_init(void);
 

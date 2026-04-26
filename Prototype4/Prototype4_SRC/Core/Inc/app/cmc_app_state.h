@@ -10,6 +10,37 @@
 #ifndef CMC_APP_STATE_H
 #define CMC_APP_STATE_H
 
+#include <stdint.h>
+#include <stdbool.h>
+#include "config/cmc_config_type.h"
 
+// Button state structure for debouncing and event detection
+typedef struct {
+  // Debounce internals
+  bool     raw;                   // Last raw GPIO read
+  uint32_t raw_last_change_ms;  // HAL_GetTick() at last raw reading change, used for debouncing
+  bool     is_pressed;            // Debounced: currently pressed
+  bool     is_held;               // Debounced: true while button is being held past threshold
+  
+  // Event counters, only increment, never reset to enable multiple features to identify new events, 
+  // consuming events needs to be managed in the feature logic
+  uint32_t click_count;         // Incremented on confirmed single-click
+  uint32_t double_click_count;  // Incremented on confirmed double-click
+  uint32_t hold_count;          // Incremented when hold threshold is reached
+} cmc_button_state_t;
+
+// The main application state machine struct, holds the current state of the application
+typedef struct {
+  cmc_config_status_t config_status; // The status of the configuration set at startup
+  uint32_t system_init_time_ms;   // The time for the system to do fully statup
+  
+  cmc_button_state_t button[10];  // Button states
+} cmc_app_state_t;
+
+// Global application state machine instance
+extern cmc_app_state_t app_state; 
+ 
+// Initialize the application state machine, set all fields to default values (false/0)
+void cmc_app_state_init(void);
 
 #endif /* CMC_APP_STATE_H */
