@@ -10,6 +10,7 @@
 #include "app/cmc_app_logic.h"
 #include "app/cmc_app_state.h"
 #include "config/cmc_config_manager.h"
+#include "util/cmc_util_button.h"
 #include "util/cmc_util_onboard_led.h"
 
 // App initialization, called once at startup
@@ -23,10 +24,6 @@ void cmc_app_init(void) {
     
     // Prepare app state machine
     cmc_app_state_init();
-
-    // Inititate CAN manager, set up interrupts to update state machine when relevant incoming messages happens (not implemented yet)
-    
-
 }
 
 // Main processing, called repeatedly from main.c loop
@@ -35,8 +32,9 @@ void cmc_app_process(void) {
     // Only run system logic if app_state.system is success
     if (app_state.system_status != CMC_SYSTEM_STATUS_SUCCESS) {
 
-        // No need to read CAN messages on the unit, they will be handled by interrupts enabled by the CAN manager
-        // Read inputs for all relevant pins for this unit, buttons and sensors, and update the system state accordingly (e.g., set horn active if horn button is pressed, etc.)
+        // No need to read CAN messages in this processing loop, they will be handled by interrupts enabled by the CAN manager
+        // Scan all button inputs: debounce and detect click/double-click/hold events, updates app_state.button[] with the current state and event counts
+        cmc_util_button_scan();
     
         // Send CAN messages to other units based on the current state and configuration (e.g., if horn is active, send horn CAN message, etc.)
     

@@ -10,6 +10,7 @@
 #include "stm32g4xx_hal.h"  
 #include "app/cmc_app_state.h"
 #include "util/cmc_util_onboard_led.h"
+#include "util/cmc_util_button.h"
 #include <string.h>
 
 // The active app state machine instance
@@ -18,13 +19,15 @@ cmc_app_state_t app_state;
 // Initialize the application state machine, set all fields to default values (false/0)
 void cmc_app_state_init(void) {
 
-    // Only run if congiguration is valid and status set to success
+    // Only run if configuration is valid and status set to success
     if (app_state.system_status != CMC_SYSTEM_STATUS_SUCCESS) {
         return;
     }
 
-    // Do app init, like read all button states, set all output channes to defaults and so on
+    // Initialize button reading, sample initial GPIO states
+    cmc_util_button_init();
 
+    // Set CANBUS interrupts to update app_state when relevant messages are received, not implemented yet
 
 
 

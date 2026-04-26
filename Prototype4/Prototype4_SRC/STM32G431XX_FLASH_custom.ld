@@ -58,7 +58,8 @@ ENTRY(Reset_Handler)
 MEMORY
 {
   RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 32K
-  FLASH (rx)     : ORIGIN = 0x08000000, LENGTH = 124K /* Reduced from 128K, reserved 4K for RUNTIME + CONFIG */
+  FLASH (rx)     : ORIGIN = 0x08000000, LENGTH = 122K /* Reduced from 128K, reserved 6K for UNIT_STORE + RUNTIME + CONFIG */
+  UNIT (r)       : ORIGIN = 0x0801E800, LENGTH = 2K   /* Static unit-specific data (unit ID, etc.) */
   RUNTIME (r)    : ORIGIN = 0x0801F000, LENGTH = 2K   /* Rolling runtime data (odometer/trip) */
   CONFIG (r)     : ORIGIN = 0x0801F800, LENGTH = 2K   /* System configuration */
 }

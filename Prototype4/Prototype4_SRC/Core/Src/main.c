@@ -445,8 +445,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : BTN_10_Pin BTN_9_Pin */
-  GPIO_InitStruct.Pin = BTN_10_Pin|BTN_9_Pin;
+  /*Configure GPIO pins : BTN_10_Pin BTN_9_Pin BTN_8_Pin */
+  GPIO_InitStruct.Pin = BTN_10_Pin|BTN_9_Pin|BTN_8_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -456,12 +456,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(FDCAN1_WAKE_UP_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : BTN_8_Pin */
-  GPIO_InitStruct.Pin = BTN_8_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(BTN_8_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : BTN_7_Pin */
   GPIO_InitStruct.Pin = BTN_7_Pin;
