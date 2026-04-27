@@ -17,10 +17,14 @@
 
 // Overall system status, used to track if the system is fully operational or if there are errors that need to be addressed, can be used to gate certain logic in the app processing loop
 typedef enum {
-    CMC_SYSTEM_STATUS_SUCCESS = 0,
-    CMC_SYSTEM_STATUS_ERROR_GENERIC = 10,
-    CMC_SYSTEM_STATUS_ERROR_CONFIG = 11,
-} state_system_status_t;
+    CMC_APP_STATE_STATUS_SUCCESS = 0,
+    CMC_APP_STATE_STATUS_ERROR_CONFIG = 1,
+    CMC_APP_STATE_STATUS_INVALID_FLASH_SIGNATURE = 2,
+    CMC_APP_STATE_STATUS_INVALID_RAM_SIGNATURE = 3,
+    CMC_APP_STATE_STATUS_INVALID_FLASH_CRC = 4,
+    CMC_APP_STATE_STATUS_ERROR_SAVE_TO_FLASH = 5,
+    CMC_APP_STATE_STATUS_ERROR_LOAD_FROM_FLASH = 6,
+} cmc_app_state_status_t; 
 
 // Button state structure for debouncing and event detection
 typedef struct {
@@ -35,17 +39,16 @@ typedef struct {
   uint32_t click_count;         // Incremented on confirmed single-click
   uint32_t double_click_count;  // Incremented on confirmed double-click
   uint32_t hold_count;          // Incremented when hold threshold is reached
-} cmc_button_state_t;
+} cmc_app_state_button_t;
 
 // The main application state machine struct, holds the current state of the application
 typedef struct {
-  cmc_config_status_t config_status;   // The status of the configuration set at startup
-  state_system_status_t system_status; // The status of the system
-  bool unit_info_valid;                // True if unit_info was loaded from flash with a valid signature
-  cmc_unit_info_t unit_info;           // This units info, espicially the unit id
-  uint32_t system_init_time_ms;        // The time for the system to do fully statup
+  cmc_app_state_status_t status; // The status of the system
+  cmc_unit_info_t unit_info;                           // This units info, espicially the unit id
+  bool unit_info_valid;                                // True if unit_info was loaded from flash with a valid signature
+  uint32_t system_init_time_ms;                        // The time for the system to do fully statup
   
-  cmc_button_state_t button[10];  // Button states
+  cmc_app_state_button_t button[10];  // Button states
 } cmc_app_state_t;
 
 // Global application state machine instance

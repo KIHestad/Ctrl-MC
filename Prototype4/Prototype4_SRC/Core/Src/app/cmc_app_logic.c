@@ -30,7 +30,7 @@ void cmc_app_init(void) {
 void cmc_app_process(void) {
 
     // Only run system logic if app_state.system is success
-    if (cmc_app_state.system_status == CMC_SYSTEM_STATUS_SUCCESS) {
+    if (cmc_app_state.status == CMC_APP_STATE_STATUS_SUCCESS) {
 
         // No need to read CAN messages in this processing loop, they will be handled by interrupts enabled by the CAN manager
         // Scan all button inputs: debounce and detect click/double-click/hold events, updates app_state.button[] with the current state and event counts

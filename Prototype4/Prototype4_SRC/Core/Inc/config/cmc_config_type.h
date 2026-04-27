@@ -17,18 +17,6 @@
 #include "config/cmc_config_type_unit.h"
 #include "feature/cmc_feature_horn.h"
 
-typedef enum {
-    CMC_CONFIG_STATUS_SUCCESS = 0,
-    CMC_CONFIG_STATUS_LOADING = 1,
-    CMC_CONFIG_STATUS_ERROR_GENERIC = 2,
-    CMC_CONFIG_STATUS_ERROR_SAVE_TO_FLASH = 3,
-    CMC_CONFIG_STATUS_ERROR_LOAD_FROM_FLASH = 4,
-    CMC_CONFIG_STATUS_INVALID_FLASH_SIGNATURE = 5,
-    CMC_CONFIG_STATUS_INVALID_RAM_SIGNATURE = 6,
-    CMC_CONFIG_STATUS_INVALID_FLASH_CRC = 7,
-
-} cmc_config_status_t;
-
 // The configuration for input buttons and sensors (3 bytes)
 typedef struct {
     uint8_t enabled; // Set 1 if to be used, set 0 if not to be used and the system will ignore reading it

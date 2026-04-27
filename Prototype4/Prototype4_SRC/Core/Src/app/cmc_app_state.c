@@ -21,7 +21,7 @@ cmc_app_state_t cmc_app_state;
 void cmc_app_state_init(void) {
 
     // Only run if configuration is valid and status set to success
-    if (cmc_app_state.system_status != CMC_SYSTEM_STATUS_SUCCESS) {
+    if (cmc_app_state.status != CMC_APP_STATE_STATUS_SUCCESS) {
         return;
     }
     
@@ -64,7 +64,7 @@ void cmc_app_state_init(void) {
     cmc_app_state.system_init_time_ms  = HAL_GetTick();
 
     // Set onboard LED to indicate success if no errors occured
-    if (cmc_app_state.system_status == CMC_SYSTEM_STATUS_SUCCESS) {
+    if (cmc_app_state.status == CMC_APP_STATE_STATUS_SUCCESS) {
         // Keep LED on for 10 sec to indicate success
         cmc_onboard_led_blink_interval(cmc_app_state.unit_info.unit_id, 5000); // Blink unit id every minute
     } 

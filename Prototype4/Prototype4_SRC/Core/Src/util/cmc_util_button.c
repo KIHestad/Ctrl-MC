@@ -63,7 +63,7 @@ void cmc_util_button_scan(void) {
     }
     // only loop over configured buttons
     for (uint8_t i = 0; i < this_unit->in_digital_used; i++) {
-        cmc_button_state_t* btn = &cmc_app_state.button[i];
+        cmc_app_state_button_t* btn = &cmc_app_state.button[i];
         cmc_btn_internal_t* bi  = &btn_int[i];
 
         // --- Step 1: Read raw and track last change time ---
