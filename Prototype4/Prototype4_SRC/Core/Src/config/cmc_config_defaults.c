@@ -156,5 +156,9 @@ const cmc_config_t cmc_config_default_for_demo = {
             .device_id    = CMC_OUT_INSTR_NEUTRAL
         },        
     },
+    .feature_horn = {
+        .auto_shut_off_sec = 3, // Automatically turn off the horn after this many seconds if the button is held continuously, set to 0 to disable auto shut-off
+        .enabled = 1, // Set to 1 to enable the horn feature, set to 0 to disable it and the system will ignore any horn-related logic
+    }
         
 };

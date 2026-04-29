@@ -17,58 +17,67 @@
 #include "app/cmc_app_state.h"
 #include "util/cmc_util_output.h"
 #include "util/cmc_util_onboard_led.h"
+#include "stm32g4xx_hal.h"
 
 // Local state for the horn feature, not exposed outside this module
-static bool this_unit_horn_active = false; // True if the horn is currently active (powered on)
-static bool this_unit_feature_active = false;  // Set true if relevant in initialization, if false the horn logic will be inactive and do nothing
-static uint8_t switch_id = 0xFF; // The output index for the horn switch on this unit, set in initialization if the horn feature is enabled and the horn output device is enabled on this unit, used for controlling the horn output channel when needed
+static bool this_unit_horn_active = false;      // True if the horn is currently active (powered on)
+static bool this_unit_feature_active = false;   // Set true if relevant in initialization, if false the horn logic will be inactive and do nothing
+static uint8_t switch_id = 0xFF;                // The output index for the horn switch on this unit, set in initialization if the horn feature is enabled and the horn output device is enabled on this unit, used for controlling the horn output channel when needed
+static uint32_t horn_on_since_ms = 0;           // Tick at which the horn was last turned on, used for auto shut-off timeout
+static bool timeout_latched = false;            // Set true after timeout auto-off, cleared when horn button is released
 
 void cmc_feature_horn_init(void) {
-    // Check if the horn feature is enabled in the configuration and if this unit has the horn output device enabled, if not, this feature will be inactive and do nothing
-    this_unit_feature_active = cmc_config.feature_horn.enabled && cmc_util_out_is_device_enabled(CMC_OUT_HORN);
-    if (this_unit_feature_active) {
-        // Get the output index for the horn switch on this unit, used for controlling the horn output channel when needed
-        switch_id = cmc_util_out_get_id(CMC_OUT_HORN);
-        // Ensure the horn starts in the off state on initialization
-        // TODO        
-    }
+  // Check if the horn feature is enabled in the configuration and if this unit has the horn output device enabled, if not, this feature will be inactive and do nothing
+  this_unit_feature_active = (cmc_config.feature_horn.enabled == 1) && cmc_util_out_is_device_enabled(CMC_OUT_HORN);
+  if (this_unit_feature_active) {
+      // Get the output index for the horn switch on this unit, used for controlling the horn output channel when needed
+      switch_id = cmc_util_out_get_id(CMC_OUT_HORN);
+      // Ensure the horn starts in the off state on initialization
+      cmc_util_out_set_switch(switch_id, false);
+  }
 }
 
 // Turn Horn on/off
 void cmc_feature_horn_process() {
-  
-  // Compare this units horn active state with the app state
-  // The app state is set from input processing logic or received from other unit from CANBUS
-  if (!this_unit_feature_active || this_unit_horn_active == cmc_app_state.input.horn_button_pressed) {
-    // Feature is not present or active, or no change in state, do nothing
-    return;
-  }
-  
-  // Horn feature logic
-  // Horn is configured and enabled on this unit, check if it should be turned on or off based on logic
-  bool this_unit_horn_active_new_status = false; // Default to off, only turn on if conditions are met below
-  if (cmc_app_state.vehicle.ignition_on && !cmc_app_state.vehicle.starter_engaged && cmc_app_state.input.horn_button_pressed) {
-    this_unit_horn_active_new_status = true;
+
+  // Feature is not configured or enabled on this unit, do nothing
+  if (!this_unit_feature_active) {
+      return;
   }
 
-  // Check for change in horn active state, if changed, update the state and send CAN message to other units to inform them of the change if needed
-  if (this_unit_horn_active != this_unit_horn_active_new_status) {
-
-    // Turn on of off the horn output on this unit based on the new status, not implemented yet, just update the state variable for now
-    // Send signal to Infion Profet switches
-
-    
-    // TODO: Send CAN message to other units to inform them of the horn state change if needed, not implemented yet
-
-    // Update the horn active state for this unit
-    this_unit_horn_active = this_unit_horn_active_new_status;
-    
-    // temp code to turn onboard led on when horn is active for testing, remove when actual horn output control is implemented
-    cmc_onboard_led_set(this_unit_horn_active);
+  // After timeout-triggered auto-off, require button release before allowing a new horn activation.
+  if (timeout_latched) {
+    if (!cmc_app_state.input.horn_button_pressed) {
+      timeout_latched = false;
+    }
+    else {
+      return;
+    }
   }
 
-
+  if (!this_unit_horn_active) {
+    // Horn in currently off, if button pressed, ignition is on and starter not engaged - turn on the horn
+    if (cmc_app_state.input.horn_button_pressed && cmc_app_state.vehicle.ignition_on && !cmc_app_state.vehicle.starter_engaged) {
+      cmc_util_out_set_switch(switch_id, true); // Turn on the horn
+      horn_on_since_ms = HAL_GetTick(); // Start timer for auto shut-off
+      this_unit_horn_active = true; // Update local state
+      cmc_onboard_led_set(true); // Temp: mirror horn state on onboard LED for testing
+    }
+  }
+  else {
+    // Horn is currently on, if button released, ignition turned off, starter engaged or auto shut-off timeout reached - turn off the horn
+    bool time_overdue = (cmc_config.feature_horn.auto_shut_off_sec > 0U) &&
+                        ((HAL_GetTick() - horn_on_since_ms) >= ((uint32_t)cmc_config.feature_horn.auto_shut_off_sec * 1000U));
+    if (!cmc_app_state.input.horn_button_pressed || !cmc_app_state.vehicle.ignition_on || cmc_app_state.vehicle.starter_engaged || time_overdue) {
+      cmc_util_out_set_switch(switch_id, false); // Turn off the horn
+      this_unit_horn_active = false; // Update local state
+      if (time_overdue) {
+        timeout_latched = true;
+      }
+      cmc_onboard_led_set(false); // Temp: mirror horn state on onboard LED for testing
+    }
+  }
 }
-   
+
 
 

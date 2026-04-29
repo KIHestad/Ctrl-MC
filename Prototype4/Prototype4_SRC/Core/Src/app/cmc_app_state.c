@@ -25,7 +25,13 @@ void cmc_app_state_init(void) {
     if (cmc_app_state.system.status != CMC_APP_STATE_STATUS_SUCCESS) {
         return;
     }
-    
+
+    // Set default values for the app state machine
+    // TODO
+    cmc_app_state.vehicle.ignition_on = true; // Set to true for testing, later add logic from config to dertermin if software ignition state should be tracked and used in the system
+    cmc_app_state.vehicle.starter_engaged = false; // Set to false for testing, should be replaced with feature
+
+
     // Initialize button reading, sample initial GPIO states
     cmc_util_input_init();
 
