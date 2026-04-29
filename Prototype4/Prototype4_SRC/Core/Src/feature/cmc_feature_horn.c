@@ -16,6 +16,7 @@
 #include "config/cmc_config_type.h"
 #include "app/cmc_app_state.h"
 #include "util/cmc_util_output.h"
+#include "util/cmc_util_onboard_led.h"
 
 // Local state for the horn feature, not exposed outside this module
 static bool this_unit_horn_active = false; // True if the horn is currently active (powered on)
@@ -61,7 +62,11 @@ void cmc_feature_horn_process() {
 
     // Update the horn active state for this unit
     this_unit_horn_active = this_unit_horn_active_new_status;
+    
+    // temp code to turn onboard led on when horn is active for testing, remove when actual horn output control is implemented
+    cmc_onboard_led_set(this_unit_horn_active);
   }
+
 
 }
    

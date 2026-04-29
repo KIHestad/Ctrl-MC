@@ -12,6 +12,7 @@
 #include "config/cmc_config_manager.h"
 #include "util/cmc_util_input.h"
 #include "util/cmc_util_onboard_led.h"
+#include "feature/cmc_features.h"
 
 // App initialization, called once at startup
 void cmc_app_init(void) {

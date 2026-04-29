@@ -12,6 +12,7 @@
 #include "app/cmc_app_state.h"
 #include "util/cmc_util_onboard_led.h"
 #include "util/cmc_util_input.h"
+#include "feature/cmc_features.h"
 #include <string.h>
 
 // The active app state machine instance
