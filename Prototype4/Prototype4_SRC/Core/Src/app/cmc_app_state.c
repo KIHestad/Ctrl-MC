@@ -11,7 +11,7 @@
 #include "config/cmc_config_hw_mapping.h"
 #include "app/cmc_app_state.h"
 #include "util/cmc_util_onboard_led.h"
-#include "util/cmc_util_button.h"
+#include "util/cmc_util_input.h"
 #include <string.h>
 
 // The active app state machine instance
@@ -21,28 +21,28 @@ cmc_app_state_t cmc_app_state;
 void cmc_app_state_init(void) {
 
     // Only run if configuration is valid and status set to success
-    if (cmc_app_state.status != CMC_APP_STATE_STATUS_SUCCESS) {
+    if (cmc_app_state.system.status != CMC_APP_STATE_STATUS_SUCCESS) {
         return;
     }
     
     // Initialize button reading, sample initial GPIO states
-    cmc_util_button_init();
+    cmc_util_input_init();
 
     // Read unit data from unit info flash store
     cmc_unit_info_init();
     // If unit info is not valid, blink LED and wait for user to set it via button presses before proceeding with the rest of initialization, this ensures we have a valid unit id to work with for the rest of the system
-    if (!cmc_app_state.unit_info_valid) {
+    if (!cmc_app_state.system.unit_info_valid) {
         cmc_onboard_led_blink(50, 950); 
         // Unit info invalid, run loop until unid_id is set from button press. Needs to ever lasting busy-wait loop unitl button press detected.
         // Without valid unit_id we can't proceed with the rest of initialization that relies on it.
-        while (!cmc_app_state.unit_info_valid) {
+        while (!cmc_app_state.system.unit_info_valid) {
             // Check buttons 1 to CMC_CONFIG_MAX_SUPPORTED_IO_UNITS to allow user to set unit id via button presses
             for (uint8_t i = 0; i < CMC_CONFIG_MAX_SUPPORTED_IO_UNITS; i++) {
                 if (HAL_GPIO_ReadPin(cmc_config_hw_digital_in_mapping[i].port,cmc_config_hw_digital_in_mapping[i].pin) == GPIO_PIN_RESET) {
                     // If button is pressed, set unit id to button index + 1 (to make it 1-based)
-                    cmc_app_state.unit_info.unit_id = i + 1;
+                    cmc_app_state.system.unit_info.unit_id = i + 1;
                     // Add correct signature to indicated valid unit info and save to flash
-                    cmc_app_state.unit_info.signature = CMC_UNIT_INFO_SIGNATURE;
+                    cmc_app_state.system.unit_info.signature = CMC_UNIT_INFO_SIGNATURE;
                     // save to flash now
                     cmc_unit_info_save();
                     break;                    
@@ -54,19 +54,22 @@ void cmc_app_state_init(void) {
         cmc_onboard_led_startup(); 
     }
 
-    // Config and unit info should be valid at this point, set this_unit
-    this_unit = &cmc_config.io_unit[cmc_app_state.unit_info.unit_id - 1];
+    // Config and unit info should be valid at this point, set cmc_config_this_unit
+    cmc_config_this_unit = &cmc_config.io_unit[cmc_app_state.system.unit_info.unit_id - 1];
+
+    // Now initiate all features for this unit, check config / cmc_config_this_unit to set initial feature state as needed
+    cmc_feature_horn_init();
 
     // Set CANBUS interrupts to update app_state when relevant messages are received, not implemented yet
 
 
     // Set tick from HAL_GetTick() to track how long the system time took
-    cmc_app_state.system_init_time_ms  = HAL_GetTick();
+    cmc_app_state.system.init_time_ms  = HAL_GetTick();
 
     // Set onboard LED to indicate success if no errors occured
-    if (cmc_app_state.status == CMC_APP_STATE_STATUS_SUCCESS) {
+    if (cmc_app_state.system.status == CMC_APP_STATE_STATUS_SUCCESS) {
         // Keep LED on for 10 sec to indicate success
-        cmc_onboard_led_blink_interval(cmc_app_state.unit_info.unit_id, 5000); // Blink unit id every minute
+        cmc_onboard_led_blink_interval(cmc_app_state.system.unit_info.unit_id, 5000); // Blink unit id every minute
     } 
 }
 

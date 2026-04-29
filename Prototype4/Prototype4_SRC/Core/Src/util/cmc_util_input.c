@@ -1,15 +1,15 @@
 /**
   *********************************************************************************************
-    * @file      cmc_util_button.c
-    * @brief     Button reading, debouncing and event detection (click, hold)
-    *            Reads GPIO pins via cmc_config_hw_digital_in_mapping
+  * @file      cmc_util_input.c
+  * @brief     Button reading, debouncing and event detection (click, hold)
+  *            Reads GPIO pins via cmc_config_hw_digital_in_mapping
   *            All buttons are active-low (pulled up, pressed reads GPIO_PIN_RESET)
   * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
   * @copyright KI Hestad, Complicated Productions
   *********************************************************************************************
   */
 
-#include "util/cmc_util_button.h"
+#include "util/cmc_util_input.h"
 #include "app/cmc_app_state.h"
 #include "config/cmc_config_hw_mapping.h"
 #include "stm32g4xx_hal.h"
@@ -64,53 +64,53 @@ void cmc_util_input_scan(void) {
         }
 
         // Reference to the button state struct for easier access
-        cmc_util_in_state_t* btn  = &cmc_util_in_state[i];
+        cmc_util_in_state_t* in  = &cmc_util_in_state[i];
 
         // Read inputs depending on digital or analog type
         if (type_id != CMC_IN_TYPE_ANALOG) {
             
             // Digital button, read the raw GPIO state, compare to last raw state for debounce logic
             bool current_pressed_raw = read_button_raw(i);
-            if (current_pressed_raw != btn->pressed_raw) {
-                btn->pressed_raw = current_pressed_raw;
-                btn->pressed_raw_ms = now;
+            if (current_pressed_raw != in->pressed_raw) {
+                in->pressed_raw = current_pressed_raw;
+                in->pressed_raw_ms = now;
             }
 
             // Debounce — only accept new state after it has been stable
-            bool prev_physical_pressed = btn->pressed_physical;
-            if (btn->pressed_raw != btn->pressed_physical) {
-                if ((now - btn->pressed_raw_ms) >= CMC_UTIL_IN_DEBOUNCE_MS) {
-                    btn->pressed_physical = btn->pressed_raw;
+            bool prev_physical_pressed = in->pressed_physical;
+            if (in->pressed_raw != in->pressed_physical) {
+                if ((now - in->pressed_raw_ms) >= CMC_UTIL_IN_DEBOUNCE_MS) {
+                    in->pressed_physical = in->pressed_raw;
                 }
             }
 
-            bool just_pressed = (btn->pressed_physical && !prev_physical_pressed);
-            bool just_released = (!btn->pressed_physical && prev_physical_pressed);
+            bool just_pressed = (in->pressed_physical && !prev_physical_pressed);
+            bool just_released = (!in->pressed_physical && prev_physical_pressed);
 
             // Direct output follows debounced physical state. Toggle output flips once per press edge.
             if (type_id == CMC_IN_TYPE_DIGITAL_DIRECT) {
-                btn->pressed = btn->pressed_physical;
+                in->pressed = in->pressed_physical;
             }
             //  type_id == CMC_IN_TYPE_DIGITAL_TOGGLE
             else { 
                 if (just_pressed) {
-                    btn->pressed = !btn->pressed;
+                    in->pressed = !in->pressed;
                     // Hold tracking is based on physical debounced press, not logical toggle state.
-                    btn->toggle_hold_start_ms = now;
-                    btn->toggle_hold = false;
-                    btn->toggle_hold_sec = 0;
+                    in->toggle_hold_start_ms = now;
+                    in->toggle_hold = false;
+                    in->toggle_hold_sec = 0;
                 }
                 // Hold detection based on physical debounced state, only for toggle type
-                if (btn->pressed_physical) {
-                    uint32_t hold_elapsed_ms = now - btn->toggle_hold_start_ms;
+                if (in->pressed_physical) {
+                    uint32_t hold_elapsed_ms = now - in->toggle_hold_start_ms;
                     if (hold_elapsed_ms >= CMC_UTIL_IN_HOLD_THRESHOLD_MS) {
-                        btn->toggle_hold = true;
-                        btn->toggle_hold_sec = (uint8_t)(hold_elapsed_ms / 1000U);
+                        in->toggle_hold = true;
+                        in->toggle_hold_sec = (uint8_t)(hold_elapsed_ms / 1000U);
                     }
                 } 
                 else if (just_released) {
-                    btn->toggle_hold = false;
-                    btn->toggle_hold_sec = 0;
+                    in->toggle_hold = false;
+                    in->toggle_hold_sec = 0;
                 }
             }
             
@@ -123,7 +123,9 @@ void cmc_util_input_scan(void) {
         }
 
         // After button state is recorded, check if cmc_app_state needs updating depending on the button type
-
+        if (cmc_config_this_unit->in[i].device_id == CMC_IN_HORN) {
+            cmc_app_state.input.horn_button_pressed = in->pressed;
+        }
 
     }
 }

@@ -1,14 +1,14 @@
 /**
   *********************************************************************************************
-  * @file      cmc_util_button.h
+  * @file      cmc_util_input.h
   * @brief     Button reading, debouncing and event detection (click, hold)
   * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
   * @copyright KI Hestad, Complicated Productions
   *********************************************************************************************
   */
 
-#ifndef CMC_UTIL_BUTTON_H_
-#define CMC_UTIL_BUTTON_H_
+#ifndef CMC_UTIL_INPUT_H_
+#define CMC_UTIL_INPUT_H_
 
 #include <stdint.h>
 
@@ -22,4 +22,4 @@ void cmc_util_input_init(void);
 // Scan all buttons, debounce and detect events, call once per main loop iteration
 void cmc_util_input_scan(void);
 
-#endif /* CMC_UTIL_BUTTON_H_ */
+#endif /* CMC_UTIL_INPUT_H_ */

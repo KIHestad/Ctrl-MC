@@ -66,53 +66,53 @@ static bool unit_info_write(const cmc_unit_info_t* data) {
 
 // Init: read flash and load into app_state.unit_info if valid
 void cmc_unit_info_init(void) {
-    cmc_app_state.unit_info_valid = false;
+    cmc_app_state.system.unit_info_valid = false;
 
     // Check signature
     if (flash_unit_info->signature != CMC_UNIT_INFO_SIGNATURE) {
-        cmc_app_state.unit_info = (cmc_unit_info_t){0};
+        cmc_app_state.system.unit_info = (cmc_unit_info_t){0};
         return;
     }
 
     // Copy whole struct (including _pad, so CRC verify is consistent)
-    cmc_app_state.unit_info = *flash_unit_info;
+    cmc_app_state.system.unit_info = *flash_unit_info;
 
     // Verify CRC over payload (everything after the crc field)
-    if (CMC_UTIL_CRC_CALCULATE_PAYLOAD(&cmc_app_state.unit_info) != cmc_app_state.unit_info.crc) {
-        cmc_app_state.unit_info = (cmc_unit_info_t){0};
+    if (CMC_UTIL_CRC_CALCULATE_PAYLOAD(&cmc_app_state.system.unit_info) != cmc_app_state.system.unit_info.crc) {
+        cmc_app_state.system.unit_info = (cmc_unit_info_t){0};
         return;
     }
 
-    cmc_app_state.unit_info_valid = true;
+    cmc_app_state.system.unit_info_valid = true;
 }
 
 // Save: erase page then write new data
 void cmc_unit_info_save(void) {
     // Full page save since this is to be updated very rare, minimal flash wear, no need for a rolling log or multiple slots
     // Check valid unit_id is set before saving
-    if (cmc_app_state.unit_info.unit_id < 1 || cmc_app_state.unit_info.unit_id > CMC_CONFIG_MAX_SUPPORTED_IO_UNITS) {
-        cmc_app_state.unit_info = (cmc_unit_info_t){0};
-        cmc_app_state.unit_info_valid = false;
+    if (cmc_app_state.system.unit_info.unit_id < 1 || cmc_app_state.system.unit_info.unit_id > CMC_CONFIG_MAX_SUPPORTED_IO_UNITS) {
+        cmc_app_state.system.unit_info = (cmc_unit_info_t){0};
+        cmc_app_state.system.unit_info_valid = false;
         return; 
     }
     // Try erase flash
     if (!unit_info_erase_page()) {
-        cmc_app_state.unit_info = (cmc_unit_info_t){0};
-        cmc_app_state.unit_info_valid = false;
+        cmc_app_state.system.unit_info = (cmc_unit_info_t){0};
+        cmc_app_state.system.unit_info_valid = false;
         return;
     }
     // Try write new data to flash
-    cmc_unit_info_t data_to_write = cmc_app_state.unit_info;
+    cmc_unit_info_t data_to_write = cmc_app_state.system.unit_info;
     data_to_write.signature = CMC_UNIT_INFO_SIGNATURE;
     data_to_write.crc       = CMC_UTIL_CRC_CALCULATE_PAYLOAD(&data_to_write);   // covers subsequent data after signature and crc fields = unit_id and more if added
     if (!unit_info_write(&data_to_write)) {
-        cmc_app_state.unit_info = (cmc_unit_info_t){0};
-        cmc_app_state.unit_info_valid = false;
+        cmc_app_state.system.unit_info = (cmc_unit_info_t){0};
+        cmc_app_state.system.unit_info_valid = false;
         return;
     }
     // Done
-    cmc_app_state.unit_info = data_to_write;   // sync RAM with flash
-    cmc_app_state.unit_info_valid = true;  
+    cmc_app_state.system.unit_info = data_to_write;   // sync RAM with flash
+    cmc_app_state.system.unit_info_valid = true;  
 }
 
 

@@ -26,29 +26,32 @@ typedef enum {
     CMC_APP_STATE_STATUS_ERROR_LOAD_FROM_FLASH = 6,
 } cmc_app_state_status_t; 
 
-// Button state structure for debouncing and event detection
-typedef struct {
-  // Debounce internals
-  bool     raw;                   // Last raw GPIO read
-  uint32_t raw_last_change_ms;  // HAL_GetTick() at last raw reading change, used for debouncing
-  bool     is_pressed;            // Debounced: currently pressed
-  bool     is_held;               // Debounced: true while button is being held past threshold
-  
-  // Event counters, only increment, never reset to enable multiple features to identify new events, 
-  // consuming events needs to be managed in the feature logic
-  uint32_t click_count;         // Incremented on confirmed single-click
-  uint32_t double_click_count;  // Incremented on confirmed double-click
-  uint32_t hold_count;          // Incremented when hold threshold is reached
-} cmc_app_state_button_t;
-
-// The main application state machine struct, holds the current state of the application
+// Main system state 
 typedef struct {
   cmc_app_state_status_t status; // The status of the system
   cmc_unit_info_t unit_info;                           // This units info, espicially the unit id
   bool unit_info_valid;                                // True if unit_info was loaded from flash with a valid signature
-  uint32_t system_init_time_ms;                        // The time for the system to do fully statup
-  
-  cmc_app_state_button_t button[10];  // Button states
+  uint32_t init_time_ms;                        // The time for the system to do fully statup
+    
+} cmc_app_state_system_t;
+
+// Main vehicle state
+typedef struct {
+    bool ignition_on; // True if ignition is on
+    bool starter_engaged; // True if starter motor is engaged
+} cmc_app_state_vehicle_t;
+
+// Button readings
+typedef struct {
+    bool horn_button_pressed; // True if the horn button is currently pressed
+} cmc_app_state_input_t;
+
+
+// The main application state machine struct, holds the current state of the application
+typedef struct {
+    cmc_app_state_system_t system; // The overall system state, can be used to gate certain logic in the app processing loop if the system is not fully operational
+    cmc_app_state_vehicle_t vehicle; // The current state of the vehicle, can be used for logic that depends on the state of the vehicle (eg: horn should not be on if ignition is off, etc)
+    cmc_app_state_input_t input; // The current state of the inputs, can be used for logic that depends on the state of the inputs (eg: horn button pressed, etc)
 } cmc_app_state_t;
 
 // Global application state machine instance

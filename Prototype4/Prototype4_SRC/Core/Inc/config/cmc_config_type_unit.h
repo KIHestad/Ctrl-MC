@@ -50,13 +50,13 @@ typedef enum {
     CMC_IN_MENU_BACK = 45,
 } cmc_in_t;
 
-// button types: How should the system interpret the button presses? (eg: classic, toggle, ignore)
+// button and sensor types, for digital inputs set how to interpret the button presses: direct or toggle
 typedef enum {
-    CMC_IN_DEV_TYPE_IGNORE         = 0, // Disable, ignore any input
-    CMC_IN_DEV_TYPE_DIGITAL_DIRECT = 1, // Mechanical latching button stays permanently on (light on/off button) or if held when momentary button (horn hold button)
-    CMC_IN_DEV_TYPE_DIGITAL_TOGGLE = 2, // Click to turn ON, click to turn OFF, to use a modern momentary-type button to act like a permanent button (select menu items)
-    CMC_IN_DEV_TYPE_ANALOG         = 3, // Analog input device (fuel level sensor)
-} cmc_in_device_type_t;
+    CMC_IN_TYPE_IGNORE         = 0, // Disable, ignore any input
+    CMC_IN_TYPE_DIGITAL_DIRECT = 1, // Mechanical latching button stays permanently on (light on/off button) or if held when momentary button (horn hold button)
+    CMC_IN_TYPE_DIGITAL_TOGGLE = 2, // Click to turn ON, click to turn OFF, to use a modern momentary-type button to act like a permanent button (select menu items)
+    CMC_IN_TYPE_ANALOG         = 3, // Analog input device (fuel level sensor)
+} cmc_in_type_t;
 
 // Supported output devices
 typedef enum {

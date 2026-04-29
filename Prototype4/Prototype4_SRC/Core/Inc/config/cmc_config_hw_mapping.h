@@ -11,6 +11,8 @@
 #define CMC_CONFIG_HW_MAPPING_H_
 
 #include <stdbool.h>
+#include <stdint.h>
+#include "stm32g4xx.h"
 
 #define CMC_CONFIG_HW_IN_DIGITAL_COUNT 10 // Physical number of buttons possible for usage
 #define CMC_CONFIG_HW_IN_ANALOG_COUNT 1 // Physical number of analog input channels possible for usage
@@ -33,7 +35,7 @@ typedef struct {
     cmc_config_gpio_pin_t is_pin; // The GPIO pin for reading analog diagnostic feedback from the output channel (current sensing)
     cmc_config_gpio_pin_t dsel_pin; // The first output pin that this channel controls (used for both single and dual channels)
     bool dual_channel; // Set to true if this output channel is a dual channel that controls two outputs, false if it controls one output
-    GPIO_PinState dsel_value; // The pin state (high or low) that turns on the output for the dsel_pin, used only if dual_channel is true
+  uint8_t dsel_value; // GPIO_PIN_SET/GPIO_PIN_RESET value used for the dsel pin on dual channels
 } cmc_config_infineon_profet_t;
 
 // Hardware mapping for output channels, channel 1 = item[0]

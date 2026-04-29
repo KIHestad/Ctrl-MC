@@ -43,7 +43,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Feature
     ./Core/Src/feature/cmc_feature_horn.c
     # Util
-    ./Core/Src/util/cmc_util_button.c
+    ./Core/Src/util/cmc_util_input.c
+    ./Core/Src/util/cmc_util_output.c
     ./Core/Src/util/cmc_util_onboard_led.c
     ./Core/Src/util/cmc_util_usage_journal.c
     ./Core/Src/util/cmc_util_unit_info.c
