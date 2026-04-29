@@ -39,7 +39,8 @@ void cmc_app_process(void) {
         // Send CAN messages to other units based on the current state and configuration (e.g., if horn is active, send horn CAN message, etc.)
     
         // Process features for this unit (e.g., if horn is active, check if system state indicates button hold or release check or if auto shut-off timer has expired and turn off if needed, etc.)
-        
+        cmc_features_process();
+
     }
     
     // Update onboard LED state on this unit, is done regardless of system state to ensure proper LED behavior with error indication as well

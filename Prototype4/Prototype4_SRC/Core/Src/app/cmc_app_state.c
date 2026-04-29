@@ -57,8 +57,8 @@ void cmc_app_state_init(void) {
     // Config and unit info should be valid at this point, set cmc_config_this_unit
     cmc_config_this_unit = &cmc_config.io_unit[cmc_app_state.system.unit_info.unit_id - 1];
 
-    // Now initiate all features for this unit, check config / cmc_config_this_unit to set initial feature state as needed
-    cmc_feature_horn_init();
+    // Now initiate all features for this unit
+    cmc_features_init();
 
     // Set CANBUS interrupts to update app_state when relevant messages are received, not implemented yet
 
