@@ -1,13 +1,13 @@
 /**
   *********************************************************************************************
-  * @file      cmc_util_output.c
-  * @brief     Output utility helpers for device availability checks on the active unit
+  * @file      cmc_features_output.c
+  * @brief     Output helpers for device availability checks on the active unit
   * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
   * @copyright KI Hestad, Complicated Productions
   *********************************************************************************************
   */
 
-#include "util/cmc_util_output.h"
+#include "feature/cmc_features_output.h"
 #include "config/cmc_config_hw_mapping.h"
 #include "config/cmc_config_type.h"
 #include "stm32g4xx_hal_gpio.h"

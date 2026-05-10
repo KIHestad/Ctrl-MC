@@ -52,11 +52,11 @@ typedef enum {
 
 // button and sensor types, for digital inputs set how to interpret the button presses: direct or toggle
 typedef enum {
-    CMC_IN_TYPE_IGNORE         = 0, // Disable, ignore any input
-    CMC_IN_TYPE_DIGITAL_DIRECT = 1, // Mechanical latching button stays permanently on (light on/off button) or if held when momentary button (horn hold button)
-    CMC_IN_TYPE_DIGITAL_TOGGLE = 2, // Click to turn ON, click to turn OFF, to use a modern momentary-type button to act like a permanent button (select menu items)
-    CMC_IN_TYPE_ANALOG         = 3, // Analog input device (fuel level sensor)
-} cmc_in_type_t;
+    CMC_INTYPE_IGNORE         = 0, // Disable, ignore any input
+    CMC_INTYPE_DIGITAL_DIRECT = 1, // Mechanical latching button stays permanently on (light on/off button) or if held when momentary button (horn hold button)
+    CMC_INTYPE_DIGITAL_TOGGLE = 2, // Click to turn ON, click to turn OFF, to use a modern momentary-type button to act like a permanent button (select menu items)
+    CMC_INTYPE_ANALOG         = 3, // Analog input device (fuel level sensor)
+} cmc_intype_t;
 
 // Supported output devices
 typedef enum {

@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+// Should be self-explanatory functions, turning on/off onboard LED
 void cmc_onboard_led_init(void);
 void cmc_onboard_led_startup(void);
 void cmc_onboard_led_set(bool on);

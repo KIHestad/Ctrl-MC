@@ -11,8 +11,8 @@
 #include "config/cmc_config_hw_mapping.h"
 #include "app/cmc_app_state.h"
 #include "util/cmc_util_onboard_led.h"
-#include "util/cmc_util_input.h"
-#include "feature/cmc_features.h"
+#include "input/cmc_input.h"
+#include "feature/cmc_features_manager.h"
 #include <string.h>
 
 // The active app state machine instance
@@ -33,7 +33,7 @@ void cmc_app_state_init(void) {
 
 
     // Initialize button reading, sample initial GPIO states
-    cmc_util_input_init();
+    cmc_input_scanner_init();
 
     // Read unit data from unit info flash store
     cmc_unit_info_init();

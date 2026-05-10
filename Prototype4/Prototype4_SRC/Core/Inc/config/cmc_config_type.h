@@ -21,7 +21,7 @@
 typedef struct {
     uint8_t enabled; // Set 1 if to be used, set 0 if not to be used and the system will ignore reading it
     uint8_t device_id; // Maps to cmc_in_t, what device is connected to (eg: ignition, light switch, turn signal button, etc)
-    uint8_t type_id; // Maps to cmc_in_type_t, how should the system interpret the button presses? (eg: direct, toggle, ignore)
+    uint8_t type_id; // Maps to cmc_intype_t, how should the system interpret the button presses? (eg: direct, toggle, ignore)
 } cmc_config_in_t;
 
 // The configuration for output channels (2 bytes)

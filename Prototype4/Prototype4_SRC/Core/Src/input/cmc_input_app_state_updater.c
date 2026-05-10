@@ -1,0 +1,33 @@
+/**
+  *********************************************************************************************
+  * @file      cmc_input_app_state_updater.c
+  * @brief     Updates the cmc_app_state based on the input states read and processed by 
+               cmc_input_scanner, called from the main app logic after scanning inputs
+  * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
+  * @copyright KI Hestad, Complicated Productions
+  *********************************************************************************************
+  */
+
+#include "stm32g4xx_hal.h"
+#include "config/cmc_config_hw_mapping.h"
+#include "config/cmc_config_type.h"
+#include "config/cmc_config_type_unit.h"
+#include "app/cmc_app_state.h"
+#include "input/cmc_input.h"
+
+// This function should be called after cmc_input_scanner executes to update the cmc_app_state based on the latest input states.
+void cmc_input_app_state_update(const cmc_config_in_t* config_in, cmc_input_state_t* in_state) {
+
+        // After button state is recorded, check if cmc_app_state needs updating depending on the button type
+        switch (config_in->device_id) {
+            case CMC_IN_HORN:
+                if (cmc_app_state.input.horn_button_pressed != in_state->pressed) {
+                    cmc_app_state.input.horn_button_pressed = in_state->pressed; // set to true or false
+                }
+                break;
+            case CMC_IN_BRAKE_LEVER:
+                // todo
+                break;
+        }
+
+}

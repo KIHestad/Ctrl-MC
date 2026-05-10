@@ -33,6 +33,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # App
     ./Core/Src/app/cmc_app_logic.c
     ./Core/Src/app/cmc_app_state.c
+    # INPUT
+    ./Core/Src/input/cmc_input_app_state_updater.c
+    ./Core/Src/input/cmc_input_scanner.c
     # CAN
     ./Core/Src/can/cmc_can_manager.c
     ./Core/Src/can/cmc_can_message.c
@@ -42,12 +45,11 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ./Core/Src/config/cmc_config_manager.c
     # Feature
     ./Core/Src/feature/cmc_feature_horn.c
-    ./Core/Src/feature/cmc_features.c
+    ./Core/Src/feature/cmc_features_manager.c
+    ./Core/Src/feature/cmc_features_output.c
     # Util
     ./Core/Src/util/cmc_util_crc.c
-    ./Core/Src/util/cmc_util_input.c
     ./Core/Src/util/cmc_util_onboard_led.c
-    ./Core/Src/util/cmc_util_output.c
     ./Core/Src/util/cmc_util_unit_info.c
     ./Core/Src/util/cmc_util_usage_journal.c
 )

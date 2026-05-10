@@ -7,12 +7,12 @@
   *********************************************************************************************
   */
   
+#include "config/cmc_config_manager.h"
 #include "app/cmc_app_logic.h"
 #include "app/cmc_app_state.h"
-#include "config/cmc_config_manager.h"
-#include "util/cmc_util_input.h"
 #include "util/cmc_util_onboard_led.h"
-#include "feature/cmc_features.h"
+#include "input/cmc_input.h"
+#include "feature/cmc_features_manager.h"
 
 // App initialization, called once at startup
 void cmc_app_init(void) {
@@ -35,7 +35,7 @@ void cmc_app_process(void) {
 
         // No need to read CAN messages in this processing loop, they will be handled by interrupts enabled by the CAN manager
         // Scan all button inputs: debounce and detect click/hold events
-        cmc_util_input_scan();
+        cmc_input_scannner_execute();
     
         // Send CAN messages to other units based on the current state and configuration (e.g., if horn is active, send horn CAN message, etc.)
     

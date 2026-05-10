@@ -19,7 +19,7 @@ typedef struct {
     uint8_t auto_shut_off_sec;  // Max duration in seconds the horn should stay on when activated, set to 0 for no auto shut-off    
 } cmc_feature_horn_t;
 
-extern void cmc_feature_horn_init(void); // Call this in the main initialization to set up the feature state based on the configuration
-extern void cmc_feature_horn_process(void); // Call this in the main processing loop to handle horn logic
+void cmc_feature_horn_init(void); // Call this in the main initialization to set up the feature state based on the configuration
+void cmc_feature_horn_process(void); // Call this in the main processing loop to handle horn logic
 
 #endif /* CMC_CONFIG_TYPE_FEATURE_HORN_H_ */

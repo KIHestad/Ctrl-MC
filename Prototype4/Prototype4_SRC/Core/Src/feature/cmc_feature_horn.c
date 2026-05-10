@@ -12,12 +12,12 @@
   *********************************************************************************************
   */
 
-#include "feature/cmc_feature_horn.h"
+#include "stm32g4xx_hal.h"
 #include "config/cmc_config_type.h"
 #include "app/cmc_app_state.h"
-#include "util/cmc_util_output.h"
-#include "util/cmc_util_onboard_led.h"
-#include "stm32g4xx_hal.h"
+#include "feature/cmc_features_manager.h"
+#include "feature/cmc_features_output.h"
+#include "feature/cmc_feature_horn.h"
 
 // Local state for the horn feature, not exposed outside this module
 static bool this_unit_horn_active = false;      // True if the horn is currently active (powered on)
@@ -61,7 +61,6 @@ void cmc_feature_horn_process() {
       cmc_util_out_set_switch(switch_id, true); // Turn on the horn
       horn_on_since_ms = HAL_GetTick(); // Start timer for auto shut-off
       this_unit_horn_active = true; // Update local state
-      cmc_onboard_led_set(true); // Temp: mirror horn state on onboard LED for testing
     }
   }
   else {
@@ -74,7 +73,6 @@ void cmc_feature_horn_process() {
       if (time_overdue) {
         timeout_latched = true;
       }
-      cmc_onboard_led_set(false); // Temp: mirror horn state on onboard LED for testing
     }
   }
 }

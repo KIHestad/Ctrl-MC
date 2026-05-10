@@ -31,52 +31,52 @@ const cmc_config_t cmc_config_default_for_demo = {
         .in[0] = {       // Input button 1
             .enabled     = 1,
             .device_id   = CMC_IN_TURN_LEFT,
-            .type_id     = CMC_IN_TYPE_DIGITAL_TOGGLE
+            .type_id     = CMC_INTYPE_DIGITAL_TOGGLE
         },
         .in[1] = {       // Input button 2
             .enabled     = 1,
             .device_id   = CMC_IN_TURN_RIGHT,
-            .type_id     = CMC_IN_TYPE_DIGITAL_TOGGLE
+            .type_id     = CMC_INTYPE_DIGITAL_TOGGLE
         },
         .in[2] = {       // Input button 3
             .enabled     = 1,
             .device_id   = CMC_IN_LIGHT_HIGH_BEAM,
-            .type_id     = CMC_IN_TYPE_DIGITAL_TOGGLE
+            .type_id     = CMC_INTYPE_DIGITAL_TOGGLE
         },
         .in[3] = {       // Input button 4
             .enabled     = 1,
             .device_id   = CMC_IN_HORN,
-            .type_id     = CMC_IN_TYPE_DIGITAL_DIRECT
+            .type_id     = CMC_INTYPE_DIGITAL_DIRECT
         },
         .in[4] = {       // Input button 5
             .enabled     = 1,
             .device_id   = CMC_IN_CLUTCH_LEVER,
-            .type_id     = CMC_IN_TYPE_DIGITAL_DIRECT
+            .type_id     = CMC_INTYPE_DIGITAL_DIRECT
         },
         .in[5] = {       // Input button 6
             .enabled     = 1,
             .device_id   = CMC_IN_BRAKE_LEVER,
-            .type_id     = CMC_IN_TYPE_DIGITAL_DIRECT
+            .type_id     = CMC_INTYPE_DIGITAL_DIRECT
         },
         .in[6] = {       // Input button 7
             .enabled     = 1,
             .device_id   = CMC_IN_STARTER,
-            .type_id     = CMC_IN_TYPE_DIGITAL_DIRECT
+            .type_id     = CMC_INTYPE_DIGITAL_DIRECT
         },
         .in[7] = {       // Input button 8
             .enabled     = 1,
             .device_id   = CMC_IN_LIGHTS_MAIN,
-            .type_id     = CMC_IN_TYPE_DIGITAL_TOGGLE
+            .type_id     = CMC_INTYPE_DIGITAL_TOGGLE
         },
         .in[8] = {       // Input button 9
             .enabled     = 1,
             .device_id   = CMC_IN_MENU_LEFT,
-            .type_id     = CMC_IN_TYPE_DIGITAL_TOGGLE
+            .type_id     = CMC_INTYPE_DIGITAL_TOGGLE
         },
         .in[9] = {       // Input button 10
             .enabled     = 1,
             .device_id   = CMC_IN_MENU_RIGHT,
-            .type_id     = CMC_IN_TYPE_DIGITAL_TOGGLE
+            .type_id     = CMC_INTYPE_DIGITAL_TOGGLE
         },
 
         // Output Channel Mapping
@@ -117,17 +117,17 @@ const cmc_config_t cmc_config_default_for_demo = {
         .in[0] = {       // Input button 1
             .enabled     = 1,
             .device_id   = CMC_IN_BRAKE_PEDAL,
-            .type_id     = CMC_IN_TYPE_DIGITAL_DIRECT
+            .type_id     = CMC_INTYPE_DIGITAL_DIRECT
         },
         .in[1] = {       // Input button 2
             .enabled     = 1,
             .device_id   = CMC_IN_NEUTRAL_SENSOR,
-            .type_id     = CMC_IN_TYPE_DIGITAL_TOGGLE
+            .type_id     = CMC_INTYPE_DIGITAL_TOGGLE
         },
         .in[2] = {       // Input button 3
             .enabled     = 0, // Not used
             .device_id   = CMC_IN_OIL_SENSOR,
-            .type_id     = CMC_IN_TYPE_DIGITAL_TOGGLE
+            .type_id     = CMC_INTYPE_DIGITAL_TOGGLE
         },
 
         // Output Channel Mapping
