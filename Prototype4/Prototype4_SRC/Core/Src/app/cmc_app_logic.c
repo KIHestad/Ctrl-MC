@@ -37,8 +37,6 @@ void cmc_app_process(void) {
         // Scan all button inputs: debounce and detect click/hold events
         cmc_input_scannner_execute();
     
-        // Send CAN messages to other units based on the current state and configuration (e.g., if horn is active, send horn CAN message, etc.)
-    
         // Process features for this unit (e.g., if horn is active, check if system state indicates button hold or release check or if auto shut-off timer has expired and turn off if needed, etc.)
         cmc_features_process();
 

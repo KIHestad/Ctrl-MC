@@ -14,9 +14,9 @@ Type the following command in the terminal:
 This will generate the files: **cmc_can_message.h** and **cmc_can_message.c**. 
 
 ## Include the generated files in your project
-Copy / replace the files into the folder **Core\Inc** and **Core\Src** of the project by runnin this in the termial:
+Copy / replace the files into the folder **Core\Inc\can\** and **Core\Src\can\** of the project by runnin this in the termial:
 
 
-* Copy-Item cmc_can_message.c ..\Core\Src\
-* Copy-Item cmc_can_message.h ..\Core\Inc\
+* Copy-Item cmc_can_message.c ..\Core\Src\can\
+* Copy-Item cmc_can_message.h ..\Core\Inc\can\
 

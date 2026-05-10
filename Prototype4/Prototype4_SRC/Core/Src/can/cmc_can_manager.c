@@ -18,7 +18,6 @@
 
 extern FDCAN_HandleTypeDef hfdcan1; // FDCAN peripheral handle, defined in main.c
 static volatile cmc_can_rx_callback_t rx_callback = NULL; // User-registered RX callback, called from ISR on frame reception 
-cmc_app_state_t last_transmitted_state = {0}; // Keep track of the last transmitted app state to avoid redundant CAN messages, initialized to all zeros
 
 /* ---- Helpers ------------------------------------------------------------------------------- */
 
@@ -70,8 +69,6 @@ HAL_StatusTypeDef cmc_can_manager_init(void)
     status = HAL_FDCAN_Start(&hfdcan1);
     return status;
 
-    // Start with the current app state to avoid sending a burst of messages on startup
-    last_transmitted_state = cmc_app_state; 
 }
 
 // Send a CAN message

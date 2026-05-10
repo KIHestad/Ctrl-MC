@@ -65,8 +65,7 @@ void cmc_feature_horn_process() {
   }
   else {
     // Horn is currently on, if button released, ignition turned off, starter engaged or auto shut-off timeout reached - turn off the horn
-    bool time_overdue = (cmc_config.feature_horn.auto_shut_off_sec > 0U) &&
-                        ((HAL_GetTick() - horn_on_since_ms) >= ((uint32_t)cmc_config.feature_horn.auto_shut_off_sec * 1000U));
+    bool time_overdue = (cmc_config.feature_horn.auto_shut_off_sec > 0U) && ((HAL_GetTick() - horn_on_since_ms) >= ((uint32_t)cmc_config.feature_horn.auto_shut_off_sec * 1000U));
     if (!cmc_app_state.input.horn_button_pressed || !cmc_app_state.vehicle.ignition_on || cmc_app_state.vehicle.starter_engaged || time_overdue) {
       cmc_util_out_set_switch(switch_id, false); // Turn off the horn
       this_unit_horn_active = false; // Update local state
