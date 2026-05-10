@@ -11,12 +11,14 @@
   */
 
 #include "can/cmc_can_manager.h"
+#include "app/cmc_app_state.h"
 #include <string.h>
 
 /* ---- Private state ------------------------------------------------------------------------ */
 
 extern FDCAN_HandleTypeDef hfdcan1; // FDCAN peripheral handle, defined in main.c
 static volatile cmc_can_rx_callback_t rx_callback = NULL; // User-registered RX callback, called from ISR on frame reception 
+cmc_app_state_t last_transmitted_state = {0}; // Keep track of the last transmitted app state to avoid redundant CAN messages, initialized to all zeros
 
 /* ---- Helpers ------------------------------------------------------------------------------- */
 
@@ -46,7 +48,7 @@ static uint8_t dlc_to_length(uint32_t dlc)
 
 HAL_StatusTypeDef cmc_can_manager_init(void)
 {
-    /* Accept all standard-ID frames, reject extended and remote */
+    // Accept all standard-ID frames, reject extended and remote
     HAL_StatusTypeDef status;
 
     status = HAL_FDCAN_ConfigGlobalFilter(
@@ -57,16 +59,19 @@ HAL_StatusTypeDef cmc_can_manager_init(void)
         FDCAN_REJECT_REMOTE);
     if (status != HAL_OK) return status;
 
-    /* Enable RX FIFO 0 new-message interrupt */
+    // Enable RX FIFO 0 new-message interrupt
     status = HAL_FDCAN_ActivateNotification(
         &hfdcan1, 
         FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 
         0);
     if (status != HAL_OK) return status;
 
-    /* Start the peripheral */
+    // Start the peripheral 
     status = HAL_FDCAN_Start(&hfdcan1);
     return status;
+
+    // Start with the current app state to avoid sending a burst of messages on startup
+    last_transmitted_state = cmc_app_state; 
 }
 
 // Send a CAN message
