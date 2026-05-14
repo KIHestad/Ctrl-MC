@@ -90,7 +90,7 @@ bool cmc_usage_journal_init(void) {
 
         // Verify CRC; corrupted entries are skipped (do not advance journal_current)
         cmc_usage_journal_data_t entry = journal_page[i];
-        if (CMC_UTIL_CRC_CALCULATE_PAYLOAD(&entry) == entry.crc) {
+        if (CMC_CRC_CALCULATE_PAYLOAD(&entry) == entry.crc) {
             journal_current = entry;
         }
         next_free_slot = i + 1;
@@ -116,7 +116,7 @@ bool cmc_usage_journal_save(uint32_t total_km, uint32_t trip_km) {
         .trip_km  = trip_km,
         ._pad     = 0,
     };
-    entry.crc = CMC_UTIL_CRC_CALCULATE_PAYLOAD(&entry);
+    entry.crc = CMC_CRC_CALCULATE_PAYLOAD(&entry);
 
     if (!journal_write_slot(next_free_slot, &entry)) {
         return false;

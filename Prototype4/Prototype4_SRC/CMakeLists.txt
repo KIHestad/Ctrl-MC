@@ -40,6 +40,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ./Core/Src/config/cmc_config_defaults.c
     ./Core/Src/config/cmc_config_hw_mapping.c
     ./Core/Src/config/cmc_config_manager.c
+    ./Core/Src/config/cmc_config_unit_info.c 
     # feature
     ./Core/Src/feature/cmc_feature_horn.c
     ./Core/Src/feature/cmc_features_manager.c
@@ -50,7 +51,6 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # util
     ./Core/Src/util/cmc_util_crc.c
     ./Core/Src/util/cmc_util_onboard_led.c
-    ./Core/Src/util/cmc_util_unit_info.c
     ./Core/Src/util/cmc_util_usage_journal.c
 )
 

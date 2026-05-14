@@ -17,10 +17,4 @@ When the unit starts up successfully after memory is cleared, the unit goes into
 When unit id is set and the system starts successfully, the unit goes into normal operation mode. 
 The onboard LED is flashing every 5th second with number of blinks idincating the unit id.
 
-If an startup error occurs, the unit onboard LED flashes fast the number of blinks representing the error code, repeated every second.
-* CMC_APP_STATE_STATUS_ERROR_CONFIG = 1,
-* CMC_APP_STATE_STATUS_INVALID_FLASH_SIGNATURE = 2,
-* CMC_APP_STATE_STATUS_INVALID_RAM_SIGNATURE = 3,
-* CMC_APP_STATE_STATUS_INVALID_FLASH_CRC = 4,
-* CMC_APP_STATE_STATUS_ERROR_SAVE_TO_FLASH = 5,
-* CMC_APP_STATE_STATUS_ERROR_LOAD_FROM_FLASH = 6,
+If an startup error occurs, the unit onboard LED flashes fast the number of blinks representing the error code, repeated every second. The error codes are as the number for the enum: `cmc_app_state_status_t`

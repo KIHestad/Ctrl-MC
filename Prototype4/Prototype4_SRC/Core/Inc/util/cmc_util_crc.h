@@ -19,7 +19,7 @@ uint32_t cmc_util_crc_calculate(const void* data, size_t length_bytes);
 
 // Compute CRC over the bytes of `*ptr` that follow the `crc` field. (ptr = pointer)
 // Assumes the struct contains a `uint32_t crc;` member.
-#define CMC_UTIL_CRC_CALCULATE_PAYLOAD(ptr)                                           \
+#define CMC_CRC_CALCULATE_PAYLOAD(ptr)                                           \
     cmc_util_crc_calculate(                                                           \
         (const uint8_t*)(ptr) + offsetof(__typeof__(*(ptr)), crc) + sizeof(uint32_t), \
         sizeof(*(ptr)) - offsetof(__typeof__(*(ptr)), crc) - sizeof(uint32_t)         \
