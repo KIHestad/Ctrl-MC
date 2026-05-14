@@ -8,11 +8,12 @@
   *********************************************************************************************
   */
 
-#include "util/cmc_util_onboard_led.h"
 #include "config/cmc_config_unit_info.h"
-#include "util/cmc_util_crc.h"
 #include "app/cmc_app_state.h"
+#include "util/cmc_util_onboard_led.h"
+#include "util/cmc_util_crc.h"
 #include "stm32g4xx_hal.h"
+#include <stdbool.h>
 
 // Pointer to the flash page (memory-mapped, read directly)
 static const cmc_config_unit_info_t* flash_unit_info = (const cmc_config_unit_info_t*)CMC_CONFIG_UNIT_INFO_FLASH_ADDR;
@@ -65,6 +66,32 @@ static bool unit_info_write(const cmc_config_unit_info_t* data) {
     return (hal_status == HAL_OK);
 }
 
+
+// Helper: erase page then write new data
+static bool cmc_config_unit_info_save(void) {
+    // Full page save since this is to be updated very rare, minimal flash wear, no need for a rolling log or multiple slots
+    // Check valid unit_id is set before saving
+    if (cmc_app_state.system.unit_info.unit_id < 1 || cmc_app_state.system.unit_info.unit_id > CMC_CONFIG_MAX_SUPPORTED_IO_UNITS) {
+        cmc_app_state.system.unit_info = (cmc_config_unit_info_t){0};
+        return false; 
+    }
+    // Try erase flash
+    if (!unit_info_erase_page()) {
+        cmc_app_state.system.unit_info = (cmc_config_unit_info_t){0};
+        return false;
+    }
+    // Try write new data to flash
+    cmc_config_unit_info_t data_to_write = cmc_app_state.system.unit_info;
+    data_to_write.signature = CMC_CONFIG_UNIT_INFO_SIGNATURE;
+    data_to_write.crc       = CMC_CRC_CALCULATE_PAYLOAD(&data_to_write);   // covers subsequent data after signature and crc fields = unit_id and more if added
+    if (!unit_info_write(&data_to_write)) {
+        cmc_app_state.system.unit_info = (cmc_config_unit_info_t){0};
+        return false;
+    }
+    // Done
+    return true;   
+}
+
 // Init: read flash and load into app_state.unit_info if valid
 void cmc_config_unit_info_init(void) {
 
@@ -84,7 +111,10 @@ void cmc_config_unit_info_init(void) {
                     // Add correct signature to indicated valid unit info and save to flash
                     cmc_app_state.system.unit_info.signature = CMC_CONFIG_UNIT_INFO_SIGNATURE;
                     // save to flash now
-                    cmc_app_state.system.status = cmc_config_unit_info_save();
+                    bool save_success = cmc_config_unit_info_save();
+                    if (!save_success) {
+                        cmc_app_state.system.status = CMC_APP_STATE_STATUS_UNIT_INFO_SAVE_ERROR;
+                    }
                     unit_id_set = true;
                     break;                    
                 }
@@ -113,30 +143,5 @@ void cmc_config_unit_info_init(void) {
     
 }
 
-// Save: erase page then write new data
-cmc_app_state_status_t cmc_config_unit_info_save(void) {
-    // Full page save since this is to be updated very rare, minimal flash wear, no need for a rolling log or multiple slots
-    // Check valid unit_id is set before saving
-    if (cmc_app_state.system.unit_info.unit_id < 1 || cmc_app_state.system.unit_info.unit_id > CMC_CONFIG_MAX_SUPPORTED_IO_UNITS) {
-        cmc_app_state.system.unit_info = (cmc_config_unit_info_t){0};
-        return CMC_APP_STATE_STATUS_UNIT_INFO_SAVE_ERROR; 
-    }
-    // Try erase flash
-    if (!unit_info_erase_page()) {
-        cmc_app_state.system.unit_info = (cmc_config_unit_info_t){0};
-        return CMC_APP_STATE_STATUS_UNIT_INFO_SAVE_ERROR;
-    }
-    // Try write new data to flash
-    cmc_config_unit_info_t data_to_write = cmc_app_state.system.unit_info;
-    data_to_write.signature = CMC_CONFIG_UNIT_INFO_SIGNATURE;
-    data_to_write.crc       = CMC_CRC_CALCULATE_PAYLOAD(&data_to_write);   // covers subsequent data after signature and crc fields = unit_id and more if added
-    if (!unit_info_write(&data_to_write)) {
-        cmc_app_state.system.unit_info = (cmc_config_unit_info_t){0};
-        return CMC_APP_STATE_STATUS_UNIT_INFO_SAVE_ERROR;
-    }
-    // Done
-    return CMC_APP_STATE_STATUS_SUCCESS;
-    
-}
 
 

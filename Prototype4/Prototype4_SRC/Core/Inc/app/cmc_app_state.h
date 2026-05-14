@@ -31,7 +31,6 @@ typedef enum {
 typedef struct {
   cmc_app_state_status_t status;     // The status of the system
   cmc_config_unit_info_t unit_info;  // This units info, espicially the unit id
-  bool unit_info_valid;              // True if unit_info was loaded from flash with a valid signature
   uint32_t init_time_ms;             // The time for the system to do fully statup
     
 } cmc_app_state_system_t;

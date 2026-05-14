@@ -37,7 +37,4 @@ _Static_assert(sizeof(cmc_config_unit_info_t) % 8 == 0, "cmc_config_unit_info_t 
 // Init: read flash page, load data into RAM if valid. 
 void cmc_config_unit_info_init(void);
 
-// Save unit info data to flash (erases page, then writes).
-void cmc_config_unit_info_save(void);
-
 #endif /* CMC_CONFIG_UNIT_INFO_H_ */
