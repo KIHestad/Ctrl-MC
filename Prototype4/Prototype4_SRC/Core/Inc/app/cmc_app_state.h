@@ -27,12 +27,9 @@ typedef enum {
     CMC_APP_STATE_STATUS_UNIT_INFO_CRC_INVALID  = 7,
 } cmc_app_state_status_t; 
 
-// Main system state 
+// Main system info, the status and unit info
 typedef struct {
   cmc_app_state_status_t status;     // The status of the system
-  cmc_config_unit_info_t unit_info;  // This units info, espicially the unit id
-  uint32_t init_time_ms;             // The time for the system to do fully statup
-    
 } cmc_app_state_system_t;
 
 // Main vehicle state
@@ -50,8 +47,8 @@ typedef struct {
 // The main application state machine struct, holds the current state of the application
 typedef struct {
     cmc_app_state_system_t system; // The overall system state, can be used to gate certain logic in the app processing loop if the system is not fully operational
-    cmc_app_state_vehicle_t vehicle; // The current state of the vehicle, can be used for logic that depends on the state of the vehicle (eg: horn should not be on if ignition is off, etc)
     cmc_app_state_input_t input; // The current state of the inputs, can be used for logic that depends on the state of the inputs (eg: horn button pressed, etc)
+    cmc_app_state_vehicle_t vehicle; // The current state of the vehicle, can be used for logic that depends on the state of the vehicle (eg: horn should not be on if ignition is off, etc)
 } cmc_app_state_t;
 
 // Global application state machine instance

@@ -32,7 +32,7 @@ void cmc_app_init(void) {
     if (cmc_app_state.system.status == CMC_APP_STATE_STATUS_SUCCESS) {
 
         // Config and unit info should be valid at this point, set cmc_config_this_unit
-        cmc_config_this_unit = &cmc_config.io_unit[cmc_app_state.system.unit_info.unit_id - 1];
+        cmc_config_this_unit = &cmc_config.io_unit[cmc_config_unit_info.unit_id - 1];
         
         // Init app state machine with default values and from flash
         cmc_app_state_init();

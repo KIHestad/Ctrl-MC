@@ -15,6 +15,9 @@
 #include "stm32g4xx_hal.h"
 #include <stdbool.h>
 
+// The global active unit info, loaded from flash at startup
+cmc_config_unit_info_t cmc_config_unit_info; 
+
 // Pointer to the flash page (memory-mapped, read directly)
 static const cmc_config_unit_info_t* flash_unit_info = (const cmc_config_unit_info_t*)CMC_CONFIG_UNIT_INFO_FLASH_ADDR;
 
@@ -71,21 +74,21 @@ static bool unit_info_write(const cmc_config_unit_info_t* data) {
 static bool cmc_config_unit_info_save(void) {
     // Full page save since this is to be updated very rare, minimal flash wear, no need for a rolling log or multiple slots
     // Check valid unit_id is set before saving
-    if (cmc_app_state.system.unit_info.unit_id < 1 || cmc_app_state.system.unit_info.unit_id > CMC_CONFIG_MAX_SUPPORTED_IO_UNITS) {
-        cmc_app_state.system.unit_info = (cmc_config_unit_info_t){0};
+    if (cmc_config_unit_info.unit_id < 1 || cmc_config_unit_info.unit_id > CMC_CONFIG_MAX_SUPPORTED_IO_UNITS) {
+        cmc_config_unit_info = (cmc_config_unit_info_t){0};
         return false; 
     }
     // Try erase flash
     if (!unit_info_erase_page()) {
-        cmc_app_state.system.unit_info = (cmc_config_unit_info_t){0};
+        cmc_config_unit_info = (cmc_config_unit_info_t){0};
         return false;
     }
     // Try write new data to flash
-    cmc_config_unit_info_t data_to_write = cmc_app_state.system.unit_info;
+    cmc_config_unit_info_t data_to_write = cmc_config_unit_info;
     data_to_write.signature = CMC_CONFIG_UNIT_INFO_SIGNATURE;
     data_to_write.crc       = CMC_CRC_CALCULATE_PAYLOAD(&data_to_write);   // covers subsequent data after signature and crc fields = unit_id and more if added
     if (!unit_info_write(&data_to_write)) {
-        cmc_app_state.system.unit_info = (cmc_config_unit_info_t){0};
+        cmc_config_unit_info = (cmc_config_unit_info_t){0};
         return false;
     }
     // Done
@@ -99,7 +102,7 @@ void cmc_config_unit_info_init(void) {
     if (flash_unit_info->signature != CMC_CONFIG_UNIT_INFO_SIGNATURE) {
         // Not found valid CRC, blink LED and wait for user to set it via button presse before proceeding with the rest of initialization
         cmc_onboard_led_blink(50, 950); 
-        cmc_app_state.system.unit_info = (cmc_config_unit_info_t){0};
+        cmc_config_unit_info = (cmc_config_unit_info_t){0};
         bool unit_id_set = false;
         while (!unit_id_set) {
             // The input number (input[0] = input nr 1) will be taken as unit id, so user can set unit id by pressing the corresponding button during startup
@@ -107,9 +110,9 @@ void cmc_config_unit_info_init(void) {
             for (uint8_t i = 0; i < CMC_CONFIG_MAX_SUPPORTED_IO_UNITS; i++) {
                 if (!unit_id_set && HAL_GPIO_ReadPin(cmc_config_hw_digital_in_mapping[i].port,cmc_config_hw_digital_in_mapping[i].pin) == GPIO_PIN_RESET) {
                     // If button is pressed, set unit id to button index + 1 (to make it 1-based)
-                    cmc_app_state.system.unit_info.unit_id = i + 1;
+                    cmc_config_unit_info.unit_id = i + 1;
                     // Add correct signature to indicated valid unit info and save to flash
-                    cmc_app_state.system.unit_info.signature = CMC_CONFIG_UNIT_INFO_SIGNATURE;
+                    cmc_config_unit_info.signature = CMC_CONFIG_UNIT_INFO_SIGNATURE;
                     // save to flash now
                     bool save_success = cmc_config_unit_info_save();
                     if (!save_success) {
@@ -133,10 +136,10 @@ void cmc_config_unit_info_init(void) {
     }
     
     // Read unit info from flash and load into RAM including _pad, so CRC verify is consistent
-    cmc_app_state.system.unit_info = *flash_unit_info;
+    cmc_config_unit_info = *flash_unit_info;
 
     // Verify CRC over payload (everything after the crc field)
-    if (CMC_CRC_CALCULATE_PAYLOAD(&cmc_app_state.system.unit_info) != cmc_app_state.system.unit_info.crc) {
+    if (CMC_CRC_CALCULATE_PAYLOAD(&cmc_config_unit_info) != cmc_config_unit_info.crc) {
         cmc_app_state.system.status = CMC_APP_STATE_STATUS_UNIT_INFO_CRC_INVALID;
         return;
     }
