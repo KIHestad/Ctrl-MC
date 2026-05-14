@@ -42,7 +42,7 @@ void cmc_input_scanner_init(void) {
 }
 
 // Scan all configured buttons: debounce, then detect press/release/hold/click
-void cmc_input_scannner_execute(void) {
+void cmc_input_scanner_execute(void) {
     // Get timestamp
     uint32_t now = HAL_GetTick();
     // only loop over configured buttons

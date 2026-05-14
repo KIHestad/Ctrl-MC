@@ -7,24 +7,37 @@
   *********************************************************************************************
   */
   
+#include "util/cmc_util_onboard_led.h"
 #include "config/cmc_config_manager.h"
 #include "app/cmc_app_logic.h"
-#include "app/cmc_app_state.h"
-#include "util/cmc_util_onboard_led.h"
 #include "input/cmc_input.h"
 #include "feature/cmc_features_manager.h"
 
 // App initialization, called once at startup
 void cmc_app_init(void) {
     
-    // Show startup is running by inititate onboard LED blinking pattern that will change according to final results of initialization steps
+    // Show startup is running by inititate onboard LED blinking pattern
     cmc_onboard_led_init();    
 
-    // Check and read configuration
+    // Check and read configuration from flash to ram
     cmc_config_manager_init();
     
-    // Prepare app state machine
-    cmc_app_state_init();
+    // Only continue if configuration is valid and status set to success
+    if (cmc_app_state.system.status != CMC_APP_STATE_STATUS_SUCCESS) {
+    
+        // Init app state machine with default values and from flash
+        cmc_app_state_init();
+        
+        // Initialize button reading, sample initial GPIO states
+        cmc_input_scanner_init();
+
+        // Config and unit info should be valid at this point, set cmc_config_this_unit
+        cmc_config_this_unit = &cmc_config.io_unit[cmc_app_state.system.unit_info.unit_id - 1];
+
+        // Now initiate all features for this unit
+        cmc_features_init();
+
+    }
 }
 
 // Main processing, called repeatedly from main.c loop
@@ -35,7 +48,7 @@ void cmc_app_process(void) {
 
         // No need to read CAN messages in this processing loop, they will be handled by interrupts enabled by the CAN manager
         // Scan all button inputs: debounce and detect click/hold events
-        cmc_input_scannner_execute();
+        cmc_input_scanner_execute();
     
         // Process features for this unit (e.g., if horn is active, check if system state indicates button hold or release check or if auto shut-off timer has expired and turn off if needed, etc.)
         cmc_features_process();

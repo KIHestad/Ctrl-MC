@@ -21,23 +21,16 @@ cmc_app_state_t cmc_app_state;
 // Initialize the application state machine, set all fields to default values (false/0)
 void cmc_app_state_init(void) {
 
-    // Only run if configuration is valid and status set to success
-    if (cmc_app_state.system.status != CMC_APP_STATE_STATUS_SUCCESS) {
-        return;
-    }
-
     // Set default values for the app state machine
     // TODO
     cmc_app_state.vehicle.ignition_on = true; // Set to true for testing, later add logic from config to dertermin if software ignition state should be tracked and used in the system
     cmc_app_state.vehicle.starter_engaged = false; // Set to false for testing, should be replaced with feature
 
-
-    // Initialize button reading, sample initial GPIO states
-    cmc_input_scanner_init();
-
     // Read unit data from unit info flash store
     cmc_unit_info_init();
-    // If unit info is not valid, blink LED and wait for user to set it via button presses before proceeding with the rest of initialization, this ensures we have a valid unit id to work with for the rest of the system
+
+    // If unit info is not valid, blink LED and wait for user to set it via button presse before proceeding with the rest of initialization
+    // The input number (input[0] = input nr 1) will be taken as unit id, so user can set unit id by pressing the corresponding button during startup
     if (!cmc_app_state.system.unit_info_valid) {
         cmc_onboard_led_blink(50, 950); 
         // Unit info invalid, run loop until unid_id is set from button press. Needs to ever lasting busy-wait loop unitl button press detected.
@@ -61,22 +54,13 @@ void cmc_app_state_init(void) {
         cmc_onboard_led_startup(); 
     }
 
-    // Config and unit info should be valid at this point, set cmc_config_this_unit
-    cmc_config_this_unit = &cmc_config.io_unit[cmc_app_state.system.unit_info.unit_id - 1];
-
-    // Now initiate all features for this unit
-    cmc_features_init();
-
-    // Set CANBUS interrupts to update app_state when relevant messages are received, not implemented yet
-
-
     // Set tick from HAL_GetTick() to track how long the system time took
     cmc_app_state.system.init_time_ms  = HAL_GetTick();
 
     // Set onboard LED to indicate success if no errors occured
     if (cmc_app_state.system.status == CMC_APP_STATE_STATUS_SUCCESS) {
-        // Keep LED on for 10 sec to indicate success
-        cmc_onboard_led_blink_interval(cmc_app_state.system.unit_info.unit_id, 5000); // Blink unit id every minute
+        // Blink unit id every 5 seconds to indicate success and show unit id, can be useful for debugging and user feedback
+        cmc_onboard_led_blink_interval(cmc_app_state.system.unit_info.unit_id, 5000); 
     } 
 }
 

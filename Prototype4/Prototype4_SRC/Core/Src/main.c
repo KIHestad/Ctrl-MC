@@ -23,7 +23,12 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "app/cmc_app_logic.h" // CMC Include app logic header
+/*******************************************************************************
+ *  CMC Include app logic header                                               *
+ ******************************************************************************/
+
+ #include "app/cmc_app_logic.h" 
+
 
 /* USER CODE END Includes */
 
@@ -108,8 +113,12 @@ int main(void)
   MX_CRC_Init();
   /* USER CODE BEGIN 2 */
   
-  cmc_app_init(); // CMC Main application logic init
-    
+  /*********************************************************************************
+  *  CMC Main application logic init                                               *
+  *********************************************************************************/
+  
+  cmc_app_init(); 
+  
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -117,7 +126,12 @@ int main(void)
   while (1)
   {
     
-    cmc_app_process(); // CMC Start main application logic loop
+  /**********************************************************************************
+  *  CMC Start main application logic loop                                          *
+  **********************************************************************************/
+    
+    cmc_app_process(); 
+ 
     
     /* USER CODE END WHILE */
 
