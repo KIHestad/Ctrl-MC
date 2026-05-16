@@ -61,9 +61,10 @@ void cmc_app_init(void) {
     // Set status after init
     if (cmc_app_status.status == CMC_APP_STATUS_SUCCESS) {
         cmc_app_status.success = true;
+        cmc_onboard_led_blink_interval(cmc_config_unit_info.unit_id, 5000); 
     } else {
         cmc_app_status.success = false;
-        cmc_onboard_led_blink_interval(cmc_config_unit_info.unit_id, 5000); 
+        cmc_onboard_led_blink_interval(cmc_app_status.status, 1000); 
     }
 }
 

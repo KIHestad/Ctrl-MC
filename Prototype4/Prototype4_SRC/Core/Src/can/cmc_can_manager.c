@@ -24,23 +24,22 @@ static volatile cmc_can_rx_callback_t rx_callback = NULL; // User-registered RX 
 // Convert a payload length (bytes) to the FDCAN DLC register value.
 static uint32_t length_to_dlc(uint8_t len)
 {
-    if (len <= 8u)  return (uint32_t)len << 16u;
-    if (len <= 12u) return FDCAN_DLC_BYTES_12;
-    if (len <= 16u) return FDCAN_DLC_BYTES_16;
-    if (len <= 20u) return FDCAN_DLC_BYTES_20;
-    if (len <= 24u) return FDCAN_DLC_BYTES_24;
-    if (len <= 32u) return FDCAN_DLC_BYTES_32;
-    if (len <= 48u) return FDCAN_DLC_BYTES_48;
-    return FDCAN_DLC_BYTES_64;
+    if (len <= 8u)  return (uint32_t)len;        // FDCAN_DLC_BYTES_X = X for 0–8
+    if (len <= 12u) return FDCAN_DLC_BYTES_12;   // = 9
+    if (len <= 16u) return FDCAN_DLC_BYTES_16;   // = 10
+    if (len <= 20u) return FDCAN_DLC_BYTES_20;   // = 11
+    if (len <= 24u) return FDCAN_DLC_BYTES_24;   // = 12
+    if (len <= 32u) return FDCAN_DLC_BYTES_32;   // = 13
+    if (len <= 48u) return FDCAN_DLC_BYTES_48;   // = 14
+    return FDCAN_DLC_BYTES_64;                   // = 15
 }
 
 // Convert an FDCAN DLC register value back to payload length in bytes.
 static uint8_t dlc_to_length(uint32_t dlc)
 {
-    static const uint8_t table[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20, 24, 32, 48, 64 };
-    uint8_t idx = (uint8_t)(dlc >> 16u);
-    if (idx >= sizeof(table)) return 0u;
-    return table[idx];
+    static const uint8_t table[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20, 24, 32, 48, 64};
+    if (dlc >= sizeof(table)) return 0u;
+    return table[dlc];   // Direct index, no shift
 }
 
 /* ---- Public functions ----------------------------------------------------------------------------- */
