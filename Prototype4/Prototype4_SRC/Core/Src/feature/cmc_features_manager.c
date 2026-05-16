@@ -8,14 +8,20 @@
   */
 
 #include "feature/cmc_features_manager.h"
+#include "feature/cmc_feature_ignition.h"
+#include "feature/cmc_feature_starter.h"
 #include "feature/cmc_feature_horn.h"
 
 void cmc_features_init(void) {
     // Initialize all features based on the configuration, call the init function for each feature module
+    cmc_feature_ignition_init(); // Must run before any feature that depends on ignition_on
+    cmc_feature_starter_init();
     cmc_feature_horn_init();
 }
 
 void cmc_features_process(void) {
     // Process all features based on the configuration, call the process function for each feature module
+    cmc_feature_ignition_process(); // Must run before any feature that reads ignition_on
+    cmc_feature_starter_process();
     cmc_feature_horn_process();
 }

@@ -42,6 +42,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ./Core/Src/config/cmc_config_manager.c
     ./Core/Src/config/cmc_config_unit_info.c 
     # feature
+    ./Core/Src/feature/cmc_feature_ignition.c
+    ./Core/Src/feature/cmc_feature_starter.c
     ./Core/Src/feature/cmc_feature_horn.c
     ./Core/Src/feature/cmc_features_manager.c
     ./Core/Src/feature/cmc_features_output.c

@@ -49,7 +49,9 @@ void cmc_config_manager_init(void) {
     // If flash config is not valid, attempt to fix it
     // TODO: Should check over CANBUS if valid config can be fetched, but for now use local demo defaults and save to flash
     if (cmc_app_status.status != CMC_APP_STATUS_SUCCESS) {
-        cmc_app_status.status = cmc_config_manager_save_to_flash(&cmc_config_default_for_demo);
+        if (cmc_config_default_for_demo_use) {
+            cmc_app_status.status = cmc_config_manager_save_to_flash(&cmc_config_default_for_demo);
+        }
         // If save default config to flash succeeded, check once again if flash config is valid now (should be if save succeeded)
         cmc_app_status.status = check_flash_config(); 
     }

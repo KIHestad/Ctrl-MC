@@ -21,6 +21,20 @@ static void on_can_receive(uint32_t frame_id, const uint8_t *data, uint8_t lengt
 {
     switch (frame_id) {
 
+        case CMC_CAN_MESSAGE_FEATURE_IGNITION_FRAME_ID: {
+            struct cmc_can_message_feature_ignition_t msg;
+            if (cmc_can_message_feature_ignition_unpack(&msg, data, length) < 0) { break; }
+            cmc_app_state.veichle_state.ignition_on = (bool)msg.value_on_off;
+            break;
+        }
+
+        case CMC_CAN_MESSAGE_FEATURE_STARTER_FRAME_ID: {
+            struct cmc_can_message_feature_starter_t msg;
+            if (cmc_can_message_feature_starter_unpack(&msg, data, length) < 0) { break; }
+            cmc_app_state.button.starter_button_pressed = (bool)msg.value_on_off;
+            break;
+        }
+
         case CMC_CAN_MESSAGE_FEATURE_HORN_FRAME_ID: {
             struct cmc_can_message_feature_horn_t msg;
             if (cmc_can_message_feature_horn_unpack(&msg, data, length) < 0) { break; }
@@ -44,6 +58,30 @@ void cmc_app_state_updater_init(void)
 void cmc_app_state_update(const cmc_config_in_t *config_in, cmc_input_button_state_t *in_state)
 {
     switch (config_in->device_id) {
+
+        case CMC_CONFIG_IN_DEVICE_IGNITION:
+            if (cmc_app_state.veichle_state.ignition_on != in_state->pressed) {
+                cmc_app_state.veichle_state.ignition_on = in_state->pressed;
+                // Broadcast change to all units over CAN
+                struct cmc_can_message_feature_ignition_t ign_msg;
+                ign_msg.value_on_off = in_state->pressed ? 1u : 0u;
+                uint8_t ign_payload[CMC_CAN_MESSAGE_FEATURE_IGNITION_LENGTH];
+                if (cmc_can_message_feature_ignition_pack(ign_payload, &ign_msg, sizeof(ign_payload)) < 0) { break; }
+                cmc_can_manager_send(CMC_CAN_MESSAGE_FEATURE_IGNITION_FRAME_ID, ign_payload, CMC_CAN_MESSAGE_FEATURE_IGNITION_LENGTH);
+            }
+            break;
+
+        case CMC_CONFIG_IN_DEVICE_STARTER:
+            if (cmc_app_state.button.starter_button_pressed != in_state->pressed) {
+                cmc_app_state.button.starter_button_pressed = in_state->pressed;
+                // Broadcast change to all units over CAN
+                struct cmc_can_message_feature_starter_t str_msg;
+                str_msg.value_on_off = in_state->pressed ? 1u : 0u;
+                uint8_t str_payload[CMC_CAN_MESSAGE_FEATURE_STARTER_LENGTH];
+                if (cmc_can_message_feature_starter_pack(str_payload, &str_msg, sizeof(str_payload)) < 0) { break; }
+                cmc_can_manager_send(CMC_CAN_MESSAGE_FEATURE_STARTER_FRAME_ID, str_payload, CMC_CAN_MESSAGE_FEATURE_STARTER_LENGTH);
+            }
+            break;
 
         case CMC_CONFIG_IN_DEVICE_HORN:
             if (cmc_app_state.button.horn_button_pressed != in_state->pressed) {

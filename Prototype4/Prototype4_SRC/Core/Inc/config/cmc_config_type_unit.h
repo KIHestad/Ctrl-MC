@@ -62,8 +62,8 @@ typedef enum {
 // Supported output devices
 typedef enum {
     CMC_CONFIG_OUT_DEVICE_NONE = 0,
-    CMC_CONFIG_OUT_DEVICE_COIL = 1,
-    CMC_CONFIG_OUT_DEVICE_STARTER = 2,
+    CMC_CONFIG_OUT_DEVICE_MAIN_PWR = 1, // Typically controlled by the ignition and powers main system units as the engine ecu, coil, fuel pump or other devices having continuous power when the ignition is on
+    CMC_CONFIG_OUT_DEVICE_STARTER = 2, // Power output for the starter relay, typically only on when the starter button is pressed and the starter logic conditions are met
     CMC_CONFIG_OUT_DEVICE_LIGHT_PARK = 10,
     CMC_CONFIG_OUT_DEVICE_LIGHT_LOW_BEAM = 11,
     CMC_CONFIG_OUT_DEVICE_LIGHT_HIGH_BEAM = 12,

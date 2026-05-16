@@ -70,34 +70,34 @@ const cmc_config_t cmc_config_default_for_demo = {
             .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
         },
         .in[8] = {       // Input button 9
-            .enabled     = 1,
+            .enabled     = 0,
             .device_id   = CMC_CONFIG_IN_DEVICE_MENU_LEFT,
             .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
         },
         .in[9] = {       // Input button 10
-            .enabled     = 1,
+            .enabled     = 0,
             .device_id   = CMC_CONFIG_IN_DEVICE_MENU_RIGHT,
             .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
         },
 
         // Output Channel Mapping
-        .out[0] = {      // Output channel 2
+        .out[0] = {      // Output channel 1
             .enabled     = 1,
             .device_id   = CMC_CONFIG_OUT_DEVICE_TURN_LEFT_FRONT
         },
-        .out[1] = {      // Output channel 3
+        .out[1] = {      // Output channel 2
             .enabled     = 1,
             .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_PARK
         },
-        .out[2] = {      // Output channel 4
+        .out[2] = {      // Output channel 3
             .enabled     = 1,
             .device_id   = CMC_CONFIG_OUT_DEVICE_TURN_RIGHT_FRONT
         },
-        .out[3] = {      // Output channel 5
+        .out[3] = {      // Output channel 4
             .enabled     = 1,
             .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_LOW_BEAM
         },
-        .out[4] = {      // Output channel 6
+        .out[4] = {      // Output channel 5
             .enabled     = 1,
             .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_HIGH_BEAM
         },
@@ -152,6 +152,12 @@ const cmc_config_t cmc_config_default_for_demo = {
             .enabled      = 1,
             .device_id    = CMC_CONFIG_OUT_DEVICE_STARTER
         }
+    },
+    .feature_ignition = {
+        .enabled = 0, // 0 = disabled: ignition always on (no sensor required, safe default for bench testing)
+    },
+    .feature_starter = {
+        .enabled = 0, // 0 = disabled: starter output never activates; set to 1 to enable input-driven starter control
     },
     .feature_horn = {
         .enabled = 1, // Set to 1 to enable the horn feature, set to 0 to disable it and the system will ignore any horn-related logic

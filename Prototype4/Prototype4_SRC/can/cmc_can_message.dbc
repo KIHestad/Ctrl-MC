@@ -50,14 +50,20 @@ BO_ 101 HEARTBEAT: 1 CMC_UNIT
  SG_ unit_id : 0|6@1+ (1,0) [0|63] ""  CMC_UNIT
  SG_ system_state : 6|2@1+ (1,0) [0|3] ""  CMC_UNIT
 
-BO_ 256 FEATURE_HORN: 1 CMC_UNIT
- SG_ value_on_off : 0|1@1+ (1,0) [0|255] "" Vector__XXX
+BO_ 202 FEATURE_HORN: 1 CMC_UNIT
+ SG_ value_on_off : 0|1@1+ (1,0) [0|1] "" Vector__XXX
 
-BO_ 257 FEATURE_DIRECTION_INDICATOR: 1 CMC_UNIT
+BO_ 203 FEATURE_DIRECTION_INDICATOR: 1 CMC_UNIT
  SG_ value_left_right_both : 1|2@1+ (1,0) [0|2] "" Vector__XXX
  SG_ value_on_off : 0|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ value_front_rear_both : 3|2@1+ (1,0) [0|2] "" Vector__XXX
  SG_ value_dashboard_only : 5|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 200 FEATURE_IGNITION: 8 CMC_UNIT
+ SG_ value_on_off : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+
+BO_ 201 FEATURE_STARTER: 8 CMC_UNIT
+ SG_ value_on_off : 0|1@1+ (1,0) [0|1] "" Vector__XXX
 
 
 
@@ -73,13 +79,17 @@ CM_ SG_ 100 gc_hash "All global configs across all units must be the same, this 
 CM_ BO_ 101 "Poll on system frequently to identify missing units or mishaps";
 CM_ SG_ 101 unit_id "Unique ID for the source unit";
 CM_ SG_ 101 system_state "Report system state for taking action if not OK";
-CM_ BO_ 256 "Turn horn on/off";
-CM_ SG_ 256 value_on_off "0=off, 1=on";
-CM_ BO_ 257 "Turn direction indicators on/off, send also info for left, righ or both (hazard) and optionally if to be turned of only for front or rear, normally should be both. Separate for turning on indicator only, to be used for startup animation or check that dashboard indicator bulb works";
-CM_ SG_ 257 value_left_right_both "0=left, 1=right, 2=both";
-CM_ SG_ 257 value_on_off "0=off, 1=on";
-CM_ SG_ 257 value_front_rear_both "0=front, 1=rear, 2=both";
-CM_ SG_ 257 value_dashboard_only "0=normal operation, 1=only affect dashboard warning indicator";
+CM_ BO_ 202 "Turn horn on/off";
+CM_ SG_ 202 value_on_off "0=off, 1=on";
+CM_ BO_ 203 "Turn direction indicators on/off, send also info for left, righ or both (hazard) and optionally if to be turned of only for front or rear, normally should be both. Separate for turning on indicator only, to be used for startup animation or check that dashboard indicator bulb works";
+CM_ SG_ 203 value_left_right_both "0=left, 1=right, 2=both";
+CM_ SG_ 203 value_on_off "0=off, 1=on";
+CM_ SG_ 203 value_front_rear_both "0=front, 1=rear, 2=both";
+CM_ SG_ 203 value_dashboard_only "0=normal operation, 1=only affect dashboard warning indicator";
+CM_ BO_ 200 "Control ignition status";
+CM_ SG_ 200 value_on_off "0=off, 1=on";
+CM_ BO_ 201 "Control starter motor";
+CM_ SG_ 201 value_on_off "0=off, 1=engaged (on)";
 BA_DEF_  "BusType" STRING ;
 BA_DEF_ BO_  "CANFD_BRS" ENUM  "0","1";
 BA_DEF_ BO_  "GenMsgCycleTime" INT 0 10000;
