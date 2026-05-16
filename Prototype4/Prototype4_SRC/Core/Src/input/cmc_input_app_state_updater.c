@@ -10,7 +10,7 @@
 
 #include "config/cmc_config_type.h"
 #include "input/cmc_input.h"
-#include "input/cmc_input_state.h"
+#include "app/cmc_app_state.h"
 #include "can/cmc_can_manager.h"
 
 // This function should be called after cmc_input_scanner executes to update the cmc_app_state based on the latest input states.
@@ -20,12 +20,12 @@ void cmc_input_app_state_update(const cmc_config_in_t* config_in, cmc_input_butt
         switch (config_in->device_id) {
 
             case CMC_IN_HORN:
-                if (cmc_input_state.button.horn_button_pressed != in_state->pressed) {
+                if (cmc_app_state.button.horn_button_pressed != in_state->pressed) {
                     // Horn button state has changed, update app state accordingly
-                    cmc_input_state.button.horn_button_pressed = in_state->pressed; 
+                    cmc_app_state.button.horn_button_pressed = in_state->pressed; 
                     // Send over canbus
                     struct cmc_can_message_feature_horn_t horn_msg;
-                    horn_msg.value_on_off = cmc_input_state.button.horn_button_pressed;  // 1=on, 0=off
+                    horn_msg.value_on_off = cmc_app_state.button.horn_button_pressed;  // 1=on, 0=off
                     uint8_t payload[CMC_CAN_MESSAGE_FEATURE_HORN_LENGTH];
                     int pack_result = cmc_can_message_feature_horn_pack(payload, &horn_msg, sizeof(payload));
                     if (pack_result < 0) { break; } // Packing failed, skip sending

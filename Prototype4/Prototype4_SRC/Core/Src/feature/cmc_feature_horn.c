@@ -15,7 +15,7 @@
 #include "stm32g4xx_hal.h"
 #include "config/cmc_config_type.h"
 #include "app/cmc_app_logic.h"
-#include "input/cmc_input_state.h"
+#include "app/cmc_app_state.h"
 #include "feature/cmc_features_manager.h"
 #include "feature/cmc_features_output.h"
 #include "feature/cmc_feature_horn.h"
@@ -48,7 +48,7 @@ void cmc_feature_horn_process() {
 
   // After timeout-triggered auto-off, require button release before allowing a new horn activation.
   if (timeout_latched) {
-    if (!cmc_input_state.button.horn_button_pressed) {
+    if (!cmc_app_state.button.horn_button_pressed) {
       timeout_latched = false;
     }
     else {
@@ -58,7 +58,7 @@ void cmc_feature_horn_process() {
 
   if (!this_unit_horn_active) {
     // Horn in currently off, if button pressed, ignition is on and starter not engaged - turn on the horn
-    if (cmc_input_state.button.horn_button_pressed && cmc_input_state.veichle_state.ignition_on && !cmc_input_state.button.starter_button_pressed) {
+    if (cmc_app_state.button.horn_button_pressed && cmc_app_state.veichle_state.ignition_on && !cmc_app_state.button.starter_button_pressed) {
       cmc_util_out_set_switch(switch_id, true); // Turn on the horn
       horn_on_since_ms = HAL_GetTick(); // Start timer for auto shut-off
       this_unit_horn_active = true; // Update local state
@@ -67,7 +67,7 @@ void cmc_feature_horn_process() {
   else {
     // Horn is currently on, if button released, ignition turned off, starter engaged or auto shut-off timeout reached - turn off the horn
     bool time_overdue = (cmc_config.feature_horn.auto_shut_off_sec > 0U) && ((HAL_GetTick() - horn_on_since_ms) >= ((uint32_t)cmc_config.feature_horn.auto_shut_off_sec * 1000U));
-    if (!cmc_input_state.button.horn_button_pressed || !cmc_input_state.veichle_state.ignition_on || cmc_input_state.button.starter_button_pressed || time_overdue) {
+    if (!cmc_app_state.button.horn_button_pressed || !cmc_app_state.veichle_state.ignition_on || cmc_app_state.button.starter_button_pressed || time_overdue) {
       cmc_util_out_set_switch(switch_id, false); // Turn off the horn
       this_unit_horn_active = false; // Update local state
       if (time_overdue) {

@@ -14,10 +14,10 @@
 #include "config/cmc_config_type.h"
 #include "config/cmc_config_type_unit.h"
 #include "input/cmc_input.h"
-#include "input/cmc_input_state.h"
+#include "app/cmc_app_state.h"
 
-// Global input state variable, updated by the scanner and used across the system and sent over CAN
-cmc_input_state_t cmc_input_state; 
+// Global application state variable, updated by the scanner and used across the system and sent over CAN
+cmc_app_state_t cmc_app_state; 
 
 // Local state for the input scanner, indexed by the button index in the unit configuration, holds raw and debounced states and timing for each button
 static cmc_input_button_state_t cmc_input_button_state[CMC_CONFIG_HW_IN_DIGITAL_COUNT];

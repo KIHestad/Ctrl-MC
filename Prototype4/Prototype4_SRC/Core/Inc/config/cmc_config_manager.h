@@ -19,8 +19,8 @@ void cmc_config_manager_init(void);
 
 // Manager methods
 bool cmc_config_manager_is_valid_config(void);
-cmc_app_state_status_t cmc_config_manager_validate(cmc_config_t* target_config);
-cmc_app_state_status_t cmc_config_manager_save_to_flash(const cmc_config_t* new_config);
-cmc_app_state_status_t cmc_config_manager_load_from_flash(cmc_config_t* target);
+cmc_app_status_code_t cmc_config_manager_validate(cmc_config_t* target_config);
+cmc_app_status_code_t cmc_config_manager_save_to_flash(const cmc_config_t* new_config);
+cmc_app_status_code_t cmc_config_manager_load_from_flash(cmc_config_t* target);
 
 #endif /* CMC_CONFIG_MANAGER_H_ */

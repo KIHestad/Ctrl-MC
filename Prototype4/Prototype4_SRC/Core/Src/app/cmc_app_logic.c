@@ -14,6 +14,9 @@
 #include "input/cmc_input.h"
 #include "feature/cmc_features_manager.h"
 
+// Global application system status variable
+cmc_app_status_t cmc_app_status;
+
 // App initialization, called once at startup
 void cmc_app_init(void) {
     
@@ -24,12 +27,12 @@ void cmc_app_init(void) {
     cmc_config_manager_init();
     
     // Check and read unit info from flash, if config is valid
-    if (cmc_app_state.status == CMC_APP_STATE_STATUS_SUCCESS) {
+    if (cmc_app_status.status == CMC_APP_STATUS_SUCCESS) {
         cmc_config_unit_info_init();
     }
 
     // Continue if configuration and unit info is valid and status set to success
-    if (cmc_app_state.status == CMC_APP_STATE_STATUS_SUCCESS) {
+    if (cmc_app_status.status == CMC_APP_STATUS_SUCCESS) {
 
         // Config and unit info should be valid at this point, set cmc_config_this_unit
         cmc_config_this_unit = &cmc_config.io_unit[cmc_config_unit_info.unit_id - 1];
@@ -43,10 +46,10 @@ void cmc_app_init(void) {
     }
 
     // Set status after init
-    if (cmc_app_state.status == CMC_APP_STATE_STATUS_SUCCESS) {
-        cmc_app_state.success = true;
+    if (cmc_app_status.status == CMC_APP_STATUS_SUCCESS) {
+        cmc_app_status.success = true;
     } else {
-        cmc_app_state.success = false;
+        cmc_app_status.success = false;
         cmc_onboard_led_blink_interval(cmc_config_unit_info.unit_id, 5000); 
     }
 }
@@ -54,8 +57,8 @@ void cmc_app_init(void) {
 // Main processing, called repeatedly from main.c loop
 void cmc_app_process(void) {
 
-    // Only run system logic if app_state.system is success
-    if (cmc_app_state.success) {
+    // Only run system logic if app_status.system is success
+    if (cmc_app_status.success) {
 
         // No need to read CAN messages in this processing loop, they will be handled by interrupts enabled by the CAN manager
         // Scan all button inputs: debounce and detect click/hold events
@@ -68,5 +71,8 @@ void cmc_app_process(void) {
     
     // Update onboard LED state on this unit, is done regardless of system state to ensure proper LED behavior with error indication as well
     cmc_onboard_led_process(); 
+
+    // Ensures CPU sleep mode between iterations for power saving and to make it run cooler, wakes up on interrupts (e.g., CAN messages, timer for input scanning, etc.)
+    __WFI();
 
 }

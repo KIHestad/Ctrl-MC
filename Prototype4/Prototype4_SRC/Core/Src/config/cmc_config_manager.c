@@ -30,38 +30,38 @@ static uint32_t flash_get_page(uint32_t address) {
 }
 
 // Helper: check that flash holds a valid signature AND a matching CRC
-static cmc_app_state_status_t check_flash_config(void) {
+static cmc_app_status_code_t check_flash_config(void) {
     if (flash_config->signature != CMC_CONFIG_SIGNATURE) {
-        return CMC_APP_STATE_STATUS_CONFIG_FLASH_SIGNATURE_INVALID;
+        return CMC_APP_STATUS_CONFIG_FLASH_SIGNATURE_INVALID;
     }
     if (CMC_CRC_CALCULATE_PAYLOAD(flash_config) != flash_config->crc) {
-        return CMC_APP_STATE_STATUS_CONFIG_FLASH_CRC_INVALID;
+        return CMC_APP_STATUS_CONFIG_FLASH_CRC_INVALID;
     }
-    return CMC_APP_STATE_STATUS_SUCCESS;
+    return CMC_APP_STATUS_SUCCESS;
 }
 
 // Init the configuration manager, called at startup to load and validate the configuration
 void cmc_config_manager_init(void) {
 
     // Set config status based on config in flash is valid
-    cmc_app_state.status = check_flash_config(); 
+    cmc_app_status.status = check_flash_config(); 
     
     // If flash config is not valid, attempt to fix it
     // TODO: Should check over CANBUS if valid config can be fetched, but for now use local demo defaults and save to flash
-    if (cmc_app_state.status != CMC_APP_STATE_STATUS_SUCCESS) {
-        cmc_app_state.status = cmc_config_manager_save_to_flash(&cmc_config_default_for_demo);
+    if (cmc_app_status.status != CMC_APP_STATUS_SUCCESS) {
+        cmc_app_status.status = cmc_config_manager_save_to_flash(&cmc_config_default_for_demo);
         // If save default config to flash succeeded, check once again if flash config is valid now (should be if save succeeded)
-        cmc_app_state.status = check_flash_config(); 
+        cmc_app_status.status = check_flash_config(); 
     }
 
     // If config is found valid in flash, load it into the active config struct in RAM for use by the system
-    if (cmc_app_state.status == CMC_APP_STATE_STATUS_SUCCESS) {
-        cmc_app_state.status = cmc_config_manager_load_from_flash(&cmc_config);
+    if (cmc_app_status.status == CMC_APP_STATUS_SUCCESS) {
+        cmc_app_status.status = cmc_config_manager_load_from_flash(&cmc_config);
     }
     
     // If errors detected, set LED to fast blink to indicate error state
-    if (cmc_app_state.status != CMC_APP_STATE_STATUS_SUCCESS) {
-        cmc_onboard_led_blink_interval(cmc_app_state.status, 1000); // Config save failed, indicate error with fast blinking
+    if (cmc_app_status.status != CMC_APP_STATUS_SUCCESS) {
+        cmc_onboard_led_blink_interval(cmc_app_status.status, 1000); // Config save failed, indicate error with fast blinking
     }
 
     // Done
@@ -69,9 +69,9 @@ void cmc_config_manager_init(void) {
 }
 
 // Save configuration struct to flash using 64-bit double-word programming (STM32G4 requirement)
-cmc_app_state_status_t cmc_config_manager_save_to_flash(const cmc_config_t* new_config) {
+cmc_app_status_code_t cmc_config_manager_save_to_flash(const cmc_config_t* new_config) {
     if (new_config == NULL) {
-        return CMC_APP_STATE_STATUS_CONFIG_SAVE_TO_FLASH_ERROR;
+        return CMC_APP_STATUS_CONFIG_SAVE_TO_FLASH_ERROR;
     }
 
     // Local copy so we can stamp signature + CRC without mutating the caller's struct
@@ -84,7 +84,7 @@ cmc_app_state_status_t cmc_config_manager_save_to_flash(const cmc_config_t* new_
     // Unlock flash
     hal_status = HAL_FLASH_Unlock();
     if (hal_status != HAL_OK) {
-        return CMC_APP_STATE_STATUS_CONFIG_SAVE_TO_FLASH_ERROR;
+        return CMC_APP_STATUS_CONFIG_SAVE_TO_FLASH_ERROR;
     }
 
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
@@ -100,7 +100,7 @@ cmc_app_state_status_t cmc_config_manager_save_to_flash(const cmc_config_t* new_
     hal_status = HAL_FLASHEx_Erase(&erase_init, &page_error);
     if (hal_status != HAL_OK) {
         HAL_FLASH_Lock();
-        return CMC_APP_STATE_STATUS_CONFIG_SAVE_TO_FLASH_ERROR;
+        return CMC_APP_STATUS_CONFIG_SAVE_TO_FLASH_ERROR;
     }
 
     // Program config as 64-bit double-words from the stamped local copy
@@ -112,24 +112,24 @@ cmc_app_state_status_t cmc_config_manager_save_to_flash(const cmc_config_t* new_
         hal_status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, dest_addr, src[i]);
         if (hal_status != HAL_OK) {
             HAL_FLASH_Lock();
-            return CMC_APP_STATE_STATUS_CONFIG_SAVE_TO_FLASH_ERROR;
+            return CMC_APP_STATUS_CONFIG_SAVE_TO_FLASH_ERROR;
         }
         dest_addr += sizeof(uint64_t);
     }
 
     HAL_FLASH_Lock();
-    return CMC_APP_STATE_STATUS_SUCCESS;
+    return CMC_APP_STATUS_SUCCESS;
 }
 
 // Load configuration from flash into RAM using 32-bit word copy for safe aligned access
-cmc_app_state_status_t cmc_config_manager_load_from_flash(cmc_config_t* target) {
+cmc_app_status_code_t cmc_config_manager_load_from_flash(cmc_config_t* target) {
     if (target == NULL) {
-        return CMC_APP_STATE_STATUS_CONFIG_LOAD_FROM_FLASH_ERROR;
+        return CMC_APP_STATUS_CONFIG_LOAD_FROM_FLASH_ERROR;
     }
 
     // Verify flash contains a valid config before copying
     if (flash_config->signature != CMC_CONFIG_SIGNATURE) {
-        return CMC_APP_STATE_STATUS_CONFIG_FLASH_SIGNATURE_INVALID;
+        return CMC_APP_STATUS_CONFIG_FLASH_SIGNATURE_INVALID;
     }
 
     // Copy from memory-mapped flash to RAM, word-by-word for safe aligned access
@@ -143,14 +143,14 @@ cmc_app_state_status_t cmc_config_manager_load_from_flash(cmc_config_t* target) 
 
     // Verify the copy succeeded
     if (target->signature != CMC_CONFIG_SIGNATURE) {
-        return CMC_APP_STATE_STATUS_CONFIG_RAM_SIGNATURE_INVALID;
+        return CMC_APP_STATUS_CONFIG_RAM_SIGNATURE_INVALID;
     }
 
     // Verify CRC over payload (everything after the crc field)
     if (CMC_CRC_CALCULATE_PAYLOAD(target) != target->crc) {
-        return CMC_APP_STATE_STATUS_CONFIG_FLASH_CRC_INVALID;
+        return CMC_APP_STATUS_CONFIG_FLASH_CRC_INVALID;
     }
 
-    return CMC_APP_STATE_STATUS_SUCCESS;
+    return CMC_APP_STATUS_SUCCESS;
 }
 
