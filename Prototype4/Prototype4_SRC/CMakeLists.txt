@@ -80,3 +80,12 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 
     # Add user defined libraries
 )
+# Post-build: report size of cmc_config_t relative to the 2KB flash config page
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND}
+        -DNM=${CMAKE_NM}
+        -DELF=$<TARGET_FILE:${CMAKE_PROJECT_NAME}>
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/print_config_size.cmake
+    VERBATIM
+    COMMENT "Checking cmc_config_t flash config size"
+)
