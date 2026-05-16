@@ -13,7 +13,7 @@
 #include "stm32g4xx_hal_gpio.h"
 
 // Returns true only if the output device exists on the active unit and is enabled.
-bool cmc_util_out_is_device_enabled(cmc_config_out_device_t device_id) {
+bool cmc_features_out_is_device_enabled(cmc_config_out_device_t device_id) {
     
     // Loop over the outputs configured on this unit and check if the given device_id is both present and enabled
     for (uint8_t i = 0; i < cmc_config_this_unit->out_used; i++) {
@@ -27,7 +27,7 @@ bool cmc_util_out_is_device_enabled(cmc_config_out_device_t device_id) {
 }
 
 // Returns true only if the output device exists on the active unit and is enabled.
-uint8_t cmc_util_out_get_id(cmc_config_out_device_t device_id) {
+uint8_t cmc_features_out_get_device_id(cmc_config_out_device_t device_id) {
     
     // Loop over the outputs configured on this unit and check if the given device_id is both present and enabled
     for (uint8_t i = 0; i < cmc_config_this_unit->out_used; i++) {
@@ -40,7 +40,7 @@ uint8_t cmc_util_out_get_id(cmc_config_out_device_t device_id) {
     return 0xFF; // Return 0xFF if the device is not found or not enabled
 }
 
-void cmc_util_out_set_switch(uint8_t switch_id, bool on) {
+void cmc_features_out_set_switch(uint8_t switch_id, bool on) {
 
     // Get the hardware mapping for this output channel from the configuration
     const cmc_config_infineon_profet_t* channel = &cmc_config_hw_out_channel_mapping[switch_id];
@@ -50,7 +50,7 @@ void cmc_util_out_set_switch(uint8_t switch_id, bool on) {
     HAL_GPIO_WritePin(channel->in_pin.port, channel->in_pin.pin, on ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 
-bool cmc_util_out_is_switch_on(uint8_t switch_id) {
+bool cmc_features_out_is_switch_on(uint8_t switch_id) {
 
     // Get the hardware mapping for this output channel from the configuration
     const cmc_config_infineon_profet_t* channel = &cmc_config_hw_out_channel_mapping[switch_id];

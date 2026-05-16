@@ -29,12 +29,12 @@ static bool timeout_latched = false;            // Set true after timeout auto-o
 
 void cmc_feature_horn_init(void) {
   // Check if the horn feature is enabled in the configuration and if this unit has the horn output device enabled, if not, this feature will be inactive and do nothing
-  this_unit_feature_active = (cmc_config.feature_horn.enabled == 1) && cmc_util_out_is_device_enabled(CMC_CONFIG_OUT_DEVICE_HORN);
+  this_unit_feature_active = (cmc_config.feature_horn.enabled == 1) && cmc_features_out_is_device_enabled(CMC_CONFIG_OUT_DEVICE_HORN);
   if (this_unit_feature_active) {
       // Get the output index for the horn switch on this unit, used for controlling the horn output channel when needed
-      switch_id = cmc_util_out_get_id(CMC_CONFIG_OUT_DEVICE_HORN);
+      switch_id = cmc_features_out_get_device_id(CMC_CONFIG_OUT_DEVICE_HORN);
       // Ensure the horn starts in the off state on initialization
-      cmc_util_out_set_switch(switch_id, false);
+      cmc_features_out_set_switch(switch_id, false);
   }
 }
 
@@ -59,7 +59,7 @@ void cmc_feature_horn_process() {
   if (!this_unit_horn_active) {
     // Horn in currently off, if button pressed, ignition is on and starter not engaged - turn on the horn
     if (cmc_app_state.button.horn_button_pressed && cmc_app_state.veichle_state.ignition_on && !cmc_app_state.button.starter_button_pressed) {
-      cmc_util_out_set_switch(switch_id, true); // Turn on the horn
+      cmc_features_out_set_switch(switch_id, true); // Turn on the horn
       horn_on_since_ms = HAL_GetTick(); // Start timer for auto shut-off
       this_unit_horn_active = true; // Update local state
     }
@@ -68,7 +68,7 @@ void cmc_feature_horn_process() {
     // Horn is currently on, if button released, ignition turned off, starter engaged or auto shut-off timeout reached - turn off the horn
     bool time_overdue = (cmc_config.feature_horn.auto_shut_off_sec > 0U) && ((HAL_GetTick() - horn_on_since_ms) >= ((uint32_t)cmc_config.feature_horn.auto_shut_off_sec * 1000U));
     if (!cmc_app_state.button.horn_button_pressed || !cmc_app_state.veichle_state.ignition_on || cmc_app_state.button.starter_button_pressed || time_overdue) {
-      cmc_util_out_set_switch(switch_id, false); // Turn off the horn
+      cmc_features_out_set_switch(switch_id, false); // Turn off the horn
       this_unit_horn_active = false; // Update local state
       if (time_overdue) {
         timeout_latched = true;

@@ -40,7 +40,10 @@ typedef struct {
     cmc_config_out_t out[CMC_CONFIG_HW_OUT_COUNT]; // 12 bytes - The equipment connected to each output channel, maps to cmc_equipment_t
 } cmc_config_io_unit_t;
 
-// Master configuration structure that holds the entire system configuration, including all I/O units and features
+
+/*********************************************************************************************************************
+    Master configuration structure that holds the entire system configuration, including all I/O units and features
+**********************************************************************************************************************/
 typedef struct {
     
     // Signature and CRC to ensure valid operation 
