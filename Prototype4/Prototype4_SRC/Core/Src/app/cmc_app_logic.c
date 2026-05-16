@@ -24,18 +24,15 @@ void cmc_app_init(void) {
     cmc_config_manager_init();
     
     // Check and read unit info from flash, if config is valid
-    if (cmc_app_state.system.status == CMC_APP_STATE_STATUS_SUCCESS) {
+    if (cmc_app_state.status == CMC_APP_STATE_STATUS_SUCCESS) {
         cmc_config_unit_info_init();
     }
 
     // Continue if configuration and unit info is valid and status set to success
-    if (cmc_app_state.system.status == CMC_APP_STATE_STATUS_SUCCESS) {
+    if (cmc_app_state.status == CMC_APP_STATE_STATUS_SUCCESS) {
 
         // Config and unit info should be valid at this point, set cmc_config_this_unit
         cmc_config_this_unit = &cmc_config.io_unit[cmc_config_unit_info.unit_id - 1];
-        
-        // Init app state machine with default values and from flash
-        cmc_app_state_init();
         
         // Initialize button reading, sample initial GPIO states
         cmc_input_scanner_init();
@@ -44,13 +41,21 @@ void cmc_app_init(void) {
         cmc_features_init();
     
     }
+
+    // Set status after init
+    if (cmc_app_state.status == CMC_APP_STATE_STATUS_SUCCESS) {
+        cmc_app_state.success = true;
+    } else {
+        cmc_app_state.success = false;
+        cmc_onboard_led_blink_interval(cmc_config_unit_info.unit_id, 5000); 
+    }
 }
 
 // Main processing, called repeatedly from main.c loop
 void cmc_app_process(void) {
 
     // Only run system logic if app_state.system is success
-    if (cmc_app_state.system.status == CMC_APP_STATE_STATUS_SUCCESS) {
+    if (cmc_app_state.success) {
 
         // No need to read CAN messages in this processing loop, they will be handled by interrupts enabled by the CAN manager
         // Scan all button inputs: debounce and detect click/hold events

@@ -26,7 +26,7 @@ typedef struct {
     bool     toggle_hold;          // True while toggle input is physically held past hold threshold
     uint8_t  toggle_hold_sec;      // Whole seconds toggle input has been held after threshold
     uint32_t toggle_hold_start_ms; // Tick when toggle input debounced press began
-} cmc_input_state_t;
+} cmc_input_button_state_t;
 
 // Initialize button states, read initial GPIO levels into raw/debounced fields
 void cmc_input_scanner_init(void);
@@ -35,6 +35,6 @@ void cmc_input_scanner_init(void);
 void cmc_input_scanner_execute(void);
 
 // Update application state based on processed input states and configuration
-void cmc_input_app_state_update(const cmc_config_in_t *config_in, cmc_input_state_t *in_state);
+void cmc_input_app_state_update(const cmc_config_in_t *config_in, cmc_input_button_state_t *in_state);
 
 #endif /* CMC_INPUT_SCANNER_H_ */

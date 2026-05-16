@@ -11,7 +11,7 @@
   */
 
 #include "can/cmc_can_manager.h"
-#include "app/cmc_app_state.h"
+#include "app/cmc_app_logic.h"
 #include <string.h>
 
 /* ---- Private state ------------------------------------------------------------------------ */

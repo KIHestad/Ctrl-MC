@@ -9,7 +9,7 @@
 
 #include "config/cmc_config_manager.h"
 #include "config/cmc_config_defaults.h" 
-#include "app/cmc_app_state.h"
+#include "app/cmc_app_logic.h"
 #include "config/cmc_config_type.h"
 #include "util/cmc_util_onboard_led.h"
 #include "util/cmc_util_crc.h"
@@ -44,24 +44,24 @@ static cmc_app_state_status_t check_flash_config(void) {
 void cmc_config_manager_init(void) {
 
     // Set config status based on config in flash is valid
-    cmc_app_state.system.status = check_flash_config(); 
+    cmc_app_state.status = check_flash_config(); 
     
     // If flash config is not valid, attempt to fix it
     // TODO: Should check over CANBUS if valid config can be fetched, but for now use local demo defaults and save to flash
-    if (cmc_app_state.system.status != CMC_APP_STATE_STATUS_SUCCESS) {
-        cmc_app_state.system.status = cmc_config_manager_save_to_flash(&cmc_config_default_for_demo);
+    if (cmc_app_state.status != CMC_APP_STATE_STATUS_SUCCESS) {
+        cmc_app_state.status = cmc_config_manager_save_to_flash(&cmc_config_default_for_demo);
         // If save default config to flash succeeded, check once again if flash config is valid now (should be if save succeeded)
-        cmc_app_state.system.status = check_flash_config(); 
+        cmc_app_state.status = check_flash_config(); 
     }
 
     // If config is found valid in flash, load it into the active config struct in RAM for use by the system
-    if (cmc_app_state.system.status == CMC_APP_STATE_STATUS_SUCCESS) {
-        cmc_app_state.system.status = cmc_config_manager_load_from_flash(&cmc_config);
+    if (cmc_app_state.status == CMC_APP_STATE_STATUS_SUCCESS) {
+        cmc_app_state.status = cmc_config_manager_load_from_flash(&cmc_config);
     }
     
     // If errors detected, set LED to fast blink to indicate error state
-    if (cmc_app_state.system.status != CMC_APP_STATE_STATUS_SUCCESS) {
-        cmc_onboard_led_blink_interval(cmc_app_state.system.status, 1000); // Config save failed, indicate error with fast blinking
+    if (cmc_app_state.status != CMC_APP_STATE_STATUS_SUCCESS) {
+        cmc_onboard_led_blink_interval(cmc_app_state.status, 1000); // Config save failed, indicate error with fast blinking
     }
 
     // Done

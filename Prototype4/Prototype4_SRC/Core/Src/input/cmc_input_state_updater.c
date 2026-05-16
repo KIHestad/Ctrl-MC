@@ -8,28 +8,24 @@
   *********************************************************************************************
   */
 
-#include "stm32g4xx_hal.h"
-#include "config/cmc_config_hw_mapping.h"
 #include "config/cmc_config_type.h"
-#include "config/cmc_config_type_unit.h"
-#include "app/cmc_app_state.h"
 #include "input/cmc_input.h"
+#include "input/cmc_input_state.h"
 #include "can/cmc_can_manager.h"
-#include "can/cmc_can_message.h"
 
 // This function should be called after cmc_input_scanner executes to update the cmc_app_state based on the latest input states.
-void cmc_input_app_state_update(const cmc_config_in_t* config_in, cmc_input_state_t* in_state) {
+void cmc_input_app_state_update(const cmc_config_in_t* config_in, cmc_input_button_state_t* in_state) {
 
         // After button state is recorded, check if cmc_app_state needs updating depending on the button type
         switch (config_in->device_id) {
 
             case CMC_IN_HORN:
-                if (cmc_app_state.input.horn_button_pressed != in_state->pressed) {
+                if (cmc_input_state.button.horn_button_pressed != in_state->pressed) {
                     // Horn button state has changed, update app state accordingly
-                    cmc_app_state.input.horn_button_pressed = in_state->pressed; 
+                    cmc_input_state.button.horn_button_pressed = in_state->pressed; 
                     // Send over canbus
                     struct cmc_can_message_feature_horn_t horn_msg;
-                    horn_msg.value_on_off = cmc_app_state.input.horn_button_pressed;  // 1=on, 0=off
+                    horn_msg.value_on_off = cmc_input_state.button.horn_button_pressed;  // 1=on, 0=off
                     uint8_t payload[CMC_CAN_MESSAGE_FEATURE_HORN_LENGTH];
                     int pack_result = cmc_can_message_feature_horn_pack(payload, &horn_msg, sizeof(payload));
                     if (pack_result < 0) { break; } // Packing failed, skip sending

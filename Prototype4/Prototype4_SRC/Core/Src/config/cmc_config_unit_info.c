@@ -9,7 +9,9 @@
   */
 
 #include "config/cmc_config_unit_info.h"
-#include "app/cmc_app_state.h"
+#include "config/cmc_config_type_unit.h"
+#include "config/cmc_config_hw_mapping.h"
+#include "app/cmc_app_logic.h"
 #include "util/cmc_util_onboard_led.h"
 #include "util/cmc_util_crc.h"
 #include "stm32g4xx_hal.h"
@@ -116,7 +118,7 @@ void cmc_config_unit_info_init(void) {
                     // save to flash now
                     bool save_success = cmc_config_unit_info_save();
                     if (!save_success) {
-                        cmc_app_state.system.status = CMC_APP_STATE_STATUS_UNIT_INFO_SAVE_ERROR;
+                        cmc_app_state.status = CMC_APP_STATE_STATUS_UNIT_INFO_SAVE_ERROR;
                     }
                     unit_id_set = true;
                     break;                    
@@ -131,7 +133,7 @@ void cmc_config_unit_info_init(void) {
     cmc_onboard_led_startup(); 
 
     // If save new unit info to flash failed, the state will be set to an error state
-    if (cmc_app_state.system.status != CMC_APP_STATE_STATUS_SUCCESS) {
+    if (cmc_app_state.status != CMC_APP_STATE_STATUS_SUCCESS) {
         return;
     }
     
@@ -140,7 +142,7 @@ void cmc_config_unit_info_init(void) {
 
     // Verify CRC over payload (everything after the crc field)
     if (CMC_CRC_CALCULATE_PAYLOAD(&cmc_config_unit_info) != cmc_config_unit_info.crc) {
-        cmc_app_state.system.status = CMC_APP_STATE_STATUS_UNIT_INFO_CRC_INVALID;
+        cmc_app_state.status = CMC_APP_STATE_STATUS_UNIT_INFO_CRC_INVALID;
         return;
     }
     

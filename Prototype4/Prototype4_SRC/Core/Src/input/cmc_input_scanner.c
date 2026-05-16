@@ -13,10 +13,14 @@
 #include "config/cmc_config_hw_mapping.h"
 #include "config/cmc_config_type.h"
 #include "config/cmc_config_type_unit.h"
-#include "app/cmc_app_state.h"
 #include "input/cmc_input.h"
+#include "input/cmc_input_state.h"
 
-static cmc_input_state_t cmc_input_state[CMC_CONFIG_HW_IN_DIGITAL_COUNT];
+// Global input state variable, updated by the scanner and used across the system and sent over CAN
+cmc_input_state_t cmc_input_state; 
+
+// Local state for the input scanner, indexed by the button index in the unit configuration, holds raw and debounced states and timing for each button
+static cmc_input_button_state_t cmc_input_button_state[CMC_CONFIG_HW_IN_DIGITAL_COUNT];
 
 // Read one button GPIO, returns true if button is physically pressed (active-low)
 static bool read_button_raw(uint8_t index) {
@@ -28,24 +32,29 @@ static bool read_button_raw(uint8_t index) {
 
 // Initialize: sample current GPIO state as both raw and debounced, clear all counters
 void cmc_input_scanner_init(void) {
+    // Set all button states to the current raw reading at startup
     uint32_t now = HAL_GetTick();
     for (uint8_t i = 0; i < CMC_CONFIG_HW_IN_DIGITAL_COUNT; i++) {
         bool pressed = read_button_raw(i);
-        cmc_input_state[i].pressed_raw      = pressed;
-        cmc_input_state[i].pressed_physical = pressed;
-        cmc_input_state[i].pressed          = pressed;
-        cmc_input_state[i].toggle_hold      = false;
-        cmc_input_state[i].toggle_hold_sec  = 0;
-        cmc_input_state[i].pressed_raw_ms   = now;
-        cmc_input_state[i].toggle_hold_start_ms = now;
+        cmc_input_button_state[i].pressed_raw      = pressed;
+        cmc_input_button_state[i].pressed_physical = pressed;
+        cmc_input_button_state[i].pressed          = pressed;
+        cmc_input_button_state[i].toggle_hold      = false;
+        cmc_input_button_state[i].toggle_hold_sec  = 0;
+        cmc_input_button_state[i].pressed_raw_ms   = now;
+        cmc_input_button_state[i].toggle_hold_start_ms = now;
     }
+
+    // Set global input state to defaults
+
+
 }
 
 // Scan all configured buttons: debounce, then detect press/release/hold/click
 void cmc_input_scanner_execute(void) {
     // Get timestamp
     uint32_t now = HAL_GetTick();
-    // only loop over configured buttons
+    // loop over all configured buttons
     for (uint8_t i = 0; i < cmc_config_this_unit->in_used; i++) {
         
         // First get the button configuration for this input pin from the unit configuration
@@ -55,7 +64,7 @@ void cmc_input_scanner_execute(void) {
         }
 
         // Reference to the button state struct for easier access
-        cmc_input_state_t* in_state  = &cmc_input_state[i];
+        cmc_input_button_state_t* in_state  = &cmc_input_button_state[i];
 
         // Read inputs depending on digital or analog type
         if (type_id != CMC_INTYPE_ANALOG) {
@@ -108,8 +117,9 @@ void cmc_input_scanner_execute(void) {
         }
         else {
 
-            // Analog input processing can be implemented here if needed, for now we will skip it as the current focus is on button inputs
-            // TODO: Not implemented yet
+            // TODO: Not implemented yet!
+            // Analog input processing is to be implemented here later
+            // for now we will skip it as the current focus is on button inputs
 
         }
 
