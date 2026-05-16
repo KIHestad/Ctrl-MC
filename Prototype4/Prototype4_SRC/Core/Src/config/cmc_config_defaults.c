@@ -18,142 +18,143 @@ const bool cmc_config_default_for_demo_use = true;
 // Default configuration values for the system
 const cmc_config_t cmc_config_default_for_demo = {
     .signature       = CMC_CONFIG_SIGNATURE, // Default config signature, must match CMC_CONFIG_SIGNATURE to be considered valid
-    .units_required  = 2, // The minimum number of IO units the system needs to operate
+    .version         = CMC_CONFIG_VERSION,   // Default config version, can be used for migration logic if the config structure changes in future firmware versions
+    .units_required  = 2, // The expected number of IO units the system needs to operate, this is also the number of units that should be present in the configuration
 
     // Unit number 1: Front I/O Unit
     .io_unit[0] = {
         .unit_id         = 1,
-        .unit_name_id    = CMC_UNIT_FRONT, 
+        .unit_name_id    = CMC_CONFIG_UNIT_NAME_FRONT, 
         .in_used         = 8, // Number of input connectors used on this unit
         .out_used        = 6, // Number of output channels used on this unit
         
         // Input buttons and sensors
         .in[0] = {       // Input button 1
             .enabled     = 1,
-            .device_id   = CMC_IN_TURN_LEFT,
-            .type_id     = CMC_INTYPE_DIGITAL_TOGGLE
+            .device_id   = CMC_CONFIG_IN_DEVICE_TURN_LEFT,
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
         },
         .in[1] = {       // Input button 2
             .enabled     = 1,
-            .device_id   = CMC_IN_TURN_RIGHT,
-            .type_id     = CMC_INTYPE_DIGITAL_TOGGLE
+            .device_id   = CMC_CONFIG_IN_DEVICE_TURN_RIGHT,
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
         },
         .in[2] = {       // Input button 3
             .enabled     = 1,
-            .device_id   = CMC_IN_LIGHT_HIGH_BEAM,
-            .type_id     = CMC_INTYPE_DIGITAL_TOGGLE
+            .device_id   = CMC_CONFIG_IN_DEVICE_LIGHT_HIGH_BEAM,
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
         },
         .in[3] = {       // Input button 4
             .enabled     = 1,
-            .device_id   = CMC_IN_HORN,
-            .type_id     = CMC_INTYPE_DIGITAL_DIRECT
+            .device_id   = CMC_CONFIG_IN_DEVICE_HORN,
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_DIRECT
         },
         .in[4] = {       // Input button 5
             .enabled     = 1,
-            .device_id   = CMC_IN_CLUTCH_LEVER,
-            .type_id     = CMC_INTYPE_DIGITAL_DIRECT
+            .device_id   = CMC_CONFIG_IN_DEVICE_CLUTCH_LEVER,
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_DIRECT
         },
         .in[5] = {       // Input button 6
             .enabled     = 1,
-            .device_id   = CMC_IN_BRAKE_LEVER,
-            .type_id     = CMC_INTYPE_DIGITAL_DIRECT
+            .device_id   = CMC_CONFIG_IN_DEVICE_BRAKE_LEVER,
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_DIRECT
         },
         .in[6] = {       // Input button 7
             .enabled     = 1,
-            .device_id   = CMC_IN_STARTER,
-            .type_id     = CMC_INTYPE_DIGITAL_DIRECT
+            .device_id   = CMC_CONFIG_IN_DEVICE_STARTER,
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_DIRECT
         },
         .in[7] = {       // Input button 8
             .enabled     = 1,
-            .device_id   = CMC_IN_LIGHTS_MAIN,
-            .type_id     = CMC_INTYPE_DIGITAL_TOGGLE
+            .device_id   = CMC_CONFIG_IN_DEVICE_LIGHTS_MAIN,
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
         },
         .in[8] = {       // Input button 9
             .enabled     = 1,
-            .device_id   = CMC_IN_MENU_LEFT,
-            .type_id     = CMC_INTYPE_DIGITAL_TOGGLE
+            .device_id   = CMC_CONFIG_IN_DEVICE_MENU_LEFT,
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
         },
         .in[9] = {       // Input button 10
             .enabled     = 1,
-            .device_id   = CMC_IN_MENU_RIGHT,
-            .type_id     = CMC_INTYPE_DIGITAL_TOGGLE
+            .device_id   = CMC_CONFIG_IN_DEVICE_MENU_RIGHT,
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
         },
 
         // Output Channel Mapping
         .out[0] = {      // Output channel 1
             .enabled     = 1,
-            .device_id   = CMC_OUT_HORN
+            .device_id   = CMC_CONFIG_OUT_DEVICE_HORN
         },
         .out[1] = {      // Output channel 2
             .enabled     = 1,
-            .device_id   = CMC_OUT_TURN_LEFT_FRONT
+            .device_id   = CMC_CONFIG_OUT_DEVICE_TURN_LEFT_FRONT
         },
         .out[2] = {      // Output channel 3
             .enabled     = 1,
-            .device_id   = CMC_OUT_LIGHT_PARK
+            .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_PARK
         },
         .out[3] = {      // Output channel 4
             .enabled     = 1,
-            .device_id   = CMC_OUT_TURN_RIGHT_FRONT
+            .device_id   = CMC_CONFIG_OUT_DEVICE_TURN_RIGHT_FRONT
         },
         .out[4] = {      // Output channel 5
             .enabled     = 1,
-            .device_id   = CMC_OUT_LIGHT_LOW_BEAM
+            .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_LOW_BEAM
         },
         .out[5] = {      // Output channel 6
             .enabled     = 1,
-            .device_id   = CMC_OUT_LIGHT_HIGH_BEAM
+            .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_HIGH_BEAM
         },
     },
 
     // Unit number 2: Rear I/O Unit
     .io_unit[1] = {
         .unit_id         = 2,
-        .unit_name_id    = CMC_UNIT_REAR,
+        .unit_name_id    = CMC_CONFIG_UNIT_NAME_REAR,
         .in_used         = 2, // Number of input connectors used on this unit
         .out_used        = 6, // Number of output channels used on this unit
 
         // Input buttons and sensors
         .in[0] = {       // Input button 1
             .enabled     = 1,
-            .device_id   = CMC_IN_BRAKE_PEDAL,
-            .type_id     = CMC_INTYPE_DIGITAL_DIRECT
+            .device_id   = CMC_CONFIG_IN_DEVICE_BRAKE_PEDAL,
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_DIRECT
         },
         .in[1] = {       // Input button 2
             .enabled     = 1,
-            .device_id   = CMC_IN_NEUTRAL_SENSOR,
-            .type_id     = CMC_INTYPE_DIGITAL_TOGGLE
+            .device_id   = CMC_CONFIG_IN_DEVICE_NEUTRAL_SENSOR,
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
         },
         .in[2] = {       // Input button 3
             .enabled     = 0, // Not used
-            .device_id   = CMC_IN_OIL_SENSOR,
-            .type_id     = CMC_INTYPE_DIGITAL_TOGGLE
+            .device_id   = CMC_CONFIG_IN_DEVICE_OIL_SENSOR,
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
         },
 
         // Output Channel Mapping
         .out[0] = {       // Output channel 1
             .enabled      = 1,
-            .device_id    = CMC_OUT_LIGHT_BRAKE
+            .device_id    = CMC_CONFIG_OUT_DEVICE_LIGHT_BRAKE
         },
         .out[1] = {       // Output channel 2
             .enabled      = 1,
-            .device_id    = CMC_OUT_LIGHT_TAIL
+            .device_id    = CMC_CONFIG_OUT_DEVICE_LIGHT_TAIL
         },
         .out[2] = {       // Output channel 3
             .enabled      = 1,
-            .device_id    = CMC_OUT_TURN_LEFT_REAR
+            .device_id    = CMC_CONFIG_OUT_DEVICE_TURN_LEFT_REAR
         },
         .out[3] = {       // Output channel 4
             .enabled      = 1,
-            .device_id    = CMC_OUT_TURN_RIGHT_REAR
+            .device_id    = CMC_CONFIG_OUT_DEVICE_TURN_RIGHT_REAR
         },
         .out[4] = {       // Output channel 5
             .enabled      = 1,
-            .device_id    = CMC_OUT_STARTER
+            .device_id    = CMC_CONFIG_OUT_DEVICE_STARTER
         },
         .out[5] = {       // Output channel 6
             .enabled      = 1,
-            .device_id    = CMC_OUT_INSTR_NEUTRAL
+            .device_id    = CMC_CONFIG_OUT_DEVICE_INSTR_NEUTRAL
         },        
     },
     .feature_horn = {

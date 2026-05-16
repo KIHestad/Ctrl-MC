@@ -58,8 +58,8 @@ void cmc_input_scanner_execute(void) {
     for (uint8_t i = 0; i < cmc_config_this_unit->in_used; i++) {
         
         // First get the button configuration for this input pin from the unit configuration
-        uint8_t type_id = cmc_config_this_unit->in[i].type_id;
-        if (type_id == CMC_INTYPE_IGNORE) {
+        uint8_t usage_id = cmc_config_this_unit->in[i].usage_id;
+        if (usage_id == CMC_CONFIG_IN_USAGE_IGNORE) {
             continue; // skip processing for this button if it's configured to be ignored
         }
 
@@ -67,7 +67,7 @@ void cmc_input_scanner_execute(void) {
         cmc_input_button_state_t* in_state  = &cmc_input_button_state[i];
 
         // Read inputs depending on digital or analog type
-        if (type_id != CMC_INTYPE_ANALOG) {
+        if (usage_id != CMC_CONFIG_IN_USAGE_ANALOG) {
             
             // Digital button, read the raw GPIO state, compare to last raw state for debounce logic
             bool current_pressed_raw = read_button_raw(i);
@@ -88,10 +88,10 @@ void cmc_input_scanner_execute(void) {
             bool just_released = (!in_state->pressed_physical && prev_physical_pressed);
 
             // Direct output follows debounced physical state. Toggle output flips once per press edge.
-            if (type_id == CMC_INTYPE_DIGITAL_DIRECT) {
+            if (usage_id == CMC_CONFIG_IN_USAGE_DIGITAL_DIRECT) {
                 in_state->pressed = in_state->pressed_physical;
             }
-            //  type_id == CMC_INTYPE_DIGITAL_TOGGLE
+            //  usage_id == CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
             else { 
                 if (just_pressed) {
                     in_state->pressed = !in_state->pressed;

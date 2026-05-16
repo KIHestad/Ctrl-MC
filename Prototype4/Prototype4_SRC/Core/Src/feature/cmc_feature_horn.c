@@ -29,10 +29,10 @@ static bool timeout_latched = false;            // Set true after timeout auto-o
 
 void cmc_feature_horn_init(void) {
   // Check if the horn feature is enabled in the configuration and if this unit has the horn output device enabled, if not, this feature will be inactive and do nothing
-  this_unit_feature_active = (cmc_config.feature_horn.enabled == 1) && cmc_util_out_is_device_enabled(CMC_OUT_HORN);
+  this_unit_feature_active = (cmc_config.feature_horn.enabled == 1) && cmc_util_out_is_device_enabled(CMC_CONFIG_OUT_DEVICE_HORN);
   if (this_unit_feature_active) {
       // Get the output index for the horn switch on this unit, used for controlling the horn output channel when needed
-      switch_id = cmc_util_out_get_id(CMC_OUT_HORN);
+      switch_id = cmc_util_out_get_id(CMC_CONFIG_OUT_DEVICE_HORN);
       // Ensure the horn starts in the off state on initialization
       cmc_util_out_set_switch(switch_id, false);
   }

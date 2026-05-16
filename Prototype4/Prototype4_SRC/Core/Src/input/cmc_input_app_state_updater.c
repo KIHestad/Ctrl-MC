@@ -19,7 +19,7 @@ void cmc_input_app_state_update(const cmc_config_in_t* config_in, cmc_input_butt
         // After button state is recorded, check if cmc_app_state needs updating depending on the button type
         switch (config_in->device_id) {
 
-            case CMC_IN_HORN:
+            case CMC_CONFIG_IN_DEVICE_HORN:
                 if (cmc_app_state.button.horn_button_pressed != in_state->pressed) {
                     // Horn button state has changed, update app state accordingly
                     cmc_app_state.button.horn_button_pressed = in_state->pressed; 
@@ -34,7 +34,7 @@ void cmc_input_app_state_update(const cmc_config_in_t* config_in, cmc_input_butt
                 }
                 break;
             
-                case CMC_IN_BRAKE_LEVER:
+                case CMC_CONFIG_IN_DEVICE_BRAKE_LEVER:
                 // todo
                 break;
         }

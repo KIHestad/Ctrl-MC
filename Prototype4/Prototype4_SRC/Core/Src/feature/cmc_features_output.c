@@ -13,7 +13,7 @@
 #include "stm32g4xx_hal_gpio.h"
 
 // Returns true only if the output device exists on the active unit and is enabled.
-bool cmc_util_out_is_device_enabled(cmc_out_t device_id) {
+bool cmc_util_out_is_device_enabled(cmc_config_out_device_t device_id) {
     
     // Loop over the outputs configured on this unit and check if the given device_id is both present and enabled
     for (uint8_t i = 0; i < cmc_config_this_unit->out_used; i++) {
@@ -27,7 +27,7 @@ bool cmc_util_out_is_device_enabled(cmc_out_t device_id) {
 }
 
 // Returns true only if the output device exists on the active unit and is enabled.
-uint8_t cmc_util_out_get_id(cmc_out_t device_id) {
+uint8_t cmc_util_out_get_id(cmc_config_out_device_t device_id) {
     
     // Loop over the outputs configured on this unit and check if the given device_id is both present and enabled
     for (uint8_t i = 0; i < cmc_config_this_unit->out_used; i++) {

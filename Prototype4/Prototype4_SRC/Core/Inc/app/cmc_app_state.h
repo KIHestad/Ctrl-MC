@@ -37,7 +37,6 @@ typedef struct {
 typedef struct {
     bool left_on;  
     bool right_on; 
-    bool hazard_on; 
 } cmc_app_state_button_turn_signal_t;
 
 // All input buttons

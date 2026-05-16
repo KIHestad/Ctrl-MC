@@ -31,7 +31,7 @@ typedef struct {
 } cmc_app_status_t;
 
 // Global application system status
-extern cmc_app_status_t   cmc_app_status;
+extern cmc_app_status_t cmc_app_status;
 
 // Public functions for application logic - main init and main loop 
 void cmc_app_init(void);
