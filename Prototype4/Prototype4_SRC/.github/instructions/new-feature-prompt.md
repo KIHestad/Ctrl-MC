@@ -1,3 +1,8 @@
+Before starting check the following:
+- If a canbus message is needed for the feature, this needs to be created manually first by the user
+- The user needs to use cantools to generate the /Core/Inc/can/cmc_can_message.h and /Core/Src/can/cmc_can_message.c files for the canbus message
+- Never modity the generated .c and .h files as part of this feature creation
+
 Create a new feature module following the Ctrl-MC pattern:
 - Header in `Core/Inc/feature/cmc_feature_<name>.h`
 - Source in `Core/Src/feature/cmc_feature_<name>.c`
