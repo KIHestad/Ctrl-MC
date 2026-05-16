@@ -6,5 +6,5 @@ The code should follow the aligns with the Sense-Compute-Actuate pattern, decoup
 
 Canbus messages are used for communication between different units, and the system is designed to handle multiple units in a networked environment. Interrups should only fetch data and set flags, while the main loop with business logic should handle the processing of data and state management.
 
-![System Design Illustration](.\img\3_System_design_illustration.png)
+![System Design Illustration](.\img\Ctrl_MC-System_Design_Illustration.png)
 
