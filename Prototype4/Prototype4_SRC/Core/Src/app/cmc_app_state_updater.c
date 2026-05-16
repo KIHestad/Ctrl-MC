@@ -1,0 +1,67 @@
+/**
+  *********************************************************************************************
+  * @file      cmc_app_state_updater.c
+  * @brief     Owns all writes to cmc_app_state — both from local inputs (TX path) and from
+  *            incoming CAN messages (RX path). No other module should write to cmc_app_state.
+  * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
+  * @copyright KI Hestad, Complicated Productions
+  *********************************************************************************************
+  */
+
+#include "app/cmc_app_state_updater.h"
+#include "app/cmc_app_state.h"
+#include "can/cmc_can_manager.h"
+#include "can/cmc_can_message.h"
+
+/* ---- RX path: CAN → cmc_app_state -------------------------------------------------------- */
+
+// Called from ISR context on every received CAN frame. Keep processing short.
+// Updates cmc_app_state from incoming messages; does NOT re-broadcast (no feedback loop).
+static void on_can_receive(uint32_t frame_id, const uint8_t *data, uint8_t length)
+{
+    switch (frame_id) {
+
+        case CMC_CAN_MESSAGE_FEATURE_HORN_FRAME_ID: {
+            struct cmc_can_message_feature_horn_t msg;
+            if (cmc_can_message_feature_horn_unpack(&msg, data, length) < 0) { break; }
+            cmc_app_state.button.horn_button_pressed = (bool)msg.value_on_off;
+            break;
+        }
+
+        default:
+            break;
+    }
+}
+
+void cmc_app_state_updater_init(void)
+{
+    cmc_can_manager_on_receive(on_can_receive);
+}
+
+/* ---- TX path: local input → cmc_app_state → CAN ----------------------------------------- */
+
+// Called from cmc_input_scanner_execute once per button per loop iteration.
+void cmc_app_state_update(const cmc_config_in_t *config_in, cmc_input_button_state_t *in_state)
+{
+    switch (config_in->device_id) {
+
+        case CMC_CONFIG_IN_DEVICE_HORN:
+            if (cmc_app_state.button.horn_button_pressed != in_state->pressed) {
+                cmc_app_state.button.horn_button_pressed = in_state->pressed;
+                // Broadcast change to all units over CAN
+                struct cmc_can_message_feature_horn_t msg;
+                msg.value_on_off = in_state->pressed ? 1u : 0u;
+                uint8_t payload[CMC_CAN_MESSAGE_FEATURE_HORN_LENGTH];
+                if (cmc_can_message_feature_horn_pack(payload, &msg, sizeof(payload)) < 0) { break; }
+                cmc_can_manager_send(CMC_CAN_MESSAGE_FEATURE_HORN_FRAME_ID, payload, CMC_CAN_MESSAGE_FEATURE_HORN_LENGTH);
+            }
+            break;
+
+        case CMC_CONFIG_IN_DEVICE_BRAKE_LEVER:
+            // TODO
+            break;
+
+        default:
+            break;
+    }
+}

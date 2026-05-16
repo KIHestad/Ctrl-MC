@@ -32,6 +32,7 @@ add_executable(${CMAKE_PROJECT_NAME})
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # app
     ./Core/Src/app/cmc_app_logic.c
+    ./Core/Src/app/cmc_app_state_updater.c
     # can
     ./Core/Src/can/cmc_can_manager.c
     ./Core/Src/can/cmc_can_message.c
@@ -45,7 +46,6 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ./Core/Src/feature/cmc_features_manager.c
     ./Core/Src/feature/cmc_features_output.c
     # input
-    ./Core/Src/input/cmc_input_app_state_updater.c
     ./Core/Src/input/cmc_input_scanner.c
     # util
     ./Core/Src/util/cmc_util_crc.c

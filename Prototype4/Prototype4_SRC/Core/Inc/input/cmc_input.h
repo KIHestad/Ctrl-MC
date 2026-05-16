@@ -34,7 +34,4 @@ void cmc_input_scanner_init(void);
 // Scan all buttons, debounce and detect events, call once per main loop iteration
 void cmc_input_scanner_execute(void);
 
-// Update application state based on processed input states and configuration
-void cmc_input_app_state_update(const cmc_config_in_t *config_in, cmc_input_button_state_t *in_state);
-
 #endif /* CMC_INPUT_SCANNER_H_ */

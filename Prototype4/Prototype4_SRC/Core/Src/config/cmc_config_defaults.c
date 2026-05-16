@@ -26,7 +26,7 @@ const cmc_config_t cmc_config_default_for_demo = {
         .unit_id         = 1,
         .unit_name_id    = CMC_CONFIG_UNIT_NAME_FRONT, 
         .in_used         = 8, // Number of input connectors used on this unit
-        .out_used        = 6, // Number of output channels used on this unit
+        .out_used        = 5, // Number of output channels used on this unit
         
         // Input buttons and sensors
         .in[0] = {       // Input button 1
@@ -81,27 +81,23 @@ const cmc_config_t cmc_config_default_for_demo = {
         },
 
         // Output Channel Mapping
-        .out[0] = {      // Output channel 1
-            .enabled     = 1,
-            .device_id   = CMC_CONFIG_OUT_DEVICE_HORN
-        },
-        .out[1] = {      // Output channel 2
+        .out[0] = {      // Output channel 2
             .enabled     = 1,
             .device_id   = CMC_CONFIG_OUT_DEVICE_TURN_LEFT_FRONT
         },
-        .out[2] = {      // Output channel 3
+        .out[1] = {      // Output channel 3
             .enabled     = 1,
             .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_PARK
         },
-        .out[3] = {      // Output channel 4
+        .out[2] = {      // Output channel 4
             .enabled     = 1,
             .device_id   = CMC_CONFIG_OUT_DEVICE_TURN_RIGHT_FRONT
         },
-        .out[4] = {      // Output channel 5
+        .out[3] = {      // Output channel 5
             .enabled     = 1,
             .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_LOW_BEAM
         },
-        .out[5] = {      // Output channel 6
+        .out[4] = {      // Output channel 6
             .enabled     = 1,
             .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_HIGH_BEAM
         },
@@ -132,30 +128,30 @@ const cmc_config_t cmc_config_default_for_demo = {
         },
 
         // Output Channel Mapping
-        .out[0] = {       // Output channel 1
-            .enabled      = 1,
-            .device_id    = CMC_CONFIG_OUT_DEVICE_LIGHT_BRAKE
+        .out[0] = {      // Output channel 1
+            .enabled     = 1,
+            .device_id   = CMC_CONFIG_OUT_DEVICE_HORN
         },
         .out[1] = {       // Output channel 2
             .enabled      = 1,
-            .device_id    = CMC_CONFIG_OUT_DEVICE_LIGHT_TAIL
+            .device_id    = CMC_CONFIG_OUT_DEVICE_LIGHT_BRAKE
         },
         .out[2] = {       // Output channel 3
             .enabled      = 1,
-            .device_id    = CMC_CONFIG_OUT_DEVICE_TURN_LEFT_REAR
+            .device_id    = CMC_CONFIG_OUT_DEVICE_LIGHT_TAIL
         },
         .out[3] = {       // Output channel 4
             .enabled      = 1,
-            .device_id    = CMC_CONFIG_OUT_DEVICE_TURN_RIGHT_REAR
+            .device_id    = CMC_CONFIG_OUT_DEVICE_TURN_LEFT_REAR
         },
         .out[4] = {       // Output channel 5
             .enabled      = 1,
-            .device_id    = CMC_CONFIG_OUT_DEVICE_STARTER
+            .device_id    = CMC_CONFIG_OUT_DEVICE_TURN_RIGHT_REAR
         },
         .out[5] = {       // Output channel 6
             .enabled      = 1,
-            .device_id    = CMC_CONFIG_OUT_DEVICE_INSTR_NEUTRAL
-        },        
+            .device_id    = CMC_CONFIG_OUT_DEVICE_STARTER
+        }
     },
     .feature_horn = {
         .enabled = 1, // Set to 1 to enable the horn feature, set to 0 to disable it and the system will ignore any horn-related logic

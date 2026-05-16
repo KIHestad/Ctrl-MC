@@ -21,11 +21,13 @@
 #include "feature/cmc_feature_horn.h"
 
 // Local state for the horn feature, not exposed outside this module
-static bool this_unit_horn_active = false;      // True if the horn is currently active (powered on)
+// Static variables to track the horn state and configuration on this unit
 static bool this_unit_feature_active = false;   // Set true if relevant in initialization, if false the horn logic will be inactive and do nothing
-static uint8_t switch_id = 0xFF;                // The output index for the horn switch on this unit, set in initialization if the horn feature is enabled and the horn output device is enabled on this unit, used for controlling the horn output channel when needed
+static uint8_t switch_id = 0xFF;                // The output index for the horn switch on this unit
+// Active state tracking for the horn
+static bool this_unit_horn_active = false;      // True if the horn is currently active (powered on)
+static bool button_prev_state = false;          // Previous horn button state, used to detect a fresh press and prevent re-activation while button is held
 static uint32_t horn_on_since_ms = 0;           // Tick at which the horn was last turned on, used for auto shut-off timeout
-static bool timeout_latched = false;            // Set true after timeout auto-off, cleared when horn button is released
 
 void cmc_feature_horn_init(void) {
   // Check if the horn feature is enabled in the configuration and if this unit has the horn output device enabled, if not, this feature will be inactive and do nothing
@@ -39,42 +41,41 @@ void cmc_feature_horn_init(void) {
 }
 
 // Turn Horn on/off
-void cmc_feature_horn_process() {
+void cmc_feature_horn_process(void) {
 
   // Feature is not configured or enabled on this unit, do nothing
   if (!this_unit_feature_active) {
       return;
   }
 
-  // After timeout-triggered auto-off, require button release before allowing a new horn activation.
-  if (timeout_latched) {
-    if (!cmc_app_state.button.horn_button_pressed) {
-      timeout_latched = false;
-    }
-    else {
-      return;
+  // Auto shut-off: if configured and horn has been on long enough, turn it off
+  if (this_unit_horn_active && (cmc_config.feature_horn.auto_shut_off_sec > 0U)) {
+    if ((HAL_GetTick() - horn_on_since_ms) >= ((uint32_t)cmc_config.feature_horn.auto_shut_off_sec * 1000U)) {
+      cmc_features_out_set_switch(switch_id, false);
+      this_unit_horn_active = false;
     }
   }
 
-  if (!this_unit_horn_active) {
-    // Horn in currently off, if button pressed, ignition is on and starter not engaged - turn on the horn
-    if (cmc_app_state.button.horn_button_pressed && cmc_app_state.veichle_state.ignition_on && !cmc_app_state.button.starter_button_pressed) {
-      cmc_features_out_set_switch(switch_id, true); // Turn on the horn
-      horn_on_since_ms = HAL_GetTick(); // Start timer for auto shut-off
-      this_unit_horn_active = true; // Update local state
-    }
+  // Detect a fresh button press: only a new press after a release can activate the horn.
+  // This naturally prevents re-activation after auto shut-off while the button is still held.
+  bool button_now = cmc_app_state.button.horn_button_pressed;
+  bool button_just_pressed = button_now != button_prev_state && button_now;
+  bool conditions_met = cmc_app_state.veichle_state.ignition_on && !cmc_app_state.button.starter_button_pressed;
+  
+  if (button_just_pressed && !this_unit_horn_active && conditions_met) {
+    // Turn horn on: fresh press with valid conditions
+    cmc_features_out_set_switch(switch_id, true);
+    horn_on_since_ms = HAL_GetTick();
+    this_unit_horn_active = true;
   }
-  else {
-    // Horn is currently on, if button released, ignition turned off, starter engaged or auto shut-off timeout reached - turn off the horn
-    bool time_overdue = (cmc_config.feature_horn.auto_shut_off_sec > 0U) && ((HAL_GetTick() - horn_on_since_ms) >= ((uint32_t)cmc_config.feature_horn.auto_shut_off_sec * 1000U));
-    if (!cmc_app_state.button.horn_button_pressed || !cmc_app_state.veichle_state.ignition_on || cmc_app_state.button.starter_button_pressed || time_overdue) {
-      cmc_features_out_set_switch(switch_id, false); // Turn off the horn
-      this_unit_horn_active = false; // Update local state
-      if (time_overdue) {
-        timeout_latched = true;
-      }
-    }
+  else if (this_unit_horn_active && (!button_now || !conditions_met)) {
+    // Turn horn off: button released, ignition off, or starter engaged
+    cmc_features_out_set_switch(switch_id, false);
+    this_unit_horn_active = false;
   }
+
+  // Update previous button state for next iteration
+  button_prev_state = button_now;
 }
 
 

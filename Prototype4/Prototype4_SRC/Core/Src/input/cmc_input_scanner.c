@@ -15,6 +15,7 @@
 #include "config/cmc_config_type_unit.h"
 #include "input/cmc_input.h"
 #include "app/cmc_app_state.h"
+#include "app/cmc_app_state_updater.h"
 
 // Global application state variable, updated by the scanner and used across the system and sent over CAN
 cmc_app_state_t cmc_app_state; 
@@ -124,7 +125,7 @@ void cmc_input_scanner_execute(void) {
         }
 
         // After button state is recorded, check if cmc_app_state needs updating depending on the button type
-        cmc_input_app_state_update(&cmc_config_this_unit->in[i], in_state);
+        cmc_app_state_update(&cmc_config_this_unit->in[i], in_state);
 
     }
 }

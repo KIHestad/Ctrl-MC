@@ -15,13 +15,14 @@
 // Overall system status, used to track if the system is fully operational or if there are errors that need to be addressed, can be used to gate certain logic in the app processing loop
 typedef enum {
     CMC_APP_STATUS_SUCCESS = 0,
-    CMC_APP_STATUS_CONFIG_FLASH_SIGNATURE_INVALID = 1,
-    CMC_APP_STATUS_CONFIG_RAM_SIGNATURE_INVALID = 2,
-    CMC_APP_STATUS_CONFIG_FLASH_CRC_INVALID = 3,
-    CMC_APP_STATUS_CONFIG_SAVE_TO_FLASH_ERROR = 4,
-    CMC_APP_STATUS_CONFIG_LOAD_FROM_FLASH_ERROR = 5,
-    CMC_APP_STATUS_UNIT_INFO_SAVE_ERROR = 6,
-    CMC_APP_STATUS_UNIT_INFO_CRC_INVALID  = 7,
+    CMC_APP_STATUS_CAN_INIT_ERROR = 1, 
+    CMC_APP_STATUS_CONFIG_FLASH_SIGNATURE_INVALID = 2,
+    CMC_APP_STATUS_CONFIG_RAM_SIGNATURE_INVALID = 3,
+    CMC_APP_STATUS_CONFIG_FLASH_CRC_INVALID = 4,
+    CMC_APP_STATUS_CONFIG_SAVE_TO_FLASH_ERROR = 5,
+    CMC_APP_STATUS_CONFIG_LOAD_FROM_FLASH_ERROR = 6,
+    CMC_APP_STATUS_UNIT_INFO_SAVE_ERROR = 7,
+    CMC_APP_STATUS_UNIT_INFO_CRC_INVALID  = 8,
 } cmc_app_status_code_t; 
 
 // Main system info, the status and unit info
