@@ -24,6 +24,7 @@ static void on_can_receive(uint32_t frame_id, const uint8_t *data, uint8_t lengt
         case CMC_CAN_MESSAGE_FEATURE_IGNITION_FRAME_ID: {
             struct cmc_can_message_feature_ignition_t msg;
             if (cmc_can_message_feature_ignition_unpack(&msg, data, length) < 0) { break; }
+            if (!cmc_can_message_feature_ignition_value_on_off_is_in_range(msg.value_on_off)) { break; }
             cmc_app_state.veichle_state.ignition_on = (bool)msg.value_on_off;
             break;
         }
@@ -31,6 +32,7 @@ static void on_can_receive(uint32_t frame_id, const uint8_t *data, uint8_t lengt
         case CMC_CAN_MESSAGE_FEATURE_STARTER_FRAME_ID: {
             struct cmc_can_message_feature_starter_t msg;
             if (cmc_can_message_feature_starter_unpack(&msg, data, length) < 0) { break; }
+            if (!cmc_can_message_feature_starter_value_on_off_is_in_range(msg.value_on_off)) { break; }
             cmc_app_state.button.starter_button_pressed = (bool)msg.value_on_off;
             break;
         }
@@ -38,6 +40,7 @@ static void on_can_receive(uint32_t frame_id, const uint8_t *data, uint8_t lengt
         case CMC_CAN_MESSAGE_FEATURE_HORN_FRAME_ID: {
             struct cmc_can_message_feature_horn_t msg;
             if (cmc_can_message_feature_horn_unpack(&msg, data, length) < 0) { break; }
+            if (!cmc_can_message_feature_horn_value_on_off_is_in_range(msg.value_on_off)) { break; }
             cmc_app_state.button.horn_button_pressed = (bool)msg.value_on_off;
             break;
         }
@@ -45,6 +48,8 @@ static void on_can_receive(uint32_t frame_id, const uint8_t *data, uint8_t lengt
         case CMC_CAN_MESSAGE_FEATURE_DIRECTION_INDICATOR_FRAME_ID: {
             struct cmc_can_message_feature_direction_indicator_t msg;
             if (cmc_can_message_feature_direction_indicator_unpack(&msg, data, length) < 0) { break; }
+            if (!cmc_can_message_feature_direction_indicator_value_on_off_is_in_range(msg.value_on_off)) { break; }
+            if (!cmc_can_message_feature_direction_indicator_value_left_right_both_is_in_range(msg.value_left_right_both)) { break; }
             bool on = (msg.value_on_off == 1U);
             bool left  = on && (msg.value_left_right_both == 0U || msg.value_left_right_both == 2U);
             bool right = on && (msg.value_left_right_both == 1U || msg.value_left_right_both == 2U);
