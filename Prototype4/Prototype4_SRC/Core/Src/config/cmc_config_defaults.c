@@ -83,7 +83,7 @@ const cmc_config_t cmc_config_default_for_demo = {
         // Output Channel Mapping
         .out[0] = {      // Output channel 1
             .enabled     = 1,
-            .device_id   = CMC_CONFIG_OUT_DEVICE_TURN_LEFT_FRONT
+            .device_id   = CMC_CONFIG_OUT_DEVICE_HORN
         },
         .out[1] = {      // Output channel 2
             .enabled     = 1,
@@ -162,6 +162,10 @@ const cmc_config_t cmc_config_default_for_demo = {
     .feature_horn = {
         .enabled = 1, // Set to 1 to enable the horn feature, set to 0 to disable it and the system will ignore any horn-related logic
         .auto_shut_off_sec = 3, // Automatically turn off the horn after this many seconds if the button is held continuously, set to 0 to disable auto shut-off
+    },
+    .feature_direction_indicator = {
+        .enabled = 1,              // Set to 1 to enable the direction indicator feature
+        .blink_interval_x10ms = 50, // Blink on/off interval (100 = 1 second, 50 = half a second - number in 1/100 of a second)
     }
         
 };

@@ -18,6 +18,7 @@
 #include "feature/cmc_feature_horn.h"
 #include "feature/cmc_feature_ignition.h"
 #include "feature/cmc_feature_starter.h"
+#include "feature/cmc_feature_direction_indicator.h"
 
 // The configuration for input buttons and sensors (3 bytes)
 typedef struct {
@@ -61,16 +62,19 @@ typedef struct {
     cmc_feature_ignition_t feature_ignition;
     cmc_feature_starter_t  feature_starter;
     cmc_feature_horn_t     feature_horn;
+    cmc_feature_direction_indicator_t feature_direction_indicator;
     
     // Automatic padding to make the total size of the structure a multiple of 8 bytes for flash storage efficiency
-    uint8_t  _padding[(8 - (
-        sizeof(uint32_t)*3
-        + sizeof(uint8_t)*1
-        + sizeof(cmc_config_io_unit_t)*CMC_CONFIG_MAX_SUPPORTED_IO_UNITS
-        + sizeof(cmc_feature_ignition_t)
-        + sizeof(cmc_feature_starter_t)
-        + sizeof(cmc_feature_horn_t)
-    ) % 8) % 8];           
+    uint8_t  _padding[(8 - 
+        (
+            sizeof(uint32_t)*3
+            + sizeof(uint8_t)*1
+            + sizeof(cmc_config_io_unit_t)*CMC_CONFIG_MAX_SUPPORTED_IO_UNITS
+            + sizeof(cmc_feature_ignition_t)
+            + sizeof(cmc_feature_starter_t)
+            + sizeof(cmc_feature_horn_t)
+            + sizeof(cmc_feature_direction_indicator_t)
+        ) % 8) % 8];
     
 } cmc_config_t;
 

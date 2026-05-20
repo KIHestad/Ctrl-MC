@@ -39,6 +39,14 @@ typedef struct {
     bool right_on; 
 } cmc_app_state_button_turn_signal_t;
 
+// Derived logical state for the direction indicator feature
+typedef struct {
+    bool active;        // True if any turn signal or hazard is currently active
+    bool left_active;   // True if the left turn signal should be blinking
+    bool right_active;  // True if the right turn signal should be blinking
+    bool hazard_active; // True if hazard mode is active (left and right simultaneously)
+} cmc_app_state_direction_indicator_t;
+
 // All input buttons
 typedef struct {
     bool clutch_lever_pressed; // True if the clutch lever is currently pressed, false if not pressed
@@ -56,6 +64,7 @@ typedef struct {
 typedef struct {  
   cmc_app_state_virtual_t veichle_state; // Virtual inputs representing logical states of the vehicle, derived from physical inputs
   cmc_app_state_button_t button; // The state of all buttons
+  cmc_app_state_direction_indicator_t direction_indicator; // Derived logical state for the direction indicator feature
 } cmc_app_state_t;
 
 // The global application state variable, updated by the input scanner and used across the system and sent over CAN
