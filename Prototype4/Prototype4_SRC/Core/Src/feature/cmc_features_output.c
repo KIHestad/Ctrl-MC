@@ -57,5 +57,17 @@ bool cmc_features_out_is_switch_on(uint8_t switch_id) {
     return HAL_GPIO_ReadPin(channel->in_pin.port, channel->in_pin.pin) == GPIO_PIN_SET;
 }
 
+void cmc_features_out_init_all(void) {
+
+    // On startup, clear any latched fault on all PROFET channels by pulsing DEN LOW then HIGH.
+    // This handles the case where a fault was latched before a firmware reset (without power cycle).
+    for (uint8_t i = 0; i < CMC_CONFIG_HW_OUT_COUNT; i++) {
+        const cmc_config_infineon_profet_t* channel = &cmc_config_hw_out_channel_mapping[i];
+        HAL_GPIO_WritePin(channel->in_pin.port,  channel->in_pin.pin,  GPIO_PIN_RESET); // IN low before clearing fault
+        HAL_GPIO_WritePin(channel->den_pin.port, channel->den_pin.pin, GPIO_PIN_RESET); // DEN low clears fault latch
+        HAL_GPIO_WritePin(channel->den_pin.port, channel->den_pin.pin, GPIO_PIN_SET);   // DEN high re-enables device
+    }
+}
+
 
 

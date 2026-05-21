@@ -34,4 +34,9 @@ void cmc_input_scanner_init(void);
 // Scan all buttons, debounce and detect events, call once per main loop iteration
 void cmc_input_scanner_execute(void);
 
+// Reset the logical toggle state for any DIGITAL_TOGGLE input mapped to the given device ID.
+// Call when a feature externally overrides an indicator's active state (e.g. cancel-other, auto
+// shut-off) so the scanner's toggle stays in sync and the next physical press acts as "turn on".
+void cmc_input_scanner_reset_toggle_by_device(cmc_config_in_device_t device_id);
+
 #endif /* CMC_INPUT_SCANNER_H_ */

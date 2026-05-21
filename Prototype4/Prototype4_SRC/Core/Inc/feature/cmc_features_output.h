@@ -21,6 +21,9 @@ bool cmc_features_out_is_device_enabled(cmc_config_out_device_t device_id);
 // Returns the output index (0-based) for the given device_id if it exists and is enabled on this unit, or 0xFF if not found or not enabled
 uint8_t cmc_features_out_get_device_id(cmc_config_out_device_t device_id);
 
+// Clears any latched fault on all PROFET channels at startup by pulsing DEN LOW then HIGH.
+void cmc_features_out_init_all(void);
+
 // Drives one physical PROFET output channel on or off using the hardware output mapping.
 void cmc_features_out_set_switch(uint8_t switch_id, bool on);
 

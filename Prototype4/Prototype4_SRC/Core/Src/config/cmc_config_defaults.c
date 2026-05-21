@@ -26,7 +26,7 @@ const cmc_config_t cmc_config_default_for_demo = {
         .unit_id         = 1,
         .unit_name_id    = CMC_CONFIG_UNIT_NAME_FRONT, 
         .in_used         = 8, // Number of input connectors used on this unit
-        .out_used        = 5, // Number of output channels used on this unit
+        .out_used        = 6, // Number of output channels used on this unit
         
         // Input buttons and sensors
         .in[0] = {       // Input button 1
@@ -87,17 +87,21 @@ const cmc_config_t cmc_config_default_for_demo = {
         },
         .out[1] = {      // Output channel 2
             .enabled     = 1,
-            .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_PARK
+            .device_id   = CMC_CONFIG_OUT_DEVICE_TURN_LEFT_FRONT
         },
         .out[2] = {      // Output channel 3
             .enabled     = 1,
-            .device_id   = CMC_CONFIG_OUT_DEVICE_TURN_RIGHT_FRONT
+            .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_PARK
         },
         .out[3] = {      // Output channel 4
             .enabled     = 1,
-            .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_LOW_BEAM
+            .device_id   = CMC_CONFIG_OUT_DEVICE_TURN_RIGHT_FRONT
         },
         .out[4] = {      // Output channel 5
+            .enabled     = 1,
+            .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_LOW_BEAM
+        },
+        .out[5] = {      // Output channel 6
             .enabled     = 1,
             .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_HIGH_BEAM
         },
@@ -113,44 +117,39 @@ const cmc_config_t cmc_config_default_for_demo = {
         // Input buttons and sensors
         .in[0] = {       // Input button 1
             .enabled     = 1,
-            .device_id   = CMC_CONFIG_IN_DEVICE_BRAKE_PEDAL,
-            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_DIRECT
-        },
-        .in[1] = {       // Input button 2
-            .enabled     = 1,
             .device_id   = CMC_CONFIG_IN_DEVICE_NEUTRAL_SENSOR,
             .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
         },
-        .in[2] = {       // Input button 3
-            .enabled     = 0, // Not used
-            .device_id   = CMC_CONFIG_IN_DEVICE_OIL_SENSOR,
-            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
+        .in[1] = {       // Input button 2
+            .enabled     = 1,
+            .device_id   = CMC_CONFIG_IN_DEVICE_BRAKE_PEDAL,
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_DIRECT
         },
 
         // Output Channel Mapping
         .out[0] = {      // Output channel 1
             .enabled     = 1,
-            .device_id   = CMC_CONFIG_OUT_DEVICE_HORN
+            .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_BRAKE
         },
         .out[1] = {       // Output channel 2
             .enabled      = 1,
-            .device_id    = CMC_CONFIG_OUT_DEVICE_LIGHT_BRAKE
+            .device_id    = CMC_CONFIG_OUT_DEVICE_LIGHT_TAIL
         },
         .out[2] = {       // Output channel 3
             .enabled      = 1,
-            .device_id    = CMC_CONFIG_OUT_DEVICE_LIGHT_TAIL
+            .device_id    = CMC_CONFIG_OUT_DEVICE_TURN_LEFT_REAR
         },
         .out[3] = {       // Output channel 4
             .enabled      = 1,
-            .device_id    = CMC_CONFIG_OUT_DEVICE_TURN_LEFT_REAR
+            .device_id    = CMC_CONFIG_OUT_DEVICE_TURN_RIGHT_REAR
         },
         .out[4] = {       // Output channel 5
             .enabled      = 1,
-            .device_id    = CMC_CONFIG_OUT_DEVICE_TURN_RIGHT_REAR
+            .device_id    = CMC_CONFIG_OUT_DEVICE_STARTER
         },
         .out[5] = {       // Output channel 6
             .enabled      = 1,
-            .device_id    = CMC_CONFIG_OUT_DEVICE_STARTER
+            .device_id    = CMC_CONFIG_OUT_DEVICE_INSTR_NEUTRAL
         }
     },
     .feature_ignition = {
@@ -166,6 +165,7 @@ const cmc_config_t cmc_config_default_for_demo = {
     .feature_direction_indicator = {
         .enabled = 1,              // Set to 1 to enable the direction indicator feature
         .blink_interval_x10ms = 50, // Blink on/off interval (100 = 1 second, 50 = half a second - number in 1/100 of a second)
+        .auto_shut_off_sec = 30,    // Duration in seconds after which the direction indicator should automatically shut off, not applicable if hazard mode
     }
         
 };

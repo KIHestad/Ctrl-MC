@@ -16,58 +16,56 @@
 #include <stdint.h>
 #include "config/cmc_config_type.h"
 
-// virtual input states
+// Vehicle state
 typedef struct {
-    bool ignition_on;  
+    bool ignition_on;
+    bool ignition_on_pending_broadcast;
     bool engine_running;
     uint32_t speed_kph;
     uint32_t rpm;
-} cmc_app_state_virtual_t;
+} cmc_app_state_vehicle_t;
 
+// General simple button
+typedef struct {
+    bool on;
+    bool pending_broadcast;
+} cmc_app_state_button_t;
 
-
-// Light switch buttons
+// Light state
 typedef struct {
     bool park_on;  
     bool low_beam_on; 
     bool high_beam_on;
-} cmc_app_state_button_light_t;
+    bool pending_broadcast;
+} cmc_app_state_light_t;
 
-// Direction turn signal buttons
+// Directional turn signal state
 typedef struct {
-    bool left_on;  
-    bool right_on; 
-} cmc_app_state_button_turn_signal_t;
+    bool left_on;
+    bool right_on;
+    bool hazard_on;
+    bool pending_broadcast;
+} cmc_app_state_directional_indicator_t;
 
-// Derived logical state for the direction indicator feature
+// All input buttons — written by cmc_app_state_updater (raw input scanner + CAN RX)
 typedef struct {
-    bool active;        // True if any turn signal or hazard is currently active
-    bool left_active;   // True if the left turn signal should be blinking
-    bool right_active;  // True if the right turn signal should be blinking
-    bool hazard_active; // True if hazard mode is active (left and right simultaneously)
-} cmc_app_state_direction_indicator_t;
+    cmc_app_state_button_t clutch_lever;
+    cmc_app_state_button_t brake_lever;
+    cmc_app_state_button_t brake_pedal;
+    cmc_app_state_button_t horn;
+    cmc_app_state_button_t starter;
+    cmc_app_state_button_t kill_switch;
+    cmc_app_state_directional_indicator_t directional_indicator;
+    cmc_app_state_light_t light;
+} cmc_app_state_feature_t;
 
-// All input buttons
-typedef struct {
-    bool clutch_lever_pressed; // True if the clutch lever is currently pressed, false if not pressed
-    bool brake_lever_pressed;  // True if the brake lever is currently pressed, false if not pressed
-    bool brake_pedal_pressed;  // True if the brake pedal is currently pressed, false if not pressed
-    bool horn_button_pressed; // True if the horn button is currently pressed, false if not pressed
-    bool starter_button_pressed; // True if the starter button is currently pressed, false if not pressed
-    bool kill_switch_on; // True if the kill switch is currently on (cutting ignition), false if off
-    cmc_app_state_button_light_t light_switch; // State of the light switch buttons
-    cmc_app_state_button_turn_signal_t turn_signal; // State of the turn signal buttons
-   
-} cmc_app_state_button_t;
-
-// Master struct for holding the state of all inputs, updated by the input scanner and used across the system and sent over CAN
+// Master application state struct
 typedef struct {  
-  cmc_app_state_virtual_t veichle_state; // Virtual inputs representing logical states of the vehicle, derived from physical inputs
-  cmc_app_state_button_t button; // The state of all buttons
-  cmc_app_state_direction_indicator_t direction_indicator; // Derived logical state for the direction indicator feature
+    cmc_app_state_vehicle_t vehicle;
+    cmc_app_state_feature_t feature;                     
 } cmc_app_state_t;
 
-// The global application state variable, updated by the input scanner and used across the system and sent over CAN
+// Global application state — read by all modules, written only by the owning module per field group
 extern cmc_app_state_t cmc_app_state;
 
 #endif /* CMC_APP_STATE_H_ */

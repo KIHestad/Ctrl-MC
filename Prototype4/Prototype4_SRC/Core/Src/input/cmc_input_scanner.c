@@ -129,3 +129,15 @@ void cmc_input_scanner_execute(void) {
 
     }
 }
+
+// Reset the logical toggle state for an input by device ID.
+// Used by features after cancel-other / forced deactivation to keep the scanner's toggle in sync.
+void cmc_input_scanner_reset_toggle_by_device(cmc_config_in_device_t device_id) {
+    for (uint8_t i = 0; i < cmc_config_this_unit->in_used; i++) {
+        if (cmc_config_this_unit->in[i].device_id == (uint8_t)device_id &&
+            cmc_config_this_unit->in[i].usage_id  == CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE) {
+            cmc_input_button_state[i].pressed = false;
+            return;
+        }
+    }
+}
