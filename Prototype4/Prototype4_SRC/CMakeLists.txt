@@ -45,6 +45,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ./Core/Src/feature/cmc_feature_direction_indicator.c
     ./Core/Src/feature/cmc_feature_horn.c
     ./Core/Src/feature/cmc_feature_ignition.c
+    ./Core/Src/feature/cmc_feature_light.c
+    ./Core/Src/feature/cmc_feature_brake_light.c
     ./Core/Src/feature/cmc_feature_starter.c
     ./Core/Src/feature/cmc_features_manager.c
     ./Core/Src/feature/cmc_features_output.c
