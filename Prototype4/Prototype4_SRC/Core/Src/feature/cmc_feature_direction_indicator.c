@@ -36,8 +36,8 @@ static uint32_t on_since_ms             = 0;       // Tick at which the directio
 static bool     prev_app_left         = false;  // last seen app_state left_on
 static bool     prev_app_right        = false;  // last seen app_state right_on
 static uint32_t left_activated_ms     = 0U;     // tick when left was last activated (hazard window)
-static uint32_t right_activated_ms    = 0U;     // tick when right was last activated
-#define CMC_FEATURE_DI_HAZARD_WINDOW_MS 500U    // both buttons within this window → hazard
+static uint32_t right_activated_ms    = 0U;     // tick when right was last activated (hazard window)
+#define CMC_FEATURE_DI_HAZARD_WINDOW_MS 250U    // both buttons within this window → hazard
 
 // Sync the cancelled side: write false back to app_state, update prev_app, and reset the scanner
 // toggle so the very next physical press acts as "turn on" (no dead press required).
@@ -56,14 +56,18 @@ static void set_switch_left(bool on, bool update_active_state) {
     for (uint8_t i = 0; i < switches_left_count; i++) {
         cmc_features_out_set_switch(switch_left_id[i], on);
     }
-    if (update_active_state) { this_unit_left_active = on; }
+    if (update_active_state) { 
+        this_unit_left_active = on;
+     }
 }
 
 static void set_switch_right(bool on, bool update_active_state) {
     for (uint8_t i = 0; i < switches_right_count; i++) {
         cmc_features_out_set_switch(switch_right_id[i], on);
     }
-    if (update_active_state) { this_unit_right_active = on; }
+    if (update_active_state) { 
+        this_unit_right_active = on;
+     }
 }
 
 static void cmc_feature_direction_indicator_broadcast()
@@ -139,9 +143,26 @@ void cmc_feature_direction_indicator_init(void)
 
 void cmc_feature_direction_indicator_process(void)
 {
-    // ---- State machine: self-detecting change in app_state (local scanner, CAN RX, or any future writer) ----
+
+    // Get current app state for the directional indicator inputs (buttons), and track if we're in hazard mode (both on)
     bool cur_left  = cmc_app_state.feature.directional_indicator.left_on;
     bool cur_right = cmc_app_state.feature.directional_indicator.right_on;
+    bool in_hazard = this_unit_left_active && this_unit_right_active;
+
+    // Check for auto shut-off (not applied during hazard)
+    if (on_since_ms > 0U && cmc_config.feature_direction_indicator.auto_shut_off_sec > 0U && !in_hazard && (cur_left || cur_right)) {
+        if ((HAL_GetTick() - on_since_ms) >= ((uint32_t)cmc_config.feature_direction_indicator.auto_shut_off_sec * 1000U)) {
+            set_switch_left(false, true);
+            set_switch_right(false, true);
+            cancel_left();
+            cancel_right();
+            on_since_ms = 0U;
+            cmc_feature_direction_indicator_broadcast();
+            return;
+        }
+    } else {
+        on_since_ms = 0U;        
+    }
 
     if (cur_left != prev_app_left || cur_right != prev_app_right) {
 
@@ -156,7 +177,6 @@ void cmc_feature_direction_indicator_process(void)
         bool new_left  = this_unit_left_active;   // default: keep current
         bool new_right = this_unit_right_active;
 
-        bool in_hazard = this_unit_left_active && this_unit_right_active;
 
         if (just_left_on && just_right_on) {
             // Both toggled on in the same tick → hazard
@@ -183,9 +203,9 @@ void cmc_feature_direction_indicator_process(void)
         else if (just_right_on)   { new_right = true;  }
         else if (just_right_off)  { new_right = false; }
 
-        // Track activation timestamps for hazard window
-        if (new_left  && !this_unit_left_active)  { left_activated_ms  = HAL_GetTick(); }
-        if (new_right && !this_unit_right_active) { right_activated_ms = HAL_GetTick(); }
+        // Track activation timestamps for hazard window and auto shut-off
+        if (new_left  && !this_unit_left_active)  { left_activated_ms  = HAL_GetTick(); on_since_ms = HAL_GetTick(); }
+        if (new_right && !this_unit_right_active) { right_activated_ms = HAL_GetTick(); on_since_ms = HAL_GetTick(); }
 
         // Apply resolved active state and turn off outputs if deactivated.
         // cancel_left/right also resets the scanner toggle so the next press immediately activates.
@@ -193,7 +213,6 @@ void cmc_feature_direction_indicator_process(void)
         if (!new_right && this_unit_right_active) { set_switch_right(false, true); cancel_right(); }
         this_unit_left_active  = new_left;
         this_unit_right_active = new_right;
-        if (!new_left && !new_right) { on_since_ms = 0U; }
 
         // Only TX over CAN if the change originated from the local input scanner
         if (cmc_app_state.feature.directional_indicator.pending_broadcast) {
@@ -205,24 +224,6 @@ void cmc_feature_direction_indicator_process(void)
     // ---- Output: only runs on units that have physical turn signal outputs ----
     if (!this_unit_feature_active) { return; }
     if (!this_unit_left_active && !this_unit_right_active) { return; }
-
-    // Auto shut-off (not applied during hazard)
-    bool hazard = this_unit_left_active && this_unit_right_active;
-    if ((cmc_config.feature_direction_indicator.auto_shut_off_sec > 0U) && !hazard) {
-        if (on_since_ms == 0U) { on_since_ms = HAL_GetTick(); }
-        if ((HAL_GetTick() - on_since_ms) >=
-            ((uint32_t)cmc_config.feature_direction_indicator.auto_shut_off_sec * 1000U)) {
-            set_switch_left(false, true);
-            set_switch_right(false, true);
-            cancel_left();
-            cancel_right();
-            on_since_ms = 0U;
-            cmc_feature_direction_indicator_broadcast();
-            return;
-        }
-    } else {
-        on_since_ms = 0U;
-    }
 
     // Blink: drive outputs on/off based on current phase (active state flags are not modified)
     bool phase_on = ((HAL_GetTick() / interval_speed_ms) & 1U) == 0U;
