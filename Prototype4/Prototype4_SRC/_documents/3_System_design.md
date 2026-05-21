@@ -1,10 +1,17 @@
-# System Design
+# System Design Principles
 
-The following illustration shows the high-level system design of the Ctrl-MC firmware. The system is designed to be modular, with clear separation between hardware abstraction and core application logic. Each module is responsible for a specific aspect of the system, such as sensor input processing, actuator control, and CANBUS communication.
+The system is designed to be modular, with clear separation between hardware abstraction and core application logic. Data structs and functions are separated into separate files, and each is responsible for a specific aspect of the system, such as sensor input processing, actuator control, and CANBUS communication.
 
-The code should follow the aligns with the Sense-Compute-Actuate pattern, decoupled by a central app state: `cmc_app_state`. The app state is not just a global data store, but is also acts like an event bus, where changes to the state can trigger actions from features in other parts of the system. This allows for a reactive and flexible design, where different units can respond to changes in the system state without being tightly coupled to each other.
+The code aligns with the Sense-Compute-Actuate pattern, decoupled by a central app state: `cmc_app_state` that is the single source of truth. The app state is not just a global data store — it also acts as an event bus where changes trigger reactions from features across units. This allows for a reactive and flexible design where different units can respond to state changes without being tightly coupled to each other.
 
-Canbus messages are used for communication between different units, and the system is designed to handle multiple units in a networked environment. Interrups should only fetch data and set flags, while the main loop with business logic should handle the processing of data and state management.
+CAN bus messages are used for communication between units. Interrupts should only fetch data and set flags, these are written to app state. The main loop handles all processing and state management.
 
-![System Design Illustration](.\img\Ctrl_MC-System_Design_Illustration.png)
+For data coming from the unit itself, like buttons and sensors, this is managed by the `cmc_app_state_updater`. 
+
+The enabled features are responsible for reading the app state and driving outputs or performing actions based on that state. This separation allows for a clean and maintainable codebase where each component has a clear responsibility. The features are also where CAN messages are generated and transmitted to other units.
+
+# System Logic Processing Flow
+The following illustration shows the high-level system logic processing flows.
+
+![System Logic Processing Flow](.\img\Ctrl_MC-System_Logic_Processing_Flow.png)
 
