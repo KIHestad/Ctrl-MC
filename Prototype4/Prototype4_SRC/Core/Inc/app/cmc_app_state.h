@@ -53,6 +53,8 @@ typedef struct {
     cmc_app_state_button_t brake_lever;
     cmc_app_state_button_t brake_pedal;
     cmc_app_state_button_t brake_light;  // Resolved brake active state (lever OR pedal, OR CAN RX)
+    cmc_app_state_button_t neutral;       // Neutral gear sensor state (active-low sensor, OR CAN RX)
+    cmc_app_state_button_t oil_pressure;  // Oil pressure low warning (active-low sensor, OR CAN RX)
     cmc_app_state_button_t horn;
     cmc_app_state_button_t starter;
     cmc_app_state_button_t kill_switch;

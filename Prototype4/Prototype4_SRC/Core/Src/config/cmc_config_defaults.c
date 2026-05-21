@@ -156,7 +156,7 @@ const cmc_config_t cmc_config_default_for_demo = {
         .enabled = 0, // 0 = disabled: ignition always on (no sensor required, safe default for bench testing)
     },
     .feature_starter = {
-        .enabled = 0, // 0 = disabled: starter output never activates; set to 1 to enable input-driven starter control
+        .enabled = 1, // 0 = disabled: starter output never activates; set to 1 to enable input-driven starter control
     },
     .feature_horn = {
         .enabled = 1, // Set to 1 to enable the horn feature, set to 0 to disable it and the system will ignore any horn-related logic
@@ -176,6 +176,12 @@ const cmc_config_t cmc_config_default_for_demo = {
     },
     .feature_brake_light = {
         .enabled = 1,  // Set to 1 to enable the brake light feature
+    },
+    .feature_neutral = {
+        .enabled = 1,  // Set to 1 to enable the neutral indicator feature
+    },
+    .feature_oil_pressure = {
+        .enabled = 0,  // Set to 1 to enable the oil pressure warning feature
     }
         
 };

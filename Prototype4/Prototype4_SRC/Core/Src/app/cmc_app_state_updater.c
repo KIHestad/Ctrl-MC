@@ -74,6 +74,20 @@ static void on_can_receive(uint32_t frame_id, const uint8_t *data, uint8_t lengt
             break;
         }
 
+        case CMC_CAN_MESSAGE_FEATURE_NEUTRAL_SENSOR_FRAME_ID: {
+            struct cmc_can_message_feature_neutral_sensor_t msg;
+            if (cmc_can_message_feature_neutral_sensor_unpack(&msg, data, length) < 0) { break; }
+            cmc_app_state.feature.neutral.on = (bool)msg.neutral_engaged;
+            break;
+        }
+
+        case CMC_CAN_MESSAGE_FEATURE_OIL_PRESSURE_SENSOR_FRAME_ID: {
+            struct cmc_can_message_feature_oil_pressure_sensor_t msg;
+            if (cmc_can_message_feature_oil_pressure_sensor_unpack(&msg, data, length) < 0) { break; }
+            cmc_app_state.feature.oil_pressure.on = (bool)msg.oil_pressure_low_detected;
+            break;
+        }
+
         default:
             break;
     }
@@ -138,6 +152,22 @@ void cmc_app_state_update(const cmc_config_in_t *config_in, cmc_input_button_sta
             if (cmc_app_state.feature.brake_light.on != in_state->pressed_physical) {
                 cmc_app_state.feature.brake_light.on = in_state->pressed_physical;
                 cmc_app_state.feature.brake_light.pending_broadcast = true;
+            }
+            break;
+
+        case CMC_CONFIG_IN_DEVICE_NEUTRAL_SENSOR:
+            // Active-low sensor: pressed_physical = true when gear is in neutral (sensor GND)
+            if (cmc_app_state.feature.neutral.on != in_state->pressed_physical) {
+                cmc_app_state.feature.neutral.on = in_state->pressed_physical;
+                cmc_app_state.feature.neutral.pending_broadcast = true;
+            }
+            break;
+
+        case CMC_CONFIG_IN_DEVICE_OIL_SENSOR:
+            // Active-low sensor: pressed_physical = true when oil pressure is low (sensor GND)
+            if (cmc_app_state.feature.oil_pressure.on != in_state->pressed_physical) {
+                cmc_app_state.feature.oil_pressure.on = in_state->pressed_physical;
+                cmc_app_state.feature.oil_pressure.pending_broadcast = true;
             }
             break;
 
