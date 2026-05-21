@@ -52,6 +52,7 @@ typedef struct {
     cmc_app_state_button_t clutch_lever;
     cmc_app_state_button_t brake_lever;
     cmc_app_state_button_t brake_pedal;
+    cmc_app_state_button_t brake_light;  // Resolved brake active state (lever OR pedal, OR CAN RX)
     cmc_app_state_button_t horn;
     cmc_app_state_button_t starter;
     cmc_app_state_button_t kill_switch;

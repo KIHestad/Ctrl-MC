@@ -30,10 +30,12 @@ typedef enum {
     CMC_CONFIG_IN_DEVICE_IGNITION = 1,
     CMC_CONFIG_IN_DEVICE_STARTER = 2,
     CMC_CONFIG_IN_DEVICE_KILL_SW = 3,
-    CMC_CONFIG_IN_DEVICE_LIGHTS_MAIN = 10, // Master light switch
-    CMC_CONFIG_IN_DEVICE_LIGHT_PARK = 11,
-    CMC_CONFIG_IN_DEVICE_LIGHT_LOW_BEAM = 12,
-    CMC_CONFIG_IN_DEVICE_LIGHT_HIGH_BEAM = 13,
+    CMC_CONFIG_IN_DEVICE_LIGHTS_MAIN = 10, // Master light switch to be used as on off for enable low and high beam
+    CMC_CONFIG_IN_DEVICE_LIGHT_PARK = 11, // Master light switch to be used as on off for toggle on park only
+    CMC_CONFIG_IN_DEVICE_LIGHT_MULTIFUNCTION = 12, // If the light switch is a single input that toggles through off → park → main (enables low and high beam) with each press
+    CMC_CONFIG_IN_DEVICE_LIGHT_LOW_BEAM = 13,
+    CMC_CONFIG_IN_DEVICE_LIGHT_HIGH_BEAM = 14,
+    CMC_CONFIG_IN_DEVICE_LIGHT_HI_LOW_BEAM_TOGGLE = 15, // Toggle switch for low/high beam
     CMC_CONFIG_IN_DEVICE_TURN_LEFT = 20,
     CMC_CONFIG_IN_DEVICE_TURN_RIGHT = 21,
     CMC_CONFIG_IN_DEVICE_HORN = 22,

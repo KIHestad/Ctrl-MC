@@ -31,7 +31,7 @@ static bool this_unit_starter_active = false; // True if the starter is currentl
 static void cmc_feature_starter_broadcast(void)
 {
     struct cmc_can_message_feature_starter_t msg;
-    msg.value_on_off = cmc_app_state.feature.starter.on ? 1U : 0U;
+    msg.starter_on = cmc_app_state.feature.starter.on ? 1U : 0U;
     uint8_t payload[CMC_CAN_MESSAGE_FEATURE_STARTER_LENGTH];
     if (cmc_can_message_feature_starter_pack(payload, &msg, sizeof(payload)) < 0) { return; }
     cmc_can_manager_send(CMC_CAN_MESSAGE_FEATURE_STARTER_FRAME_ID, payload, CMC_CAN_MESSAGE_FEATURE_STARTER_LENGTH);

@@ -12,6 +12,8 @@
 #include "feature/cmc_feature_starter.h"
 #include "feature/cmc_feature_horn.h"
 #include "feature/cmc_feature_direction_indicator.h"
+#include "feature/cmc_feature_light.h"
+#include "feature/cmc_feature_brake_light.h"
 #include "feature/cmc_features_output.h"
 
 void cmc_features_init(void) {
@@ -22,6 +24,8 @@ void cmc_features_init(void) {
     cmc_feature_horn_init();
     cmc_feature_ignition_init(); // Must run before any feature that depends on ignition_on
     cmc_feature_starter_init();
+    cmc_feature_light_init();
+    cmc_feature_brake_light_init();
 }
 
 void cmc_features_process(void) {
@@ -30,4 +34,6 @@ void cmc_features_process(void) {
     cmc_feature_horn_process();
     cmc_feature_ignition_process(); // Must run before any feature that reads ignition_on
     cmc_feature_starter_process();
+    cmc_feature_light_process();
+    cmc_feature_brake_light_process();
 }

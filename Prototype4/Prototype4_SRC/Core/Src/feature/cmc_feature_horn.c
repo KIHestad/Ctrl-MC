@@ -34,7 +34,7 @@ static uint32_t horn_on_since_ms     = 0;       // Tick at which the horn was la
 static void cmc_feature_horn_broadcast(void)
 {
     struct cmc_can_message_feature_horn_t msg;
-    msg.value_on_off = cmc_app_state.feature.horn.on ? 1U : 0U;
+    msg.horn_on = cmc_app_state.feature.horn.on ? 1U : 0U;
     uint8_t payload[CMC_CAN_MESSAGE_FEATURE_HORN_LENGTH];
     if (cmc_can_message_feature_horn_pack(payload, &msg, sizeof(payload)) < 0) { return; }
     cmc_can_manager_send(CMC_CAN_MESSAGE_FEATURE_HORN_FRAME_ID, payload, CMC_CAN_MESSAGE_FEATURE_HORN_LENGTH);

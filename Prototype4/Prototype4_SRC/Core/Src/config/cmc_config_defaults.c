@@ -41,7 +41,7 @@ const cmc_config_t cmc_config_default_for_demo = {
         },
         .in[2] = {       // Input button 3
             .enabled     = 1,
-            .device_id   = CMC_CONFIG_IN_DEVICE_LIGHT_HIGH_BEAM,
+            .device_id   = CMC_CONFIG_IN_DEVICE_LIGHT_HI_LOW_BEAM_TOGGLE,
             .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
         },
         .in[3] = {       // Input button 4
@@ -66,7 +66,7 @@ const cmc_config_t cmc_config_default_for_demo = {
         },
         .in[7] = {       // Input button 8
             .enabled     = 1,
-            .device_id   = CMC_CONFIG_IN_DEVICE_LIGHTS_MAIN,
+            .device_id   = CMC_CONFIG_IN_DEVICE_LIGHT_MULTIFUNCTION,
             .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
         },
         .in[8] = {       // Input button 9
@@ -166,6 +166,16 @@ const cmc_config_t cmc_config_default_for_demo = {
         .enabled = 1,              // Set to 1 to enable the direction indicator feature
         .blink_interval_x10ms = 50, // Blink on/off interval (100 = 1 second, 50 = half a second - number in 1/100 of a second)
         .auto_shut_off_sec = 30,    // Duration in seconds after which the direction indicator should automatically shut off, not applicable if hazard mode
+    },
+    .feature_light = {
+        .enabled                  = 1,  // Set to 1 to enable the lighting feature
+        .park_light_enabled       = 1,  // 1 = motorcycle has a park/side light; 0 = no park light
+        .high_beam_keeps_low_beam = 1,  // 0 = low beam off when high beam on; 1 = both beams on simultaneously
+        .main_light_input_mode    = CMC_FEATURE_LIGHT_MAIN_MODE_MULTIFUNCTION_TOGGLE, // Use a single multifunction toggle button
+        .hi_lo_beam_input_mode    = CMC_FEATURE_LIGHT_HIBEAM_MODE_TOGGLE,             // Use a single hi/lo toggle switch
+    },
+    .feature_brake_light = {
+        .enabled = 1,  // Set to 1 to enable the brake light feature
     }
         
 };

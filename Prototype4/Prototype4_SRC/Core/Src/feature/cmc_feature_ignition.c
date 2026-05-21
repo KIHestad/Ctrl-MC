@@ -26,7 +26,7 @@ static bool cmc_feature_ignition_enabled = false; // Cached from config in init 
 static void cmc_feature_ignition_broadcast(void)
 {
     struct cmc_can_message_feature_ignition_t msg;
-    msg.value_on_off = cmc_app_state.vehicle.ignition_on ? 1U : 0U;
+    msg.ignition_on = cmc_app_state.vehicle.ignition_on ? 1U : 0U;
     uint8_t payload[CMC_CAN_MESSAGE_FEATURE_IGNITION_LENGTH];
     if (cmc_can_message_feature_ignition_pack(payload, &msg, sizeof(payload)) < 0) { return; }
     cmc_can_manager_send(CMC_CAN_MESSAGE_FEATURE_IGNITION_FRAME_ID, payload, CMC_CAN_MESSAGE_FEATURE_IGNITION_LENGTH);

@@ -37,7 +37,7 @@ static bool     prev_app_left         = false;  // last seen app_state left_on
 static bool     prev_app_right        = false;  // last seen app_state right_on
 static uint32_t left_activated_ms     = 0U;     // tick when left was last activated (hazard window)
 static uint32_t right_activated_ms    = 0U;     // tick when right was last activated (hazard window)
-#define CMC_FEATURE_DI_HAZARD_WINDOW_MS 250U    // both buttons within this window → hazard
+#define CMC_FEATURE_DI_HAZARD_WINDOW_MS 400U    // both buttons within this window → hazard
 
 // Sync the cancelled side: write false back to app_state, update prev_app, and reset the scanner
 // toggle so the very next physical press acts as "turn on" (no dead press required).
@@ -75,10 +75,10 @@ static void cmc_feature_direction_indicator_broadcast()
     // Broadcast over CAN so other units update their cmc_app_state
     struct cmc_can_message_feature_direction_indicator_t di_msg;
     bool hazard = this_unit_left_active && this_unit_right_active;
-    di_msg.value_on_off          = (this_unit_left_active || this_unit_right_active) ? 1U : 0U;
-    di_msg.value_left_right_both = hazard ? 2U : (this_unit_right_active ? 1U : 0U);
-    di_msg.value_front_rear_both = 2U; // both front and rear
-    di_msg.value_dashboard_only  = 0U; // normal operation
+    di_msg.turn_signal_on          = (this_unit_left_active || this_unit_right_active) ? 1U : 0U;
+    di_msg.turn_signal_direction = hazard ? 2U : (this_unit_right_active ? 1U : 0U);
+    di_msg.turn_signal_position = 2U; // both front and rear
+    di_msg.dashboard_only  = 0U; // normal operation
     uint8_t di_payload[CMC_CAN_MESSAGE_FEATURE_DIRECTION_INDICATOR_LENGTH];
     if (cmc_can_message_feature_direction_indicator_pack(di_payload, &di_msg, sizeof(di_payload)) < 0) { return; }
     cmc_can_manager_send(CMC_CAN_MESSAGE_FEATURE_DIRECTION_INDICATOR_FRAME_ID, di_payload, CMC_CAN_MESSAGE_FEATURE_DIRECTION_INDICATOR_LENGTH);
