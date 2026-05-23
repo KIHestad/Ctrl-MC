@@ -28,7 +28,7 @@
 #include "can/cmc_can_message.h"
 #include "feature/cmc_feature_light.h"
 
-#define CMC_FEATURE_LIGHT_STARTER_RESTORE_MS  2000U  // Delay (ms) after starter release before beams are restored
+#define CMC_FEATURE_LIGHT_STARTER_RESTORE_MS  2000U  // Delay (ms) after starter release before beams are restored 
 
 // Whether this unit has any light output configured (init sets this)
 static bool     this_unit_feature_active    = false;

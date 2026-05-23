@@ -142,34 +142,47 @@ void cmc_app_state_update(const cmc_config_in_t *config_in, cmc_input_button_sta
         }
 
         case CMC_CONFIG_IN_DEVICE_BRAKE_LEVER:
-            if (cmc_app_state.feature.brake_light.on != in_state->pressed_physical) {
-                cmc_app_state.feature.brake_light.on = in_state->pressed_physical;
+            // Write to the dedicated lever field only — never overwrite brake_light.on which
+            // carries the remote brake state received from another unit via CAN.
+            if (cmc_app_state.feature.brake_lever.on != in_state->pressed_physical) {
+                cmc_app_state.feature.brake_lever.on = in_state->pressed_physical;
                 cmc_app_state.feature.brake_light.pending_broadcast = true;
             }
             break;
 
         case CMC_CONFIG_IN_DEVICE_BRAKE_PEDAL:
-            if (cmc_app_state.feature.brake_light.on != in_state->pressed_physical) {
-                cmc_app_state.feature.brake_light.on = in_state->pressed_physical;
+            // Write to the dedicated pedal field only — same separation as brake_lever.
+            if (cmc_app_state.feature.brake_pedal.on != in_state->pressed_physical) {
+                cmc_app_state.feature.brake_pedal.on = in_state->pressed_physical;
                 cmc_app_state.feature.brake_light.pending_broadcast = true;
             }
             break;
 
-        case CMC_CONFIG_IN_DEVICE_NEUTRAL_SENSOR:
-            // Active-low sensor: pressed_physical = true when gear is in neutral (sensor GND)
-            if (cmc_app_state.feature.neutral.on != in_state->pressed_physical) {
-                cmc_app_state.feature.neutral.on = in_state->pressed_physical;
+        case CMC_CONFIG_IN_DEVICE_NEUTRAL_SENSOR: {
+            // DIGITAL_TOGGLE: logical toggle flip-flop (pressed) — each press inverts state.
+            // DIGITAL_DIRECT: physical level (pressed_physical) — active while sensor is closed (active-low, GND = neutral).
+            bool neutral_state = (config_in->usage_id == CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE)
+                                 ? in_state->pressed
+                                 : in_state->pressed_physical;
+            if (cmc_app_state.feature.neutral.on != neutral_state) {
+                cmc_app_state.feature.neutral.on = neutral_state;
                 cmc_app_state.feature.neutral.pending_broadcast = true;
             }
             break;
+        }
 
-        case CMC_CONFIG_IN_DEVICE_OIL_SENSOR:
-            // Active-low sensor: pressed_physical = true when oil pressure is low (sensor GND)
-            if (cmc_app_state.feature.oil_pressure.on != in_state->pressed_physical) {
-                cmc_app_state.feature.oil_pressure.on = in_state->pressed_physical;
+        case CMC_CONFIG_IN_DEVICE_OIL_SENSOR: {
+            // DIGITAL_TOGGLE: logical toggle flip-flop (pressed) — each press inverts state.
+            // DIGITAL_DIRECT: physical level (pressed_physical) — active while sensor is closed (active-low, GND = low pressure).
+            bool oil_state = (config_in->usage_id == CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE)
+                             ? in_state->pressed
+                             : in_state->pressed_physical;
+            if (cmc_app_state.feature.oil_pressure.on != oil_state) {
+                cmc_app_state.feature.oil_pressure.on = oil_state;
                 cmc_app_state.feature.oil_pressure.pending_broadcast = true;
             }
             break;
+        }
 
         // ---- Light inputs ----
 

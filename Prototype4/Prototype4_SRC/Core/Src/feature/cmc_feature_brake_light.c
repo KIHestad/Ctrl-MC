@@ -42,7 +42,12 @@ static void set_output(uint8_t id, bool on, bool *prev)
 static void cmc_feature_brake_light_broadcast(void)
 {
     struct cmc_can_message_feature_brake_light_t msg;
-    msg.brake_light_on = cmc_app_state.feature.brake_light.on ? 1U : 0U;
+    // Broadcast the locally-resolved brake state (lever OR pedal on this unit).
+    // Receiving units store this in brake_light.on (their remote-brake field) and combine
+    // it with their own local sources, so neither side can overwrite the other.
+    bool local_active = cmc_app_state.feature.brake_lever.on ||
+                        cmc_app_state.feature.brake_pedal.on;
+    msg.brake_light_on = local_active ? 1U : 0U;
     uint8_t payload[CMC_CAN_MESSAGE_FEATURE_BRAKE_LIGHT_LENGTH];
     if (cmc_can_message_feature_brake_light_pack(payload, &msg, sizeof(payload)) < 0) { return; }
     cmc_can_manager_send(CMC_CAN_MESSAGE_FEATURE_BRAKE_LIGHT_FRAME_ID, payload,
@@ -82,9 +87,17 @@ void cmc_feature_brake_light_process(void)
         return;
     }
 
-    // Brake light requires ignition on; not suppressed by starter
-    bool resolved = cmc_app_state.vehicle.ignition_on &&
-                    cmc_app_state.feature.brake_light.on;
+    // Brake light requires ignition on; not suppressed by starter.
+    // Three independent sources — any one is sufficient:
+    //   brake_lever.on  — local lever input (written only by local scanner)
+    //   brake_pedal.on  — local pedal input (written only by local scanner)
+    //   brake_light.on  — remote brake state received from another unit via CAN
+    // Keeping the sources separate ensures a scanner update for one source can never
+    // overwrite the state contributed by a different source on this or another unit.
+    bool brake_active = cmc_app_state.feature.brake_lever.on ||
+                        cmc_app_state.feature.brake_pedal.on ||
+                        cmc_app_state.feature.brake_light.on;
+    bool resolved = cmc_app_state.vehicle.ignition_on && brake_active;
 
     set_output(switch_id, resolved, &prev_out);
 }
