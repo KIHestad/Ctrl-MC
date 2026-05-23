@@ -2,7 +2,7 @@
 
 # PROTOTYPE 4 - STM32 with Infineon Profet +12V Smart Switch modules
 
-The prototype 4 is a simple software for testing Infineon Profet +12V Smart Switches. This code is not to be directly used in further development, but elements from it can be relevant. 
+The prototype 4 is the first complete software for the Ctrl MC system that uses Infineon Profet +12V Smart Switches. This code is the basis for further development, but it is not the final system. 
 
 The software is made to be used on a WeAct Studio STM32G431 dev board, and two custom PCB modules with each a 15Amp switch and 2 x 5Amp swithc. Input GPIO's are also configuret to be able to test turning the switches on and off. It's tested with the MC Wiring Simulator.
 
@@ -12,9 +12,16 @@ The code is built using VS Code with the STM32 extensions. The setup is explaine
 
 The schematics and PCB layout for the custom PCB module can be found in the zipped file `KiCad_Schematics_SmartSwitchesModule.zip`, this is a achived KiCad project (version 9.0.5).
 
-Here is the link to the YouTube video explaining it all:
+Here is the link to the YouTube video demoing this system:
+
+* [The New Modern Motorcycle Wiring System - Ctrl MC](https://youtu.be/QElHGgWnjcQ?si=KIwvGmHAoNGqVMwO)
+
+
+Here is the link to the YouTube video explaining the system overall:
 
 * [Uprade Your Motorcycle using Smart High-Side Switches](https://youtu.be/tBPsuoETR0Y?si=mi2s_HrKnGi2g0Y8)
+
+
 
 
 
