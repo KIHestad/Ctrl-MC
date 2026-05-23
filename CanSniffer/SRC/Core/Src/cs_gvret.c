@@ -117,31 +117,57 @@ void cs_gvret_process_host_cmd(const uint8_t *in, uint16_t in_len,
             *out_len += (uint16_t)sizeof(k_identity);
             i += 1U;
         }
+        else if (cmd == 0x05U && (i + 2U) < in_len)  /* Set bus active */
+        {
+            if ((*out_len + 4U) > CS_GVRET_RESP_BUF_SIZE)
+            {
+                break;
+            }
+            uint8_t bus_num = in[i + 2U];
+            out[(*out_len)++] = 0xF1U;
+            out[(*out_len)++] = 0x05U;
+            out[(*out_len)++] = bus_num;
+            out[(*out_len)++] = 0x01U;  /* bus enabled */
+            i += 2U;
+        }
         /* All other commands: skip silently */
     }
 }
 
 void cs_gvret_process(void)
 {
-    static uint32_t cs_led_off_tick = 0U;
+    static uint32_t cs_led_off_tick   = 0U;
+    static uint8_t  cs_tx_buf[CS_GVRET_FRAME_BUF_SIZE];
+    static uint16_t cs_tx_pending_len = 0U;
 
-    cs_can_frame_t frame;
-    uint8_t        buf[CS_GVRET_FRAME_BUF_SIZE];
-    uint16_t       len;
-
-    while (cs_can_rx_pop(&frame))
+    /* -----------------------------------------------------------------------
+     * Retry any frame whose USB transmission was deferred because CDC was
+     * busy last call.  cs_tx_buf must not be overwritten while a USB DMA
+     * transfer sourced from it may still be in progress.
+     * ----------------------------------------------------------------------- */
+    if (cs_tx_pending_len > 0U)
     {
-        cs_gvret_encode_frame(&frame, buf, &len);
-        if (CDC_Transmit_FS(buf, len) == USBD_OK)
+        if (CDC_Transmit_FS(cs_tx_buf, cs_tx_pending_len) == USBD_OK)
         {
-            /* Turn LED on and record the off-time (non-blocking 20 ms pulse) */
             HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
-            cs_led_off_tick = HAL_GetTick() + 20U;
+            cs_led_off_tick   = HAL_GetTick() + 20U;
+            cs_tx_pending_len = 0U;
         }
-        else
+        /* Still BUSY: leave pending, retry on the next call. */
+    }
+    else
+    {
+        cs_can_frame_t frame;
+        if (cs_can_rx_pop(&frame))
         {
-            /* USB TX not ready; defer remaining frames to the next process call */
-            break;
+            cs_gvret_encode_frame(&frame, cs_tx_buf, &cs_tx_pending_len);
+            if (CDC_Transmit_FS(cs_tx_buf, cs_tx_pending_len) == USBD_OK)
+            {
+                HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+                cs_led_off_tick   = HAL_GetTick() + 20U;
+                cs_tx_pending_len = 0U;
+            }
+            /* If BUSY: cs_tx_buf holds the encoded frame, retry next call. */
         }
     }
 

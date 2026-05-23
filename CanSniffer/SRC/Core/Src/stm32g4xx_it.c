@@ -57,7 +57,7 @@
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_FS;
 /* USER CODE BEGIN EV */
-
+extern FDCAN_HandleTypeDef hfdcan1;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -213,5 +213,19 @@ void USB_LP_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+/**
+  * @brief  FDCAN1 interrupt line 0 handler (RX FIFO, error notifications).
+  */
+void FDCAN1_IT0_IRQHandler(void)
+{
+  HAL_FDCAN_IRQHandler(&hfdcan1);
+}
 
+/**
+  * @brief  FDCAN1 interrupt line 1 handler (TX, status-change notifications).
+  */
+void FDCAN1_IT1_IRQHandler(void)
+{
+  HAL_FDCAN_IRQHandler(&hfdcan1);
+}
 /* USER CODE END 1 */

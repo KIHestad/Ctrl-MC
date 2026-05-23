@@ -142,6 +142,10 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
             slot->data[i] = rx_data[i];
         }
 
+        /* Ensure all frame data is written before head is published to the
+         * consumer.  __DMB() prevents the compiler and the Cortex-M4 write
+         * buffer from reordering the stores above with the head update. */
+        __DMB();
         cs_ring.head = next_head;
     }
 }
