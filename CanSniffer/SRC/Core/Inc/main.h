@@ -61,8 +61,6 @@ void Error_Handler(void);
 #define BTN_DEV_BOARD_GPIO_Port GPIOC
 #define LED_Pin GPIO_PIN_6
 #define LED_GPIO_Port GPIOC
-#define FDCAN1_WAKE_UP_Pin GPIO_PIN_10
-#define FDCAN1_WAKE_UP_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 
