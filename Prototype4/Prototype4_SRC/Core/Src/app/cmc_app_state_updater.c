@@ -55,6 +55,8 @@ static void on_can_receive(uint32_t frame_id, const uint8_t *data, uint8_t lengt
             cmc_app_state.feature.directional_indicator.left_on  = on && dir_left;
             cmc_app_state.feature.directional_indicator.right_on = on && dir_right;
             cmc_app_state.feature.directional_indicator.hazard_on = on && (dir_left && dir_right);
+            // Signal the feature process() to re-anchor blink epoch (sync on activation and periodic re-broadcast)
+            if (on) { cmc_app_state.feature.directional_indicator.pending_resync = true; }
             break;
         }
 

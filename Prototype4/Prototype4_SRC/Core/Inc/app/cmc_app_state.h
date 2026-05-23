@@ -45,6 +45,7 @@ typedef struct {
     bool right_on;
     bool hazard_on;
     bool pending_broadcast;
+    bool pending_resync;   // Set by CAN RX when a direction indicator message arrives while active; cleared by feature process()
 } cmc_app_state_directional_indicator_t;
 
 // All input buttons — written by cmc_app_state_updater (raw input scanner + CAN RX)

@@ -32,6 +32,11 @@ static bool this_unit_left_active       = false;   // True if the left direction
 static bool this_unit_right_active      = false;   // True if the right direction indicator is currently active (output on)
 static uint32_t interval_speed_ms       = 500;     // Blinking interval in milliseconds, not configurable for now
 static uint32_t on_since_ms             = 0;       // Tick at which the direction indicator was last turned on, used for auto shut-off timeout
+// Blink phase sync
+static uint32_t blink_epoch_ms          = 0U;      // Tick captured at activation; phase is relative to this so all units start aligned
+static bool     is_originator           = false;   // True when the active indication was started by the local button on this unit
+static uint32_t last_resync_ms          = 0U;      // Last tick at which the originator sent a periodic resync broadcast
+#define CMC_FEATURE_DI_RESYNC_INTERVAL_MS 3600000U // Re-broadcast every 1 hour to correct long-term crystal drift on slave units
 // State machine edge tracking — prev_app tracks the last seen app_state values for self-detecting change detection
 static bool     prev_app_left         = false;  // last seen app_state left_on
 static bool     prev_app_right        = false;  // last seen app_state right_on
@@ -203,9 +208,9 @@ void cmc_feature_direction_indicator_process(void)
         else if (just_right_on)   { new_right = true;  }
         else if (just_right_off)  { new_right = false; }
 
-        // Track activation timestamps for hazard window and auto shut-off
-        if (new_left  && !this_unit_left_active)  { left_activated_ms  = HAL_GetTick(); on_since_ms = HAL_GetTick(); }
-        if (new_right && !this_unit_right_active) { right_activated_ms = HAL_GetTick(); on_since_ms = HAL_GetTick(); }
+        // Track activation timestamps for hazard window, auto shut-off, and blink phase sync
+        if (new_left  && !this_unit_left_active)  { left_activated_ms  = HAL_GetTick(); on_since_ms = HAL_GetTick(); blink_epoch_ms = HAL_GetTick(); }
+        if (new_right && !this_unit_right_active) { right_activated_ms = HAL_GetTick(); on_since_ms = HAL_GetTick(); blink_epoch_ms = HAL_GetTick(); }
 
         // Apply resolved active state and turn off outputs if deactivated.
         // cancel_left/right also resets the scanner toggle so the next press immediately activates.
@@ -217,6 +222,9 @@ void cmc_feature_direction_indicator_process(void)
         // Only TX over CAN if the change originated from the local input scanner
         if (cmc_app_state.feature.directional_indicator.pending_broadcast) {
             cmc_app_state.feature.directional_indicator.pending_broadcast = false;
+            // Track whether this unit is the originator so it can do periodic resync broadcasts
+            is_originator = (new_left || new_right);
+            if (is_originator) { last_resync_ms = HAL_GetTick(); }
             cmc_feature_direction_indicator_broadcast();
         }
     }
@@ -225,8 +233,23 @@ void cmc_feature_direction_indicator_process(void)
     if (!this_unit_feature_active) { return; }
     if (!this_unit_left_active && !this_unit_right_active) { return; }
 
-    // Blink: drive outputs on/off based on current phase (active state flags are not modified)
-    bool phase_on = ((HAL_GetTick() / interval_speed_ms) & 1U) == 0U;
+    // Re-anchor blink epoch when a resync signal arrives from the originator via CAN (slave path)
+    if (cmc_app_state.feature.directional_indicator.pending_resync) {
+        cmc_app_state.feature.directional_indicator.pending_resync = false;
+        blink_epoch_ms = HAL_GetTick();
+    }
+
+    // Originator only: re-broadcast every CMC_FEATURE_DI_RESYNC_INTERVAL_MS so slave units
+    // re-anchor their epoch and eliminate long-term crystal drift
+    if (is_originator && (HAL_GetTick() - last_resync_ms) >= CMC_FEATURE_DI_RESYNC_INTERVAL_MS) {
+        last_resync_ms = HAL_GetTick();
+        blink_epoch_ms = HAL_GetTick();
+        cmc_feature_direction_indicator_broadcast();
+    }
+
+    // Blink: drive outputs on/off based on phase relative to epoch (not absolute tick) so all
+    // units start in phase on activation and stay aligned after periodic resync broadcasts
+    bool phase_on = (((HAL_GetTick() - blink_epoch_ms) / interval_speed_ms) & 1U) == 0U;
     if (this_unit_left_active)  { set_switch_left(phase_on,  false); }
     if (this_unit_right_active) { set_switch_right(phase_on, false); }
 }
