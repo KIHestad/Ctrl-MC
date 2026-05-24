@@ -1,4 +1,5 @@
 #include "cs_can_rx.h"
+#include "cs_led.h"
 #include "main.h"
 #include "stm32g4xx_hal_fdcan.h"
 
@@ -36,7 +37,7 @@ static uint8_t cs_dlc_to_len(uint32_t dlc_code)
         0U, 1U, 2U, 3U, 4U, 5U, 6U, 7U,    /* DLC 0–8  → 0–8 bytes  */
         8U, 12U, 16U, 20U, 24U, 32U, 48U, 64U  /* DLC 9–15 → FD lengths */
     };
-    uint8_t idx = (uint8_t)((dlc_code >> 16U) & 0x0FU);
+    uint8_t idx = (uint8_t)(dlc_code & 0x0FU); /* HAL returns raw index, no shift needed */
     return k_table[idx];
 }
 
@@ -80,8 +81,8 @@ void cs_can_rx_init(void)
 
 void cs_can_rx_process(void)
 {
-    /* Intentionally empty — consumers call cs_can_rx_pop() directly from
-     * the main loop or wherever they need a frame. */
+    /* Intentionally empty — consumers call cs_can_rx_pop() directly.
+     * LED activity is handled by cs_led_process() in the main loop. */
 }
 
 bool cs_can_rx_pop(cs_can_frame_t *frame)
@@ -97,6 +98,24 @@ bool cs_can_rx_pop(cs_can_frame_t *frame)
 
     __enable_irq();
     return available;
+}
+
+bool cs_can_tx_send(uint32_t id, bool ide, uint8_t dlc, const uint8_t *data)
+{
+    if (dlc > 8U) { dlc = 8U; } /* clamp to classic CAN 2.0 max */
+
+    FDCAN_TxHeaderTypeDef tx_hdr = {0};
+    tx_hdr.Identifier          = ide ? (id & 0x1FFFFFFFU) : (id & 0x7FFU);
+    tx_hdr.IdType              = ide ? FDCAN_EXTENDED_ID : FDCAN_STANDARD_ID;
+    tx_hdr.TxFrameType         = FDCAN_DATA_FRAME;
+    tx_hdr.DataLength          = (uint32_t)dlc; /* HAL DLC encoding: raw byte count 0–8 */
+    tx_hdr.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+    tx_hdr.BitRateSwitch       = FDCAN_BRS_OFF;
+    tx_hdr.FDFormat            = FDCAN_CLASSIC_CAN;
+    tx_hdr.TxEventFifoControl  = FDCAN_NO_TX_EVENTS;
+    tx_hdr.MessageMarker       = 0U;
+
+    return (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &tx_hdr, (uint8_t *)data) == HAL_OK);
 }
 
 /* --------------------------------------------------------------------------
@@ -147,5 +166,8 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
          * buffer from reordering the stores above with the head update. */
         __DMB();
         cs_ring.head = next_head;
+
+        /* Signal activity: turn LED on and (re)start the 50 ms off-timer. */
+        cs_led_rx_activity();
     }
 }

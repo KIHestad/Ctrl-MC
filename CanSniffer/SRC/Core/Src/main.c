@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "cs_can_rx.h"
 #include "cs_gvret.h"
+#include "cs_led.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -97,6 +98,8 @@ int main(void)
   MX_CRC_Init();
   MX_USB_Device_Init();
   /* USER CODE BEGIN 2 */
+  cs_led_init();
+  cs_led_startup_blink();
   cs_can_rx_init();
   /* USER CODE END 2 */
 
@@ -109,6 +112,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
     cs_can_rx_process();
     cs_gvret_process();
+    cs_led_process();
   }
   /* USER CODE END 3 */
 }
@@ -138,7 +142,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV2;
   RCC_OscInitStruct.PLL.PLLN = 80;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV4;
+  RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
   RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -250,6 +254,7 @@ static void MX_FDCAN1_Init(void)
    * Nominal 1 Mbit/s : Prescaler=1, Seg1=119, Seg2=40, SJW=40 → 160 TQ, 75% SP
    * Data    2 Mbit/s : Prescaler=2, Seg1=31,  Seg2=8,  SJW=8  →  80 TQ, 80% SP */
   hfdcan1.Init.FrameFormat           = FDCAN_FRAME_FD_BRS;
+  hfdcan1.Init.Mode                  = FDCAN_MODE_NORMAL; /* NORMAL required to transmit frames from SavvyCAN */
   hfdcan1.Init.NominalPrescaler      = 1U;
   hfdcan1.Init.NominalTimeSeg1       = 119U;
   hfdcan1.Init.NominalTimeSeg2       = 40U;

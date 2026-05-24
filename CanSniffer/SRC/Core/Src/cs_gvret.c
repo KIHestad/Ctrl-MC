@@ -30,38 +30,43 @@ void cs_gvret_encode_frame(const cs_can_frame_t *frame,
 {
     uint8_t *p = buf;
 
-    /* Start byte + command 0x00 (incoming CAN frame) */
-    *p++ = 0xF1U;
-    *p++ = 0x00U;
-
-    /* Timestamp milliseconds (little-endian) */
-    cs_write_u32_le(&p, frame->timestamp);
-
-    /* Timestamp microseconds — not available from HAL_GetTick(), send 0 */
-    cs_write_u32_le(&p, 0U);
-
-    /* CAN ID (little-endian); set bit 31 for extended (29-bit) frames */
+    /* CAN ID word; set bit 31 for extended (29-bit) frames */
     uint32_t can_id = frame->id;
     if (frame->ide != 0U)
     {
         can_id |= 0x80000000UL;
     }
-    cs_write_u32_le(&p, can_id);
 
-    /* bus_flags: bit 4 = CAN FD frame, bits 3:0 = bus number (always 0) */
-    *p++ = (frame->fdf != 0U) ? 0x10U : 0x00U;
-
-    /* Actual data byte count */
-    *p++ = frame->dlc;
-
-    /* Payload */
-    for (uint8_t i = 0U; i < frame->dlc; i++)
+    if (frame->fdf == 0U)
     {
-        *p++ = frame->data[i];
+        /* ---- Classic CAN frame: command 0x00 ----
+         * Layout: F1 00 | ts[4] | id[4] | (bus<<4|dlc)[1] | data[dlc]
+         * bus is always 0 on this single-bus device. */
+        *p++ = 0xF1U;
+        *p++ = 0x00U;
+        cs_write_u32_le(&p, frame->timestamp);
+        cs_write_u32_le(&p, can_id);
+        *p++ = (uint8_t)(frame->dlc & 0x0FU); /* high nibble=bus(0), low nibble=dlc */
+        for (uint8_t i = 0U; i < frame->dlc; i++)
+        {
+            *p++ = frame->data[i];
+        }
     }
-
-    /* Trailing bus number */
-    *p++ = 0x00U;
+    else
+    {
+        /* ---- CAN FD frame: command 0x14 ----
+         * Layout: F1 14 | ts[4] | id[4] | dlc[1] | bus[1] | data[dlc] */
+        *p++ = 0xF1U;
+        *p++ = 0x14U;
+        cs_write_u32_le(&p, frame->timestamp);
+        cs_write_u32_le(&p, can_id);
+        *p++ = (uint8_t)(frame->dlc & 0x3FU);
+        *p++ = 0x00U; /* bus 0 */
+        for (uint8_t i = 0U; i < frame->dlc; i++)
+        {
+            *p++ = frame->data[i];
+        }
+    }
 
     *len = (uint16_t)(p - buf);
 }
@@ -90,7 +95,31 @@ void cs_gvret_process_host_cmd(const uint8_t *in, uint16_t in_len,
 
         uint8_t cmd = in[i + 1U];
 
-        if (cmd == 0x01U) /* Time sync */
+        if (cmd == 0x00U) /* Transmit CAN frame from host */
+        {
+            /* Host TX format: F1 00 | ID[4 LE, bit31=ext] | bus[1] | len[1] | data[len] | 0x00
+             * No response expected — SavvyCAN ignores replies to cmd 0x00. */
+            if ((i + 8U) > in_len) /* need at least: cmd+ID+bus+len */
+            {
+                break;
+            }
+            uint8_t tx_len = in[i + 7U];
+            if (tx_len > 8U) { tx_len = 8U; } /* clamp to classic CAN */
+            if ((i + 8U + (uint16_t)tx_len) > in_len)
+            {
+                break; /* data bytes not fully in this packet */
+            }
+            uint32_t raw_id = (uint32_t)in[i + 2U]
+                            | ((uint32_t)in[i + 3U] <<  8U)
+                            | ((uint32_t)in[i + 4U] << 16U)
+                            | ((uint32_t)in[i + 5U] << 24U);
+            /* in[i + 6U] = bus number — ignored (single-bus device) */
+            bool tx_ide   = (raw_id & 0x80000000U) != 0U;
+            uint32_t can_id = tx_ide ? (raw_id & 0x1FFFFFFFU) : (raw_id & 0x7FFU);
+            cs_can_tx_send(can_id, tx_ide, tx_len, &in[i + 8U]);
+            i += 7U + (uint16_t)tx_len; /* skip: cmd+ID+bus+len+data; loop i++ moves past trailing 0x00 */
+        }
+        else if (cmd == 0x01U) /* Time sync */
         {
             /* Guard: ensure response fits in the caller's output buffer */
             if ((*out_len + 6U) > CS_GVRET_RESP_BUF_SIZE)
@@ -104,7 +133,7 @@ void cs_gvret_process_host_cmd(const uint8_t *in, uint16_t in_len,
             *out_len += 6U;
             i += 1U; /* skip the command byte so the next iteration advances past it */
         }
-        else if (cmd == 0x09U) /* Device identity */
+        else if (cmd == 0x09U) /* Device identity / comm validation */
         {
             if ((*out_len + (uint16_t)sizeof(k_identity)) > CS_GVRET_RESP_BUF_SIZE)
             {
@@ -115,6 +144,31 @@ void cs_gvret_process_host_cmd(const uint8_t *in, uint16_t in_len,
                 out[*out_len + j] = k_identity[j];
             }
             *out_len += (uint16_t)sizeof(k_identity);
+            i += 1U;
+        }
+        else if (cmd == 0x06U) /* Report canbus params — triggers SavvyCAN CONNECTED state */
+        {
+            /* Response: F1 06 | can0_flags[1] | can0_baud[4 LE] | can1_flags[1] | can1_baud[4 LE]
+             * can0: enabled (bit 0), not listen-only, 1 000 000 bps (0x000F4240 LE)
+             * can1: disabled, baud 0 */
+            if ((*out_len + 12U) > CS_GVRET_RESP_BUF_SIZE)
+            {
+                break;
+            }
+            uint8_t *p = out + *out_len;
+            *p++ = 0xF1U;
+            *p++ = 0x06U;
+            *p++ = 0x01U;              /* can0 enabled, not listen-only */
+            *p++ = 0x40U;              /* can0 baud 1 000 000 LE: byte 0 */
+            *p++ = 0x42U;              /* byte 1 */
+            *p++ = 0x0FU;              /* byte 2 */
+            *p++ = 0x00U;              /* byte 3 */
+            *p++ = 0x00U;              /* can1 disabled */
+            *p++ = 0x00U;              /* can1 baud 0 LE */
+            *p++ = 0x00U;
+            *p++ = 0x00U;
+            *p++ = 0x00U;
+            *out_len += 12U;
             i += 1U;
         }
         else if (cmd == 0x05U && (i + 2U) < in_len)  /* Set bus active */
@@ -136,7 +190,6 @@ void cs_gvret_process_host_cmd(const uint8_t *in, uint16_t in_len,
 
 void cs_gvret_process(void)
 {
-    static uint32_t cs_led_off_tick   = 0U;
     static uint8_t  cs_tx_buf[CS_GVRET_FRAME_BUF_SIZE];
     static uint16_t cs_tx_pending_len = 0U;
 
@@ -149,8 +202,6 @@ void cs_gvret_process(void)
     {
         if (CDC_Transmit_FS(cs_tx_buf, cs_tx_pending_len) == USBD_OK)
         {
-            HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
-            cs_led_off_tick   = HAL_GetTick() + 20U;
             cs_tx_pending_len = 0U;
         }
         /* Still BUSY: leave pending, retry on the next call. */
@@ -163,18 +214,9 @@ void cs_gvret_process(void)
             cs_gvret_encode_frame(&frame, cs_tx_buf, &cs_tx_pending_len);
             if (CDC_Transmit_FS(cs_tx_buf, cs_tx_pending_len) == USBD_OK)
             {
-                HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
-                cs_led_off_tick   = HAL_GetTick() + 20U;
                 cs_tx_pending_len = 0U;
             }
             /* If BUSY: cs_tx_buf holds the encoded frame, retry next call. */
         }
-    }
-
-    /* Non-blocking LED off: extinguish once the 20 ms window has elapsed */
-    if ((cs_led_off_tick != 0U) && (HAL_GetTick() >= cs_led_off_tick))
-    {
-        HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-        cs_led_off_tick = 0U;
     }
 }

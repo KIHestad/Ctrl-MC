@@ -29,6 +29,7 @@ typedef struct
 void cs_can_rx_init(void);
 
 /**
+
  * @brief  Main-loop processing hook (reserved for future use).
  *         Call from main.c within the USER CODE BEGIN 3 section.
  */
@@ -45,6 +46,20 @@ void cs_can_rx_process(void);
  *        Call only from thread (main-loop) context.
  */
 bool cs_can_rx_pop(cs_can_frame_t *frame);
+
+/**
+ * @brief  Transmit a classic CAN 2.0 frame on FDCAN1.
+ *
+ * @param id    CAN identifier (11-bit standard or 29-bit extended, without flags).
+ * @param ide   true = extended (29-bit) frame.
+ * @param dlc   Payload byte count (0–8). Values above 8 are clamped.
+ * @param data  Pointer to payload bytes.
+ * @return  true if the frame was accepted into the TX FIFO, false if the
+ *          TX FIFO was full or the peripheral rejected the request.
+ *
+ * @note  May be called from interrupt context (e.g. CDC_Receive_FS).
+ */
+bool cs_can_tx_send(uint32_t id, bool ide, uint8_t dlc, const uint8_t *data);
 
 #ifdef __cplusplus
 }

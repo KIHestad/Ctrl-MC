@@ -16,10 +16,11 @@ extern "C" {
 
 /**
  * Maximum buffer size for a single GVRET host-command response.
- * Largest response is the device identity reply: 3-byte header +
- * 24-char string + 1-byte NUL terminator = 28 bytes.
+ * SavvyCAN sends multiple commands in one USB packet during connection
+ * setup (time sync + identity + bus enable = 6 + 28 + 4 = 38 bytes).
+ * 64 bytes provides margin for all command combinations.
  */
-#define CS_GVRET_RESP_BUF_SIZE   28U
+#define CS_GVRET_RESP_BUF_SIZE   64U
 
 /**
  * @brief  Encode a captured CAN frame into a GVRET binary frame (cmd 0x00).
