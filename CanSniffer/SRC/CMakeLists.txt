@@ -47,6 +47,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # User sources
     Core/Src/cs_can_rx.c
     Core/Src/cs_gvret.c
+    Core/Src/cs_led.c
 )
 
 # Add include paths
