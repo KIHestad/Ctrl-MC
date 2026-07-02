@@ -70,9 +70,6 @@ BO_ 204 FEATURE_LIGHT: 1 CMC_UNIT
  SG_ low_beam_on : 1|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ high_beam_on : 2|1@1+ (1,0) [0|1] "" Vector__XXX
 
-BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
- SG_ NewSignal_0004 : 24|8@1+ (1,0) [0|0] "" Vector__XXX
-
 BO_ 205 FEATURE_BRAKE_LIGHT: 1 CMC_UNIT
  SG_ brake_light_on : 0|1@1+ (1,0) [0|1] "" Vector__XXX
 
