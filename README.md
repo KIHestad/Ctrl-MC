@@ -4,8 +4,10 @@
 
 Ctrl MC (pronounced: "Control MC") is a system currently in development for simplifying and modernizing the wiring for motorcycles.
 
-The project is being devloped by Ki Hestad: https://youtube.com/kihestad.
-For updated information about the project check the YouTube channel and feel free to participate with idead or feedback for the projects Discord channel: [https://discord.gg/p5pfdZxfS8](https://discord.gg/p5pfdZxfS8)
+The project is managed by [KI Hestad](https://youtube.com/kihestad).
+For updated information about the project check the authors [YouTube channel](https://youtube.com/kihestad). Feel free to participate with ideas and feedback by joining the projects [Discord Server](https://discord.gg/p5pfdZxfS8)
+
+PCBs for this project are sponsored by [NextPCB](https://www.nextpcb.com?code=kihestad). If you need PCB manufacturing services, we recommend [NextPCB](https://www.nextpcb.com?code=kihestad).
 
 Do you want to support this project? It's easy, just [click here to subscribe to the YouTube channel](https://youtube.com/kihestad/?sub_confirmation=1)!!!
 
@@ -13,7 +15,7 @@ Do you want to support this project? It's easy, just [click here to subscribe to
 
 This project is still in early stages, the idea is to:
 
-* Create a motorcycle control system based on microcontrollers and canbus to simplify and improve the wiring harness with possibility to add modern features for 'classic' (=older) motorcycles
+* Create a motorcycle control system based on microcontrollers (STM32) and canbus to simplify and improve the wiring harness with possibility to add modern features for 'classic' (=older) motorcycles
   * The main goal is to make an intuitive and reliable system for wiring up a motorcycles lights and instruments 
   * The project does not in the first phases aim to replace or modify the motorcycle engine ignition system, but maybe later?
 * Provide software, schematics and instructions free of charge
@@ -42,7 +44,7 @@ Some of the benefits the system (hopefully) will give:
 
 The software is developed using Visual Studio Code. The first prototypes where using are using Platform IO, Arduino framework and C++ language. The latest prototype is using STM32CubeIDE and C language. The software is open source and available in this GitHub repository.
 * Prototype 1 was a first attempt having a display unit and a relay unit using serial communication to send data in between
-* Prototype 2 was a standalone display unit for testing use of hall sensor for speedometer and IT sensor for rpm meter, one version using ESP32 was made for KI Hestad's Cagiva 750 Elefant, a second version was ported to STM32 microcontroller
+* Prototype 2 was a standalone display unit for testing use of hall sensor for speedometer and IT sensor for rpm meter made for a Cagiva 750 Elefant.
 * Prototype 3 is a simple canbus communication test using STM32 microcontroller, this is not to be used in further development but just for testing the canbus communication
 * MC Wiring Simulator is a PCB designed as a supportng tool for testing and developing purposes. 
 
