@@ -1,0 +1,92 @@
+/**
+  *********************************************************************************************
+  * @file      cmc_app_logic.c
+  * @brief     Application logic for initialization and processing loop
+  * @attention This is part of the Ctrl-MC system: https://github.com/KIHestad/Ctrl-MC
+  * @copyright KI Hestad, Complicated Productions
+  *********************************************************************************************
+  */
+  
+#include "can/cmc_can_manager.h"
+#include "util/cmc_util_onboard_led.h"
+#include "config/cmc_config_manager.h"
+#include "config/cmc_config_unit_info.h"
+#include "app/cmc_app_logic.h"
+#include "app/cmc_app_state_updater.h"
+#include "input/cmc_input.h"
+#include "feature/cmc_features_manager.h"
+
+// Global application system status variable
+cmc_app_status_t cmc_app_status;
+
+// App initialization, called once at startup
+void cmc_app_init(void) {
+
+    // Show startup is running by inititate onboard LED blinking pattern
+    cmc_onboard_led_init();    
+
+    // Initialize CAN manager for handling CAN communication
+    HAL_StatusTypeDef status = cmc_can_manager_init();
+    if (status != HAL_OK) {
+        cmc_app_status.status = CMC_APP_STATUS_CAN_INIT_ERROR; 
+    }
+
+    // Check and read configuration from flash to ram
+    if (cmc_app_status.status == CMC_APP_STATUS_SUCCESS) {
+        cmc_config_manager_init();
+    }   
+    
+    // Check and read unit info from flash, if config is valid
+    if (cmc_app_status.status == CMC_APP_STATUS_SUCCESS) {
+        cmc_config_unit_info_init();
+    }
+
+    // Continue if configuration and unit info is valid and status set to success
+    if (cmc_app_status.status == CMC_APP_STATUS_SUCCESS) {
+
+        // Config and unit info should be valid at this point, set cmc_config_this_unit
+        cmc_config_this_unit = &cmc_config.io_unit[cmc_config_unit_info.unit_id - 1];
+        
+        // Initialize button reading, sample initial GPIO states
+        cmc_input_scanner_init();
+
+        // Register CAN RX callback that writes incoming state updates to cmc_app_state
+        cmc_app_state_updater_init();
+
+        // Now initiate all features for this unit
+        cmc_features_init();
+    
+    }
+
+    // Set status after init
+    if (cmc_app_status.status == CMC_APP_STATUS_SUCCESS) {
+        cmc_app_status.success = true;
+        cmc_onboard_led_blink_interval(cmc_config_unit_info.unit_id, 5000); 
+    } else {
+        cmc_app_status.success = false;
+        cmc_onboard_led_blink_interval(cmc_app_status.status, 1000); 
+    }
+}
+
+// Main processing, called repeatedly from main.c loop
+void cmc_app_process(void) {
+
+    // Only run system logic if app_status.system is success
+    if (cmc_app_status.success) {
+
+        // No need to read CAN messages in this processing loop, they will be handled by interrupts enabled by the CAN manager
+        // Scan all button inputs: debounce and detect click/hold events
+        cmc_input_scanner_execute();
+    
+        // Process features for this unit (e.g., if horn is active, check if system state indicates button hold or release check or if auto shut-off timer has expired and turn off if needed, etc.)
+        cmc_features_process();
+
+    }
+    
+    // Update onboard LED state on this unit, is done regardless of system state to ensure proper LED behavior with error indication as well
+    cmc_onboard_led_process(); 
+
+    // Ensures CPU sleep mode between iterations for power saving and to make it run cooler, wakes up on interrupts (e.g., CAN messages, timer for input scanning, etc.)
+    __WFI();
+
+}
