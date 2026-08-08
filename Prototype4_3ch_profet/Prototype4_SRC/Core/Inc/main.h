@@ -75,8 +75,6 @@ void Error_Handler(void);
 #define SW2_DEN_GPIO_Port GPIOA
 #define SW2_DSEL_Pin GPIO_PIN_7
 #define SW2_DSEL_GPIO_Port GPIOA
-#define SENSOR_ANALOG_Pin GPIO_PIN_15
-#define SENSOR_ANALOG_GPIO_Port GPIOB
 #define LED_Pin GPIO_PIN_6
 #define LED_GPIO_Port GPIOC
 #define BTN_10_Pin GPIO_PIN_8

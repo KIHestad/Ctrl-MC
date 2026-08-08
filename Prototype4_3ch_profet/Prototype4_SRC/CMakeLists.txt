@@ -50,6 +50,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ./Core/Src/feature/cmc_feature_neutral.c
     ./Core/Src/feature/cmc_feature_oil_pressure.c
     ./Core/Src/feature/cmc_feature_starter.c
+    ./Core/Src/feature/cmc_feature_channel_info.c
     # features manager and output
     ./Core/Src/feature/cmc_features_manager.c
     ./Core/Src/feature/cmc_features_output.c
@@ -58,6 +59,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # util
     ./Core/Src/util/cmc_util_crc.c
     ./Core/Src/util/cmc_util_onboard_led.c
+    ./Core/Src/util/cmc_util_switch_driver.c
     ./Core/Src/util/cmc_util_usage_journal.c
 )
 

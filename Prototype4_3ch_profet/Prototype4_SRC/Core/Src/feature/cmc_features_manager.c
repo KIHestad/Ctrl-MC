@@ -16,6 +16,7 @@
 #include "feature/cmc_feature_brake_light.h"
 #include "feature/cmc_feature_neutral.h"
 #include "feature/cmc_feature_oil_pressure.h"
+#include "feature/cmc_feature_channel_info.h"
 #include "feature/cmc_features_output.h"
 
 void cmc_features_init(void) {
@@ -30,6 +31,7 @@ void cmc_features_init(void) {
     cmc_feature_brake_light_init();
     cmc_feature_neutral_init();
     cmc_feature_oil_pressure_init();
+    cmc_feature_channel_info_init();
 }
 
 void cmc_features_process(void) {
@@ -42,4 +44,5 @@ void cmc_features_process(void) {
     cmc_feature_brake_light_process();
     cmc_feature_neutral_process();
     cmc_feature_oil_pressure_process();
+    cmc_feature_channel_info_process();
 }

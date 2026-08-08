@@ -19,14 +19,14 @@ const bool cmc_config_default_for_demo_use = true;
 const cmc_config_t cmc_config_default_for_demo = {
     .signature       = CMC_CONFIG_SIGNATURE, // Default config signature, must match CMC_CONFIG_SIGNATURE to be considered valid
     .version         = CMC_CONFIG_VERSION,   // Default config version, can be used for migration logic if the config structure changes in future firmware versions
-    .units_required  = 2, // The expected number of IO units the system needs to operate, this is also the number of units that should be present in the configuration
+    .units_required  = 1, // The expected number of IO units the system needs to operate, this is also the number of units that should be present in the configuration
 
     // Unit number 1: Front I/O Unit
     .io_unit[0] = {
         .unit_id         = 1,
         .unit_name_id    = CMC_CONFIG_UNIT_NAME_FRONT, 
         .in_used         = 8, // Number of input connectors used on this unit
-        .out_used        = 6, // Number of output channels used on this unit
+        .out_used        = 3, // Number of output channels used on this unit
         
         // Input buttons and sensors
         .in[0] = {       // Input button 1
@@ -132,14 +132,14 @@ const cmc_config_t cmc_config_default_for_demo = {
         .enabled = 0, // 0 = disabled: ignition always on (no sensor required, safe default for bench testing)
     },
     .feature_starter = {
-        .enabled = 1, // 0 = disabled: starter output never activates; set to 1 to enable input-driven starter control
+        .enabled = 0, // 0 = disabled: starter output never activates; set to 1 to enable input-driven starter control
     },
     .feature_horn = {
-        .enabled = 1, // Set to 1 to enable the horn feature, set to 0 to disable it and the system will ignore any horn-related logic
+        .enabled = 0, // Set to 1 to enable the horn feature, set to 0 to disable it and the system will ignore any horn-related logic
         .auto_shut_off_sec = 3, // Automatically turn off the horn after this many seconds if the button is held continuously, set to 0 to disable auto shut-off
     },
     .feature_direction_indicator = {
-        .enabled = 1,              // Set to 1 to enable the direction indicator feature
+        .enabled = 0,              // Set to 1 to enable the direction indicator feature
         .blink_interval_x10ms = 50, // Blink on/off interval (100 = 1 second, 50 = half a second - number in 1/100 of a second)
         .auto_shut_off_sec = 30,    // Duration in seconds after which the direction indicator should automatically shut off, not applicable if hazard mode
     },
@@ -158,6 +158,12 @@ const cmc_config_t cmc_config_default_for_demo = {
     },
     .feature_oil_pressure = {
         .enabled = 0,  // Set to 1 to enable the oil pressure warning feature
+    },
+    .feature_channel_info = {
+        .enabled          = 1,
+        .overview_enabled = 0,   // requires CAN FD capable adapter; set 1 only when hardware supports it
+        .temp_unit        = CMC_TEMP_UNIT_CELSIUS,
+        .open_load_ma     = 5,   // threshold in mA; LEDs draw ~15mA so set low to avoid OPEN_LOAD false alarm
     }
         
 };

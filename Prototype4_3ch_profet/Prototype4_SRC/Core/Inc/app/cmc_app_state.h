@@ -69,7 +69,20 @@ typedef struct {
     cmc_app_state_feature_t feature;                     
 } cmc_app_state_t;
 
+// Per output channel diagnostic state (power, fault)
+typedef struct {
+    uint16_t power_cw;      // power in 0.01 W units (0–20000 = 0–200.00 W)
+    uint8_t  fault_code;    // cmc_switch_status_t value
+} cmc_app_state_channel_t;
+
+// Aggregated channel diagnostics and supply state
+typedef struct {
+    cmc_app_state_channel_t ch[CMC_CONFIG_HW_OUT_COUNT];
+    uint16_t supply_voltage_mv; // supply voltage in mV; default 12000
+} cmc_app_state_channel_info_t;
+
 // Global application state — read by all modules, written only by the owning module per field group
-extern cmc_app_state_t cmc_app_state;
+extern cmc_app_state_t            cmc_app_state;
+extern cmc_app_state_channel_info_t cmc_app_state_channel_info;
 
 #endif /* CMC_APP_STATE_H_ */

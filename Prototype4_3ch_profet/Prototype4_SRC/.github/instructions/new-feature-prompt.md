@@ -1,7 +1,5 @@
 # Before starting check the following:
-- If a canbus message is needed for the feature, this needs to be created manually first by the user. The canbus message to use should be specified in the user's prompt.
-- Only the user is allowed to add canbus messages or signals to existing messages by using cantools to generate the /Core/Inc/can/cmc_can_message.h and /Core/Src/can/cmc_can_message.c files.
-- Never modify these generated .c and .h files as part of this feature creation!
+- If a new canbus message/signal is needed for the feature, this needs to be added to the file `can/cmc_can_message.dbc` and checked by the user using KVASER database editor to make sure it's according to requirements before any other code changes are made. When the DBC file is updated, the user must run `cantools` to generate the new `/Core/Inc/can/cmc_can_message.h` and `/Core/Src/can/cmc_can_message.c` files. The user must also check that the generated files are correct and do not contain any errors.
 
 # Create a new feature module following the Ctrl-MC pattern:
 - Header in `Core/Inc/feature/cmc_feature_<name>.h`

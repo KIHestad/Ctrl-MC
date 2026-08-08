@@ -23,6 +23,7 @@
 #include "feature/cmc_feature_brake_light.h"
 #include "feature/cmc_feature_neutral.h"
 #include "feature/cmc_feature_oil_pressure.h"
+#include "feature/cmc_feature_channel_info.h"
 
 // The configuration for input buttons and sensors (3 bytes)
 typedef struct {
@@ -71,6 +72,7 @@ typedef struct {
     cmc_feature_brake_light_t feature_brake_light;
     cmc_feature_neutral_t      feature_neutral;
     cmc_feature_oil_pressure_t feature_oil_pressure;
+    cmc_feature_channel_info_t feature_channel_info;
     
     // Automatic padding to make the total size of the structure a multiple of 8 bytes for flash storage efficiency
     uint8_t  _padding[(8 - 
@@ -86,6 +88,7 @@ typedef struct {
             + sizeof(cmc_feature_brake_light_t)
             + sizeof(cmc_feature_neutral_t)
             + sizeof(cmc_feature_oil_pressure_t)
+            + sizeof(cmc_feature_channel_info_t)
         ) % 8) % 8];
     
 } cmc_config_t;

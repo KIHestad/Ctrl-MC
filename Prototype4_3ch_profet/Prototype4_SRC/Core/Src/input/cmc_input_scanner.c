@@ -18,7 +18,8 @@
 #include "app/cmc_app_state_updater.h"
 
 // Global application state variable, updated by the scanner and used across the system and sent over CAN
-cmc_app_state_t cmc_app_state; 
+cmc_app_state_t cmc_app_state;
+cmc_app_state_channel_info_t cmc_app_state_channel_info;
 
 // Local state for the input scanner, indexed by the button index in the unit configuration, holds raw and debounced states and timing for each button
 static cmc_input_button_state_t cmc_input_button_state[CMC_CONFIG_HW_IN_DIGITAL_COUNT];

@@ -28,17 +28,33 @@ typedef struct {
 extern const cmc_config_gpio_pin_t cmc_config_hw_digital_in_mapping[CMC_CONFIG_HW_IN_DIGITAL_COUNT]; // tbd, to be defined in cmc_config_hw_mapping.c
 extern const cmc_config_gpio_pin_t cmc_config_hw_analog_in_mapping[CMC_CONFIG_HW_IN_ANALOG_COUNT]; // tbd, to be defined in cmc_config_hw_mapping.c
 
-// For mapping the hardware output channels, for the infineon PROFET +2 high side switches
+// Switch type discriminator for the output channel mapping
+typedef enum {
+    CMC_CONFIG_SWITCH_TYPE_PROFET = 0, // Infineon PROFET: GPIO (IN/DEN/DSEL) + ADC IS pin
+    CMC_CONFIG_SWITCH_TYPE_SPOC   = 1, // Infineon SPOC: SPI-controlled (future)
+} cmc_config_switch_type_t;
+
+// One logical output channel — PROFET fields used when switch_type == PROFET, SPOC fields when SPOC
 typedef struct {
-    cmc_config_gpio_pin_t in_pin; // The GPIO pin used to control the output channel (turn on/off)
-    cmc_config_gpio_pin_t den_pin; // The GPIO pin used to reset and control the is_pin
-    cmc_config_gpio_pin_t is_pin; // The GPIO pin for reading analog diagnostic feedback from the output channel (current sensing)
-    cmc_config_gpio_pin_t dsel_pin; // The first output pin that this channel controls (used for both single and dual channels)
-    bool dual_channel; // Set to true if this output channel is a dual channel that controls two outputs, false if it controls one output
-  uint8_t dsel_value; // GPIO_PIN_SET/GPIO_PIN_RESET value used for the dsel pin on dual channels
-} cmc_config_infineon_profet_t;
+    cmc_config_switch_type_t switch_type;
+
+    // PROFET fields:
+    cmc_config_gpio_pin_t in_pin;       // IN or IN0 for dual channel
+    cmc_config_gpio_pin_t den_pin;
+    cmc_config_gpio_pin_t is_pin;       // IS analog diagnostic pin
+    uint8_t               is_adc_rank;  // ADC1 scan rank (1-based) for this IS pin
+    cmc_config_gpio_pin_t dsel_pin;     // DSEL for IS mux; leave {0} for single-channel
+    bool                  dual_channel;
+    uint8_t               dsel_value;   // DSEL GPIO state that selects this logical channel
+    uint16_t              ilis_ratio;   // K_ILIS current mirror ratio (confirm from datasheet)
+    uint16_t              ris_ohms;     // IS sense resistor in ohms (confirm from schematic)
+
+    // SPOC fields (used when switch_type == CMC_CONFIG_SWITCH_TYPE_SPOC):
+    uint8_t               spoc_channel; // channel address within the SPI daisy chain
+    cmc_config_gpio_pin_t spoc_cs_pin;
+} cmc_config_switch_t;
 
 // Hardware mapping for output channels, channel 1 = item[0]
-extern const cmc_config_infineon_profet_t cmc_config_hw_out_channel_mapping[CMC_CONFIG_HW_OUT_COUNT]; // tbd, to be defined in cmc_config_hw_mapping.c
+extern const cmc_config_switch_t cmc_config_hw_out_channel_mapping[CMC_CONFIG_HW_OUT_COUNT];
 
 #endif /* CMC_CONFIG_HW_MAPPING_H_ */   
