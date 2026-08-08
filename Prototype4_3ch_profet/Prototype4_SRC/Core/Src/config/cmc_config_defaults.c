@@ -160,10 +160,19 @@ const cmc_config_t cmc_config_default_for_demo = {
         .enabled = 0,  // Set to 1 to enable the oil pressure warning feature
     },
     .feature_channel_info = {
-        .enabled          = 1,
-        .overview_enabled = 0,   // requires CAN FD capable adapter; set 1 only when hardware supports it
-        .temp_unit        = CMC_TEMP_UNIT_CELSIUS,
-        .open_load_ma     = 5,   // threshold in mA; LEDs draw ~15mA so set low to avoid OPEN_LOAD false alarm
+        // Per-channel power, supply voltage, and fault reporting over CAN, needed for display units to show channel status and power consumption
+        .enabled                = 1,
+        .open_load_ma           = 5, // threshold in mA; LEDs draw ~15mA so set low to avoid OPEN_LOAD false alarm
+        .temp_unit              = CMC_TEMP_UNIT_CELSIUS,
+        .compensation_enabled   = 1, // set 0 to report raw current-sense values, eg. when calibrating a new switch
+        
+        // The following overview_enabled flags control the periodic broadcast of channel overview messages over CAN
+        // These messages are not read by the Ctrl MC system, only for reporting when using a CAN bus analyzer like Savvycan
+        .overview_enabled       = 0,   // requires CAN FD capable adapter; set 1 only when hardware supports it
+        .overview_enabled_01_03 = 1, // classic CAN, ch1-3; matches this board's 3 physical output channels
+        .overview_enabled_04_06 = 0, // classic CAN, ch4-6; enable only if the unit has these channels
+        .overview_enabled_07_09 = 0, // classic CAN, ch7-9; enable only if the unit has these channels
+        .overview_enabled_10_12 = 0, // classic CAN, ch10-12; enable only if the unit has these channels
     }
         
 };

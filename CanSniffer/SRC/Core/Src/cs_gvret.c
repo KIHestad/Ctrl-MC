@@ -52,10 +52,16 @@ void cs_gvret_encode_frame(const cs_can_frame_t *frame,
             *p++ = frame->data[i];
         }
     }
-    else
-    {
-        /* SavvyCAN BUILD_FD_FRAME uses buildData[rx_step-9]; data at rx_step=10 skips index 0.
-         * dlc+1 shifts all bytes to valid indices 1..N; two trailing bytes trigger completion.
+        /* CONFIRMED against SavvyCAN master (connections/gvretserial.cpp, GVRetSerial::procRXChar,
+         * BUILD_FD_FRAME case) — this is a real bug in SavvyCAN's parser, not a stale hack:
+         * its data loop starts at rx_step=10 but indexes buildData[rx_step-9], so byte 0 of the
+         * payload is never written (stays uninitialised) and every real byte lands one index late.
+         * The dlc+1 length plus these two trailing bytes are required to keep SavvyCAN's state
+         * machine in sync — do NOT switch to a "plain" (dlc, no padding) framing: without the
+         * extra trailing byte, SavvyCAN never reaches its frame-complete branch and instead
+         * consumes the *next* frame's 0xF1 marker as the completion trigger, desyncing the whole
+         * stream. This workaround cannot make SavvyCAN show a byte-perfect payload (byte 0 will
+         * still be garbage there) — that requires a fix on the SavvyCAN side.
          * Cap at 62: (62+1)&0x3F=63 is safe; (63+1)&0x3F wraps to 0 and corrupts the stream. */
         uint8_t send_len = (frame->dlc <= 62U) ? frame->dlc : 62U;
         *p++ = 0xF1U;
