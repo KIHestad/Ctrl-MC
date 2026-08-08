@@ -10,7 +10,8 @@ extern "C" {
 
 /**
  * Maximum buffer size for a single GVRET-encoded CAN frame.
- * 17 bytes of fixed header/footer + up to 64 bytes of CAN FD payload = 81 bytes.
+ * FD (worst case): 12 header + 1 pad + 48 data + 1 trailer = 62 bytes.
+ * Kept at 81 for margin and to survive future firmware changes.
  */
 #define CS_GVRET_FRAME_BUF_SIZE  81U
 

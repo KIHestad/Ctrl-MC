@@ -54,18 +54,22 @@ void cs_gvret_encode_frame(const cs_can_frame_t *frame,
     }
     else
     {
-        /* ---- CAN FD frame: command 0x14 ----
-         * Layout: F1 14 | ts[4] | id[4] | dlc[1] | bus[1] | data[dlc] */
+        /* SavvyCAN BUILD_FD_FRAME uses buildData[rx_step-9]; data at rx_step=10 skips index 0.
+         * dlc+1 shifts all bytes to valid indices 1..N; two trailing bytes trigger completion.
+         * Cap at 62: (62+1)&0x3F=63 is safe; (63+1)&0x3F wraps to 0 and corrupts the stream. */
+        uint8_t send_len = (frame->dlc <= 62U) ? frame->dlc : 62U;
         *p++ = 0xF1U;
         *p++ = 0x14U;
         cs_write_u32_le(&p, frame->timestamp);
         cs_write_u32_le(&p, can_id);
-        *p++ = (uint8_t)(frame->dlc & 0x3FU);
+        *p++ = (uint8_t)((send_len + 1U) & 0x3FU);
         *p++ = 0x00U; /* bus 0 */
-        for (uint8_t i = 0U; i < frame->dlc; i++)
+        for (uint8_t i = 0U; i < send_len; i++)
         {
             *p++ = frame->data[i];
         }
+        *p++ = 0x00U; /* absorbed mid-loop (OOB write to buildData[N+1]) */
+        *p++ = 0x00U; /* triggers BUILD_FD_FRAME else -> frame enqueued */
     }
 
     *len = (uint16_t)(p - buf);
