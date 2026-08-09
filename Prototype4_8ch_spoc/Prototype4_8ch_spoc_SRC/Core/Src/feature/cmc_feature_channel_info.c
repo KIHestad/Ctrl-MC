@@ -19,6 +19,7 @@
 #include "config/cmc_config_type.h"
 #include "app/cmc_app_state.h"
 #include "util/cmc_util_switch_driver.h"
+#include "util/cmc_util_mcu_driver.h"
 #include "can/cmc_can_manager.h"
 #include "can/cmc_can_message.h"
 #include "feature/cmc_feature_channel_info.h"
@@ -59,7 +60,7 @@ static void broadcast_unit_info(void) {
     struct cmc_can_message_unit_info_t msg;
     msg.supply_voltage = (uint16_t)(cmc_app_state_channel_info.supply_voltage_mv / 10U);
     // t in tenths of °C; raw = t + 400 (DBC: scale=0.1, offset=-40 → raw=(phys+40)/0.1=tenths+400)
-    int16_t t          = cmc_util_switch_read_mcu_temp_c();
+    int16_t t          = cmc_util_mcu_read_temp();
     bool out_of_range  = (t < -400 || t > 2140);
     msg.mcu_temp_c             = out_of_range ? MCU_TEMP_FALLBACK_RAW : (uint16_t)((int32_t)t + 400);
     msg.mcu_temp_out_of_range  = out_of_range ? 1U : 0U;
@@ -70,7 +71,7 @@ static void broadcast_unit_info(void) {
     // power_cw is in 0.01 W units; total_watts signal uses 0.1 W units
     msg.total_watts = (uint16_t)(total_cw / 10U);
     // vfref: VDDA in mV / 10 gives 0.01 V units (2 decimal places)
-    uint32_t vdda_mv = cmc_util_switch_read_vdda_mv();
+    uint32_t vdda_mv = cmc_util_mcu_read_vdda_mv();
     msg.vfref = (uint16_t)(vdda_mv / 10U);
     uint8_t payload[CMC_CAN_MESSAGE_UNIT_INFO_LENGTH];
     if (cmc_can_message_unit_info_pack(payload, &msg, sizeof(payload)) < 0) { return; }

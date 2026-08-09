@@ -58,8 +58,11 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ./Core/Src/input/cmc_input_scanner.c
     # util
     ./Core/Src/util/cmc_util_crc.c
+    ./Core/Src/util/cmc_util_mcu_driver.c
     ./Core/Src/util/cmc_util_onboard_led.c
     ./Core/Src/util/cmc_util_switch_driver.c
+    ./Core/Src/util/cmc_util_switch_profet_driver.c
+    ./Core/Src/util/cmc_util_switch_spoc_driver.c
     ./Core/Src/util/cmc_util_usage_journal.c
 )
 

@@ -44,12 +44,6 @@ void               cmc_util_switch_sample_all(void);
 // Returns cached load current in mA from the last sample_all() call; 0 when switch is off
 int32_t            cmc_util_switch_read_current_ma(uint8_t ch);
 
-// Triggers a fresh ADC1 scan (ranks 1-4), returns MCU die temperature in tenths of °C (e.g. 286 = 28.6°C)
-int16_t            cmc_util_switch_read_mcu_temp_c(void);
-
-// Triggers a fresh ADC1 scan (rank 4), returns VDDA in mV computed via VREFINT calibration
-uint32_t           cmc_util_switch_read_vdda_mv(void);
-
 // Returns the channel status inferred during the last sample_all() call
 cmc_switch_status_t cmc_util_switch_get_status(uint8_t ch);
 
