@@ -15,21 +15,21 @@
 #include "util/cmc_util_switch_driver.h"
 
 // Not part of the public API; included only by cmc_util_switch_driver.c
-// SPI register/command protocol is not yet defined — see cmc_util_switch_spoc_driver.c
+// SPI protocol: Infineon BTS72220-4ESA, 2 chips daisy-chained on SPI1 (shared CSN + IS pin)
 
-// Placeholder init; no SPI transaction yet
+// Clears the OUT register (all channels off) on both chips; relies on power-on register defaults otherwise
 void                 cmc_util_switch_spoc_init(void);
 
-// Placeholder set; tracks commanded state only, no SPI transaction yet
+// Writes the OUT register bit for the channel's chip (immediate SPI transaction)
 void                 cmc_util_switch_spoc_set(uint8_t ch, bool on);
 
-// Returns the last commanded on/off state (not read back from hardware yet)
+// Returns the last commanded on/off state (shadow copy of the OUT register bit)
 bool                 cmc_util_switch_spoc_is_on(uint8_t ch);
 
-// Placeholder sample; no SPI diagnostic read yet, status left unchanged
+// Reads WRNDIAG/ERRDIAG for both chips, then round-robins DCR.MUX across all 8 channels to sample IS current
 void                 cmc_util_switch_spoc_sample_all(cmc_switch_status_t *status);
 
-// Not yet implemented; always returns CMC_SWITCH_NOT_SUPPORTED
+// Returns cached load current in mA from the last sample_all() call; 0 when switch is off
 int32_t              cmc_util_switch_spoc_read_current_ma(uint8_t ch);
 
 #endif /* CMC_UTIL_SWITCH_SPOC_DRIVER_H_ */

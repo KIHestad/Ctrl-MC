@@ -8,6 +8,7 @@
   */
 
 #include "util/cmc_util_switch_profet_driver.h"
+#include "util/cmc_util_mcu_driver.h"
 #include "config/cmc_config_hw_mapping.h"
 #include "config/cmc_config_type.h"
 #include "stm32g4xx_hal.h"
@@ -132,11 +133,9 @@ bool cmc_util_switch_profet_is_on(uint8_t ch) {
 }
 
 void cmc_util_switch_profet_sample_all(cmc_switch_status_t *status) {
-    uint32_t rank_vals[5] = {0U}; // index 1..4 maps to ADC1 scan ranks
-    uint8_t  max_rank_profet = profet_max_rank();
-    if (max_rank_profet == 0U) { return; }
-    // Extend scan to rank 4 (VREFINT) so VDDA can be updated in the same pass
-    uint8_t  max_rank = (max_rank_profet < 4U) ? 4U : max_rank_profet;
+    uint32_t rank_vals[5] = {0U}; // index 1..max_rank maps to ADC1 scan ranks
+    uint8_t  max_rank = profet_max_rank();
+    if (max_rank == 0U) { return; }
 
     bool sampled[CMC_CONFIG_HW_OUT_COUNT] = {false};
 
@@ -175,11 +174,9 @@ void cmc_util_switch_profet_sample_all(cmc_switch_status_t *status) {
         status[ch] = CMC_SWITCH_POWER_GOOD;
     }
 
-    // Refresh cached VDDA from the VREFINT rank captured above (last scan pass is sufficient)
-    uint32_t vref_raw = rank_vals[4];
-    if (vref_raw > 0U) {
-        s_vdda_mv = ((uint32_t)VREFINT_CAL_VREF * (uint32_t)*VREFINT_CAL_ADDR) / vref_raw;
-    }
+    // VDDA comes from the shared MCU driver rather than a hardcoded rank here — the ADC1 scan
+    // layout (which rank is VREFINT) is board-specific and not a PROFET driver concern.
+    s_vdda_mv = cmc_util_mcu_read_vdda_mv();
 }
 
 int32_t cmc_util_switch_profet_read_current_ma(uint8_t ch) {
