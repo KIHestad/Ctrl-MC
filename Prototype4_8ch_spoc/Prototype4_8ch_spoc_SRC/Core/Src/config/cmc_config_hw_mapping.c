@@ -54,16 +54,26 @@ const cmc_config_switch_t cmc_config_hw_out_channel_mapping[CMC_CONFIG_HW_OUT_CO
     // 2x BTS72220-4ESA (SPOC) daisy-chained on SPI1, 4 channels each = 8 total.
     // Channels 0 and 3 of each chip are the 7 A outputs (KILIS=5500 typ.)
     // Channels 1 and 2 of each chip are the 4 A outputs (KILIS=2500 typ.)
-    // Ref datasheet Table 1. RSENSE = 1.2 kOhm shared
+    // Ref datasheet Table 1. RSENSE = 1.2 kOhm shared, confirmed as Rsense1 on the schematic
+    // (_documents/documents/infineon-spoc-bts72220-4esa-2x-pcb-devmodule-schematics.png), a
+    // single resistor on the common IS_COMMON bus feeding both chips' IS pins.
+    // ilis_ratio is the datasheet Typ. KILIS only (Table 27/29) — NOT bench-calibrated per unit
+    // like the PROFET comp tables above. Per-unit KILIS tolerance is wide at low currents
+    // (+-65% @ 20mA) and narrows near full load (+-8% @ 5.5-10A per Table 27), so readings in the
+    // open-load range below are the least accurate; real bench calibration would need an actual
+    // BTS72220 + precision ammeter, not available yet.
     // IS pin (SW_IS) for both chips, current-sense-multiplexed via SPI (DCR.MUX).
-    [0] = { .switch_type = CMC_CONFIG_SWITCH_TYPE_SPOC, .spoc_channel = 0, .ilis_ratio = 5500, .ris_ohms = 1200 },
-    [1] = { .switch_type = CMC_CONFIG_SWITCH_TYPE_SPOC, .spoc_channel = 1, .ilis_ratio = 2500, .ris_ohms = 1200 },
-    [2] = { .switch_type = CMC_CONFIG_SWITCH_TYPE_SPOC, .spoc_channel = 2, .ilis_ratio = 2500, .ris_ohms = 1200 },
-    [3] = { .switch_type = CMC_CONFIG_SWITCH_TYPE_SPOC, .spoc_channel = 3, .ilis_ratio = 5500, .ris_ohms = 1200 },
-    [4] = { .switch_type = CMC_CONFIG_SWITCH_TYPE_SPOC, .spoc_channel = 4, .ilis_ratio = 5500, .ris_ohms = 1200 },
-    [5] = { .switch_type = CMC_CONFIG_SWITCH_TYPE_SPOC, .spoc_channel = 5, .ilis_ratio = 2500, .ris_ohms = 1200 },
-    [6] = { .switch_type = CMC_CONFIG_SWITCH_TYPE_SPOC, .spoc_channel = 6, .ilis_ratio = 2500, .ris_ohms = 1200 },
-    [7] = { .switch_type = CMC_CONFIG_SWITCH_TYPE_SPOC, .spoc_channel = 7, .ilis_ratio = 5500, .ris_ohms = 1200 },
+    // open_load_ma uses the datasheet's own Open Load Output Current IL(OL)_4u typical value:
+    // Table 27 (5.5mΩ/7A, KILIS=5500) = 20mA typ (5-50mA range); Table 29 (13.5mΩ/4A, KILIS=2500)
+    // = 9mA typ (3-25mA range). Not yet bench-verified on real SPOC hardware.
+    [0] = { .switch_type = CMC_CONFIG_SWITCH_TYPE_SPOC, .spoc_channel = 0, .ilis_ratio = 5500, .ris_ohms = 1200, .open_load_ma = 20 },
+    [1] = { .switch_type = CMC_CONFIG_SWITCH_TYPE_SPOC, .spoc_channel = 1, .ilis_ratio = 2500, .ris_ohms = 1200, .open_load_ma = 9 },
+    [2] = { .switch_type = CMC_CONFIG_SWITCH_TYPE_SPOC, .spoc_channel = 2, .ilis_ratio = 2500, .ris_ohms = 1200, .open_load_ma = 9 },
+    [3] = { .switch_type = CMC_CONFIG_SWITCH_TYPE_SPOC, .spoc_channel = 3, .ilis_ratio = 5500, .ris_ohms = 1200, .open_load_ma = 20 },
+    [4] = { .switch_type = CMC_CONFIG_SWITCH_TYPE_SPOC, .spoc_channel = 4, .ilis_ratio = 5500, .ris_ohms = 1200, .open_load_ma = 20 },
+    [5] = { .switch_type = CMC_CONFIG_SWITCH_TYPE_SPOC, .spoc_channel = 5, .ilis_ratio = 2500, .ris_ohms = 1200, .open_load_ma = 9 },
+    [6] = { .switch_type = CMC_CONFIG_SWITCH_TYPE_SPOC, .spoc_channel = 6, .ilis_ratio = 2500, .ris_ohms = 1200, .open_load_ma = 9 },
+    [7] = { .switch_type = CMC_CONFIG_SWITCH_TYPE_SPOC, .spoc_channel = 7, .ilis_ratio = 5500, .ris_ohms = 1200, .open_load_ma = 20 },
 
     // Sample configuration for 3 output channels for Profet switches, using 2 dual-channel PROFET switches and 1 single-channel PROFET switch. 
     // Uncomment and modify as needed for your specific hardware setup.
@@ -78,6 +88,7 @@ const cmc_config_switch_t cmc_config_hw_out_channel_mapping[CMC_CONFIG_HW_OUT_CO
     //     .dsel_value   = GPIO_PIN_RESET, // LOW selects channel 0 (IN0)
     //     .ilis_ratio   = 3700, // BTS7020-2EPA K_ILIS confirmed from datasheet
     //     .ris_ohms     = 1200, // Rsense2 = 1.2k from schematic
+    //     .open_load_ma = 5, // bench-tuned alongside PROFET compensation tables, see cmc_util_switch_profet_driver.c
     // },
     // [1] = { // Output channel 2 - Switch 2 dual channel 1
     //     .switch_type  = CMC_CONFIG_SWITCH_TYPE_PROFET,
@@ -90,6 +101,7 @@ const cmc_config_switch_t cmc_config_hw_out_channel_mapping[CMC_CONFIG_HW_OUT_CO
     //     .dsel_value   = GPIO_PIN_SET,   // HIGH selects channel 1 (IN1)
     //     .ilis_ratio   = 3700, // BTS7020-2EPA K_ILIS confirmed from datasheet
     //     .ris_ohms     = 1200, // Rsense2 = 1.2k from schematic
+    //     .open_load_ma = 5, // bench-tuned alongside PROFET compensation tables, see cmc_util_switch_profet_driver.c
     // },
     // [2] = { // Output channel 3 - Switch 1 single channel
     //     .switch_type  = CMC_CONFIG_SWITCH_TYPE_PROFET,
@@ -100,5 +112,6 @@ const cmc_config_switch_t cmc_config_hw_out_channel_mapping[CMC_CONFIG_HW_OUT_CO
     //     .dual_channel = false,
     //     .ilis_ratio   = 20000, // BTS7004-1EPP K_ILIS confirmed from datasheet
     //     .ris_ohms     = 1200,  // Rsense2 = 1.2k from schematic 
+    //     .open_load_ma = 5, // bench-tuned alongside PROFET compensation tables, see cmc_util_switch_profet_driver.c
     // },
 };

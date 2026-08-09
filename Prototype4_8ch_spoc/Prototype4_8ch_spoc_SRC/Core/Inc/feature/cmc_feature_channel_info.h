@@ -25,7 +25,6 @@ typedef struct {
     uint8_t  overview_enabled_10_12;  // 1 = broadcast CHANNEL_OVERVIEW_10_12 every 1 s (classic CAN, ch10-12)
     uint8_t  temp_unit;        // CMC_TEMP_UNIT_CELSIUS or CMC_TEMP_UNIT_FAHRENHEIT
     uint8_t  compensation_enabled; // 1 = apply PROFET current-sense compensation tables; 0 = report raw sensor values (for inspecting new switches)
-    uint16_t open_load_ma;     // current below this when switch is ON triggers open-load warning
 } cmc_feature_channel_info_t;
 
 // Call from cmc_features_init

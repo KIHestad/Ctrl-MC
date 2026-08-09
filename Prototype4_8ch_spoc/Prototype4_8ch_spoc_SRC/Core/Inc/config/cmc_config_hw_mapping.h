@@ -50,6 +50,7 @@ typedef struct {
     // Current-sense scaling, shared math for both PROFET (K_ILIS) and SPOC (KILIS):
     uint16_t              ilis_ratio;   // Current mirror ratio (confirm from datasheet)
     uint16_t              ris_ohms;     // IS sense resistor in ohms (confirm from schematic)
+    uint16_t              open_load_ma; // current below this while ON triggers open-load warning (see driver files for how this was derived)
 
     // SPOC field (used when switch_type == CMC_CONFIG_SWITCH_TYPE_SPOC):
     uint8_t               spoc_channel; // 0-7 global index into the 2-chip daisy chain (chip = spoc_channel/4, bit = spoc_channel%4)

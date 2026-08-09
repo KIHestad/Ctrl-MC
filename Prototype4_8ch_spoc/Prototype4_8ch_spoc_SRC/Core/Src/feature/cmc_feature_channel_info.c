@@ -208,10 +208,11 @@ void cmc_feature_channel_info_process(void) {
 
             uint8_t new_status;
             cmc_switch_status_t drv = cmc_util_switch_get_status(ch);
+            uint16_t open_load_ma = cmc_config_hw_out_channel_mapping[ch].open_load_ma;
             if (drv != CMC_SWITCH_POWER_GOOD) {
                 new_status = (uint8_t)drv;
             } else if (cmc_util_switch_is_on(ch) &&
-                       (uint32_t)ma < cmc_config.feature_channel_info.open_load_ma) {
+                       (uint32_t)ma < open_load_ma) {
                 new_status = (uint8_t)CMC_SWITCH_FAULT_OPEN_LOAD;
             } else {
                 new_status = (uint8_t)CMC_SWITCH_POWER_GOOD;

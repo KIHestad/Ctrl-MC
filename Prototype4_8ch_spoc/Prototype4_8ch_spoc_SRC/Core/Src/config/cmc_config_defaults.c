@@ -162,7 +162,6 @@ const cmc_config_t cmc_config_default_for_demo = {
     .feature_channel_info = {
         // Per-channel power, supply voltage, and fault reporting over CAN, needed for display units to show channel status and power consumption
         .enabled                = 1,
-        .open_load_ma           = 5, // threshold in mA; LEDs draw ~15mA so set low to avoid OPEN_LOAD false alarm
         .temp_unit              = CMC_TEMP_UNIT_CELSIUS,
         .compensation_enabled   = 1, // set 0 to report raw current-sense values, eg. when calibrating a new switch
         
