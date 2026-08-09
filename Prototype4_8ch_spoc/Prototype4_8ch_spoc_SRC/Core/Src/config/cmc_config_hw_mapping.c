@@ -32,38 +32,41 @@ const cmc_config_gpio_pin_t cmc_config_hw_analog_in_mapping[CMC_CONFIG_HW_IN_ANA
 
 
 const cmc_config_switch_t cmc_config_hw_out_channel_mapping[CMC_CONFIG_HW_OUT_COUNT] = {
-    [0] = { // Output channel 1 - Switch 2 dual channel 0
-        .switch_type  = CMC_CONFIG_SWITCH_TYPE_PROFET,
-        .in_pin       = {.port = SW2_IN0_GPIO_Port, .pin = SW2_IN0_Pin},
-        .den_pin      = {.port = SW2_DEN_GPIO_Port, .pin = SW2_DEN_Pin},
-        .is_pin       = {.port = SW2_IS_GPIO_Port,  .pin = SW2_IS_Pin},
-        .is_adc_rank  = 2,
-        .dsel_pin     = {.port = SW2_DSEL_GPIO_Port, .pin = SW2_DSEL_Pin},
-        .dual_channel = true,
-        .dsel_value   = GPIO_PIN_RESET, // LOW selects channel 0 (IN0)
-        .ilis_ratio   = 3700, // BTS7020-2EPA K_ILIS confirmed from datasheet
-        .ris_ohms     = 1200, // Rsense2 = 1.2k from schematic
-    },
-    [1] = { // Output channel 2 - Switch 2 dual channel 1
-        .switch_type  = CMC_CONFIG_SWITCH_TYPE_PROFET,
-        .in_pin       = {.port = SW2_IN1_GPIO_Port, .pin = SW2_IN1_Pin},
-        .den_pin      = {.port = SW2_DEN_GPIO_Port, .pin = SW2_DEN_Pin},
-        .is_pin       = {.port = SW2_IS_GPIO_Port,  .pin = SW2_IS_Pin},
-        .is_adc_rank  = 2,
-        .dsel_pin     = {.port = SW2_DSEL_GPIO_Port, .pin = SW2_DSEL_Pin},
-        .dual_channel = true,
-        .dsel_value   = GPIO_PIN_SET,   // HIGH selects channel 1 (IN1)
-        .ilis_ratio   = 3700, // BTS7020-2EPA K_ILIS confirmed from datasheet
-        .ris_ohms     = 1200, // Rsense2 = 1.2k from schematic
-    },
-    [2] = { // Output channel 3 - Switch 1 single channel
-        .switch_type  = CMC_CONFIG_SWITCH_TYPE_PROFET,
-        .in_pin       = {.port = SW1_IN_GPIO_Port,  .pin = SW1_IN_Pin},
-        .den_pin      = {.port = SW1_DEN_GPIO_Port, .pin = SW1_DEN_Pin},
-        .is_pin       = {.port = SW1_IS_GPIO_Port,  .pin = SW1_IS_Pin},
-        .is_adc_rank  = 1,
-        .dual_channel = false,
-        .ilis_ratio   = 20000, // BTS7004-1EPP K_ILIS confirmed from datasheet
-        .ris_ohms     = 1200,  // Rsense2 = 1.2k from schematic 
-    },
+    
+    // Sample configuration for 3 output channels for Profet switches, using 2 dual-channel PROFET switches and 1 single-channel PROFET switch. 
+    // Uncomment and modify as needed for your specific hardware setup.
+    // [0] = { // Output channel 1 - Switch 2 dual channel 0
+    //     .switch_type  = CMC_CONFIG_SWITCH_TYPE_PROFET,
+    //     .in_pin       = {.port = SW2_IN0_GPIO_Port, .pin = SW2_IN0_Pin},
+    //     .den_pin      = {.port = SW2_DEN_GPIO_Port, .pin = SW2_DEN_Pin},
+    //     .is_pin       = {.port = SW2_IS_GPIO_Port,  .pin = SW2_IS_Pin},
+    //     .is_adc_rank  = 2,
+    //     .dsel_pin     = {.port = SW2_DSEL_GPIO_Port, .pin = SW2_DSEL_Pin},
+    //     .dual_channel = true,
+    //     .dsel_value   = GPIO_PIN_RESET, // LOW selects channel 0 (IN0)
+    //     .ilis_ratio   = 3700, // BTS7020-2EPA K_ILIS confirmed from datasheet
+    //     .ris_ohms     = 1200, // Rsense2 = 1.2k from schematic
+    // },
+    // [1] = { // Output channel 2 - Switch 2 dual channel 1
+    //     .switch_type  = CMC_CONFIG_SWITCH_TYPE_PROFET,
+    //     .in_pin       = {.port = SW2_IN1_GPIO_Port, .pin = SW2_IN1_Pin},
+    //     .den_pin      = {.port = SW2_DEN_GPIO_Port, .pin = SW2_DEN_Pin},
+    //     .is_pin       = {.port = SW2_IS_GPIO_Port,  .pin = SW2_IS_Pin},
+    //     .is_adc_rank  = 2,
+    //     .dsel_pin     = {.port = SW2_DSEL_GPIO_Port, .pin = SW2_DSEL_Pin},
+    //     .dual_channel = true,
+    //     .dsel_value   = GPIO_PIN_SET,   // HIGH selects channel 1 (IN1)
+    //     .ilis_ratio   = 3700, // BTS7020-2EPA K_ILIS confirmed from datasheet
+    //     .ris_ohms     = 1200, // Rsense2 = 1.2k from schematic
+    // },
+    // [2] = { // Output channel 3 - Switch 1 single channel
+    //     .switch_type  = CMC_CONFIG_SWITCH_TYPE_PROFET,
+    //     .in_pin       = {.port = SW1_IN_GPIO_Port,  .pin = SW1_IN_Pin},
+    //     .den_pin      = {.port = SW1_DEN_GPIO_Port, .pin = SW1_DEN_Pin},
+    //     .is_pin       = {.port = SW1_IS_GPIO_Port,  .pin = SW1_IS_Pin},
+    //     .is_adc_rank  = 1,
+    //     .dual_channel = false,
+    //     .ilis_ratio   = 20000, // BTS7004-1EPP K_ILIS confirmed from datasheet
+    //     .ris_ohms     = 1200,  // Rsense2 = 1.2k from schematic 
+    // },
 };
