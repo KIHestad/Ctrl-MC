@@ -37,6 +37,15 @@ static uint8_t  s_out_mask[CMC_SPOC_CHIP_COUNT];              // shadow of comma
 static uint32_t s_is_raw[CMC_CONFIG_HW_OUT_COUNT];            // cached raw IS ADC counts per global channel
 static uint32_t s_vdda_mv = 3300U;                            // refreshed once per sample_all() call
 
+// Returns true if any output channel is configured as SPOC; mirrors the PROFET driver's
+// profet_max_rank()==0 guard so sample_all() is a no-op on a hypothetical SPOC-less board.
+static bool spoc_any_channel_configured(void) {
+    for (uint8_t ch = 0U; ch < CMC_CONFIG_HW_OUT_COUNT; ch++) {
+        if (cmc_config_hw_out_channel_mapping[ch].switch_type == CMC_CONFIG_SWITCH_TYPE_SPOC) { return true; }
+    }
+    return false;
+}
+
 /* ---- SPI command byte builders (datasheet Table 32) ------------------------------------- */
 
 static uint8_t build_out_write(uint8_t mask4) {
@@ -47,6 +56,12 @@ static uint8_t build_dcr_write(uint8_t mux3) {
 }
 static uint8_t build_read_wrndiag(void) { return 0x01U; } // 0xxxx001
 static uint8_t build_read_errdiag(void) { return 0x03U; } // 0xxxx011
+static uint8_t build_read_out(void) { return 0x00U; } // 0xxxaaaa, aaaa=0000 (OUT register address)
+
+// HWCR write: SWR=0, RB=1, ADDR0=10, bit3=0(reserved), COL=0 (keep OR-combination with the
+// hardwired-low IN pins), RST=0 (must stay 0 — that bit issues a full device reset), CLC=1
+// (clears restart counters AND un-latches every channel on that chip — datasheet Table 39)
+static uint8_t build_hwcr_clear_latches(void) { return 0x71U; } // 0111 0001
 
 /* ---- Low-level daisy-chain transfer ------------------------------------------------------ */
 
@@ -98,6 +113,12 @@ void cmc_util_switch_spoc_init(void) {
     s_out_mask[0] = 0U;
     s_out_mask[1] = 0U;
     uint8_t discard0, discard1;
+    // Clear any restart-counter latch left over from a previous session (e.g. a channel that
+    // tripped and latched OFF) before commanding outputs, mirroring the PROFET driver's
+    // boot-time fault clear. Sent twice: pipeline delay means the first ack only arrives on
+    // the second transaction.
+    spoc_xfer(build_hwcr_clear_latches(), build_hwcr_clear_latches(), &discard0, &discard1);
+    spoc_xfer(build_hwcr_clear_latches(), build_hwcr_clear_latches(), &discard0, &discard1);
     // Send twice: pipeline delay means the first transaction's ack only arrives on the second
     spoc_xfer(build_out_write(0U), build_out_write(0U), &discard0, &discard1);
     spoc_xfer(build_out_write(0U), build_out_write(0U), &discard0, &discard1);
@@ -118,6 +139,10 @@ void cmc_util_switch_spoc_set(uint8_t ch, bool on) {
     spoc_xfer(build_read_wrndiag(), build_read_wrndiag(), &discard0, &discard1);
 }
 
+// Returns the last commanded on/off state, reconciled against real hardware once per
+// sample_all() cycle (see there) rather than a live SPI read on every call — unlike PROFET's
+// free/instant GPIO readback, an SPI register read costs a transaction plus a one-cycle
+// pipeline delay, so it isn't done synchronously on every is_on() call.
 bool cmc_util_switch_spoc_is_on(uint8_t ch) {
     if (ch >= CMC_CONFIG_HW_OUT_COUNT) { return false; }
     const cmc_config_switch_t *sw = &cmc_config_hw_out_channel_mapping[ch];
@@ -127,6 +152,8 @@ bool cmc_util_switch_spoc_is_on(uint8_t ch) {
 }
 
 void cmc_util_switch_spoc_sample_all(cmc_switch_status_t *status) {
+    if (!spoc_any_channel_configured()) { return; }
+
     uint8_t wrndiag[CMC_SPOC_CHIP_COUNT];
     uint8_t errdiag[CMC_SPOC_CHIP_COUNT];
     uint8_t discard0, discard1;
@@ -143,9 +170,12 @@ void cmc_util_switch_spoc_sample_all(cmc_switch_status_t *status) {
         uint8_t chip = sw->spoc_channel / CMC_SPOC_CH_PER_CHIP;
         uint8_t bit  = sw->spoc_channel % CMC_SPOC_CH_PER_CHIP;
         bool err_latched = (errdiag[chip] & (uint8_t)(1U << bit)) != 0U;
-        // WRNDIAG-only (no ERRDIAG) is a transient warning (e.g. inrush); only a latched
-        // ERRDIAG bit is reported as a hard fault, mirroring the PROFET driver's approach.
-        status[ch] = err_latched ? CMC_SWITCH_FAULT_OVERCURRENT : CMC_SWITCH_POWER_GOOD;
+        bool warn_set    = (wrndiag[chip] & (uint8_t)(1U << bit)) != 0U;
+        // Only a latched ERRDIAG bit is a hard fault; a WRNDIAG-only bit (e.g. inrush) is
+        // reported as a non-latched warning rather than discarded.
+        status[ch] = err_latched ? CMC_SWITCH_FAULT_OVERCURRENT
+                   : warn_set    ? CMC_SWITCH_WARNING_OVERLOAD
+                   :               CMC_SWITCH_POWER_GOOD;
     }
 
     // Round-robin all 8 channels' current-sense mux; each chip gets its target channel or
@@ -163,7 +193,16 @@ void cmc_util_switch_spoc_sample_all(cmc_switch_status_t *status) {
     // Park the mux disabled (both chips) until the next sample_all() call
     spoc_xfer(build_dcr_write(CMC_SPOC_MUX_DISABLED), build_dcr_write(CMC_SPOC_MUX_DISABLED), &discard0, &discard1);
 
-    (void)wrndiag; // reserved for future warning-level (non-latched) reporting
+    // Reconcile our commanded shadow against the actual OUT register: a chip-side reset (e.g. a
+    // brief VDD undervoltage event, STDDIAG.VSMON) reverts OUT to defaults without telling the
+    // MCU directly, so without this is_on() would keep reporting a channel as "on" after such
+    // an event until the next explicit set() call.
+    uint8_t out_resp0, out_resp1;
+    spoc_xfer(build_read_out(), build_read_out(), &discard0, &discard1);   // discard park's ack
+    spoc_xfer(build_read_out(), build_read_out(), &out_resp0, &out_resp1); // = actual OUT register content
+    s_out_mask[0] = out_resp0 & 0x0FU;
+    s_out_mask[1] = out_resp1 & 0x0FU;
+
     s_vdda_mv = cmc_util_mcu_read_vdda_mv();
 }
 

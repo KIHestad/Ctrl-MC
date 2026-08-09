@@ -22,7 +22,8 @@ typedef enum {
     CMC_SWITCH_FAULT_OPEN_LOAD   = 1, // Open circuit
     CMC_SWITCH_FAULT_OVERCURRENT = 2, // Overload or hard short to GND (channel tripped/latched)
     CMC_SWITCH_FAULT_OVERTEMP    = 3, // Thermal protection triggered
-    CMC_SWITCH_FAULT_SHORT_VS    = 4  // Output shorted to +12V battery rail
+    CMC_SWITCH_WARNING_OVERLOAD  = 4, // Transient overcurrent/overtemp/delta-T, not yet latched
+    CMC_SWITCH_WARNING_MISC      = 5  // Reserved: any other non-latched warning condition
 } cmc_switch_status_t;
 
 // Initialises all switch channels; clears PROFET fault latches via DEN pulse
