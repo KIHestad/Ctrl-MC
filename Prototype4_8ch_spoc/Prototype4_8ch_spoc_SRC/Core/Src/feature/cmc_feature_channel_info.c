@@ -55,11 +55,10 @@ static uint16_t s_peak_pcw_this_window[CMC_CONFIG_HW_OUT_COUNT];
 
 /* ---- CAN broadcast helpers -------------------------------------------------------------- */
 
-// Window-scoped view used only by the 1s periodic broadcasts: is_on is upgraded to BLINKING when
-// any is_on transition was observed since the last periodic broadcast, and watts is the PEAK
-// power_cw seen during that window (i.e. the on-phase wattage of a blinking channel). Immediate
-// on-fault-change and 5s fault re-broadcast paths continue to use instantaneous state; keeping
-// the two views separate avoids spammy immediate broadcasts on every blink transition.
+// Window-scoped view used by every CHANNEL_STATUS/CHANNEL_OVERVIEW broadcast path: is_on is
+// upgraded to BLINKING when >=2 is_on transitions were observed since the last periodic window
+// reset, and watts is the PEAK power_cw seen during that window (i.e. the on-phase wattage of a
+// blinking channel).
 static void get_reported_view(uint8_t ch, uint8_t *is_on, uint8_t *status, uint16_t *watts) {
     if (s_transitions_this_window[ch] >= 2U) {
         *is_on = (uint8_t)CMC_CHANNEL_REPORT_BLINKING;
@@ -85,11 +84,11 @@ static void broadcast_channel_status_ex(uint8_t ch, uint8_t is_on, uint8_t statu
 }
 
 static void broadcast_channel_status(uint8_t ch) {
-    broadcast_channel_status_ex(
-        ch,
-        cmc_util_switch_is_on(ch) ? (uint8_t)CMC_CHANNEL_REPORT_ON : (uint8_t)CMC_CHANNEL_REPORT_OFF,
-        cmc_app_state_channel_info.ch[ch].fault_code,
-        cmc_app_state_channel_info.ch[ch].power_cw);
+    uint8_t  is_on;
+    uint8_t  status;
+    uint16_t watts;
+    get_reported_view(ch, &is_on, &status, &watts);
+    broadcast_channel_status_ex(ch, is_on, status, watts);
 }
 
 static void broadcast_unit_info(void) {
@@ -284,11 +283,7 @@ void cmc_feature_channel_info_process(void) {
     if (now - s_last_periodic_ms >= PERIODIC_INTERVAL_MS) {
         s_last_periodic_ms = now;
         for (uint8_t ch = 0U; ch < CMC_CONFIG_HW_OUT_COUNT; ch++) {
-            uint8_t  is_on;
-            uint8_t  status;
-            uint16_t watts;
-            get_reported_view(ch, &is_on, &status, &watts);
-            broadcast_channel_status_ex(ch, is_on, status, watts);
+            broadcast_channel_status(ch);
         }
         broadcast_unit_info();
         if (s_overview_enabled) {
