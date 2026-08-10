@@ -41,19 +41,55 @@ static uint32_t s_last_sample_ms   = 0U;
 static uint32_t s_last_periodic_ms = 0U;
 static uint32_t s_last_recast_ms   = 0U;
 static uint8_t  s_prev_status[CMC_CONFIG_HW_OUT_COUNT];
+// Per-channel window-scoped reporting state: transition tracking and peak wattage seen since the
+// last 1s periodic broadcast. Purpose: a channel toggling faster than the 1s broadcast interval
+// (turn signals at ~1 Hz default) would otherwise alias with the broadcast timer and be reported
+// as stably OFF/0W depending on which blink phase the broadcast happened to land in. Instead the
+// 1s broadcasts report status=CMC_SWITCH_BLINKING when any transition was observed in the window
+// (unless a real fault takes priority) and report the PEAK power_cw seen (i.e. the on-phase
+// wattage). Applies uniformly to every channel — turn signals, flash-to-pass, or any other
+// feature that toggles a channel.
+static bool     s_prev_is_on[CMC_CONFIG_HW_OUT_COUNT];
+static uint8_t  s_transitions_this_window[CMC_CONFIG_HW_OUT_COUNT]; // saturating; only >=2 counts as BLINKING so a single mid-window on/off edge reports as a plain state change
+static uint16_t s_peak_pcw_this_window[CMC_CONFIG_HW_OUT_COUNT];
 
 /* ---- CAN broadcast helpers -------------------------------------------------------------- */
 
-static void broadcast_channel_status(uint8_t ch) {
+// Window-scoped view used only by the 1s periodic broadcasts: is_on is upgraded to BLINKING when
+// any is_on transition was observed since the last periodic broadcast, and watts is the PEAK
+// power_cw seen during that window (i.e. the on-phase wattage of a blinking channel). Immediate
+// on-fault-change and 5s fault re-broadcast paths continue to use instantaneous state; keeping
+// the two views separate avoids spammy immediate broadcasts on every blink transition.
+static void get_reported_view(uint8_t ch, uint8_t *is_on, uint8_t *status, uint16_t *watts) {
+    if (s_transitions_this_window[ch] >= 2U) {
+        *is_on = (uint8_t)CMC_CHANNEL_REPORT_BLINKING;
+        *watts = s_peak_pcw_this_window[ch];
+    } else {
+        *is_on = cmc_util_switch_is_on(ch) ? (uint8_t)CMC_CHANNEL_REPORT_ON
+                                           : (uint8_t)CMC_CHANNEL_REPORT_OFF;
+        *watts = cmc_app_state_channel_info.ch[ch].power_cw;
+    }
+    *status = cmc_app_state_channel_info.ch[ch].fault_code;
+}
+
+static void broadcast_channel_status_ex(uint8_t ch, uint8_t is_on, uint8_t status, uint16_t watts) {
     struct cmc_can_message_channel_status_t msg;
     msg.channel_number = ch + 1U;
-    msg.is_on      = cmc_util_switch_is_on(ch) ? 1U : 0U;
-    msg.status     = cmc_app_state_channel_info.ch[ch].fault_code;
-    msg.watts      = cmc_app_state_channel_info.ch[ch].power_cw;
+    msg.is_on      = is_on;
+    msg.status     = status;
+    msg.watts      = watts;
     uint8_t payload[CMC_CAN_MESSAGE_CHANNEL_STATUS_LENGTH];
     if (cmc_can_message_channel_status_pack(payload, &msg, sizeof(payload)) < 0) { return; }
     cmc_can_manager_send(CMC_CAN_MESSAGE_CHANNEL_STATUS_FRAME_ID, payload,
                          CMC_CAN_MESSAGE_CHANNEL_STATUS_LENGTH);
+}
+
+static void broadcast_channel_status(uint8_t ch) {
+    broadcast_channel_status_ex(
+        ch,
+        cmc_util_switch_is_on(ch) ? (uint8_t)CMC_CHANNEL_REPORT_ON : (uint8_t)CMC_CHANNEL_REPORT_OFF,
+        cmc_app_state_channel_info.ch[ch].fault_code,
+        cmc_app_state_channel_info.ch[ch].power_cw);
 }
 
 static void broadcast_unit_info(void) {
@@ -66,7 +102,13 @@ static void broadcast_unit_info(void) {
     msg.mcu_temp_out_of_range  = out_of_range ? 1U : 0U;
     uint32_t total_cw = 0U;
     for (uint8_t ch = 0U; ch < CMC_CONFIG_HW_OUT_COUNT; ch++) {
-        total_cw += cmc_app_state_channel_info.ch[ch].power_cw;
+        uint8_t  dummy_is_on;
+        uint8_t  dummy_status;
+        uint16_t watts;
+        // Use the same window-scoped view as the per-channel broadcasts so a blinking channel's
+        // on-phase draw is included in the total, instead of aliasing to 0W during its OFF phase.
+        get_reported_view(ch, &dummy_is_on, &dummy_status, &watts);
+        total_cw += watts;
     }
     // power_cw is in 0.01 W units; total_watts signal uses 0.1 W units
     msg.total_watts = (uint16_t)(total_cw / 10U);
@@ -83,9 +125,10 @@ static void broadcast_channel_overview(void) {
     struct cmc_can_message_channel_overview_t msg;
     if (cmc_can_message_channel_overview_init(&msg) < 0) { return; }
     for (uint8_t ch = 0U; ch < CMC_CONFIG_HW_OUT_COUNT; ch++) {
-        uint8_t  is_on  = cmc_util_switch_is_on(ch) ? 1U : 0U;
-        uint8_t  status = cmc_app_state_channel_info.ch[ch].fault_code;
-        uint16_t watts  = cmc_app_state_channel_info.ch[ch].power_cw;
+        uint8_t  is_on;
+        uint8_t  status;
+        uint16_t watts;
+        get_reported_view(ch, &is_on, &status, &watts);
         switch (ch) {
             case  0: msg.ch01_is_on  = is_on; msg.ch01_status  = status; msg.ch01_watts  = watts; break;
             case  1: msg.ch02_is_on  = is_on; msg.ch02_status  = status; msg.ch02_watts  = watts; break;
@@ -113,9 +156,7 @@ static void broadcast_channel_overview(void) {
 static void read_channel(uint8_t channel_number, uint8_t *is_on, uint8_t *status, uint16_t *watts) {
     uint8_t ch = channel_number - 1U;
     if (ch < CMC_CONFIG_HW_OUT_COUNT) {
-        *is_on  = cmc_util_switch_is_on(ch) ? 1U : 0U;
-        *status = cmc_app_state_channel_info.ch[ch].fault_code;
-        *watts  = cmc_app_state_channel_info.ch[ch].power_cw;
+        get_reported_view(ch, is_on, status, watts);
     } else {
         *is_on  = 0U;
         *status = (uint8_t)CMC_SWITCH_POWER_GOOD;
@@ -185,6 +226,9 @@ void cmc_feature_channel_info_init(void) {
         cmc_app_state_channel_info.ch[ch].power_cw   = 0U;
         cmc_app_state_channel_info.ch[ch].fault_code = CMC_SWITCH_POWER_GOOD;
         s_prev_status[ch] = CMC_SWITCH_POWER_GOOD;
+        s_prev_is_on[ch] = false;
+        s_transitions_this_window[ch] = 0U;
+        s_peak_pcw_this_window[ch] = 0U;
     }
 }
 
@@ -205,6 +249,15 @@ void cmc_feature_channel_info_process(void) {
             uint32_t pcw = (uint32_t)(((uint64_t)cmc_app_state_channel_info.supply_voltage_mv
                                        * (uint32_t)ma) / 10000UL);
             cmc_app_state_channel_info.ch[ch].power_cw = (pcw > 20000U) ? 20000U : (uint16_t)pcw;
+
+            bool is_on_now = cmc_util_switch_is_on(ch);
+            if (is_on_now != s_prev_is_on[ch] && s_transitions_this_window[ch] < 0xFFU) {
+                s_transitions_this_window[ch]++;
+            }
+            s_prev_is_on[ch] = is_on_now;
+            if (cmc_app_state_channel_info.ch[ch].power_cw > s_peak_pcw_this_window[ch]) {
+                s_peak_pcw_this_window[ch] = cmc_app_state_channel_info.ch[ch].power_cw;
+            }
 
             uint8_t new_status;
             cmc_switch_status_t drv = cmc_util_switch_get_status(ch);
@@ -231,7 +284,11 @@ void cmc_feature_channel_info_process(void) {
     if (now - s_last_periodic_ms >= PERIODIC_INTERVAL_MS) {
         s_last_periodic_ms = now;
         for (uint8_t ch = 0U; ch < CMC_CONFIG_HW_OUT_COUNT; ch++) {
-            broadcast_channel_status(ch);
+            uint8_t  is_on;
+            uint8_t  status;
+            uint16_t watts;
+            get_reported_view(ch, &is_on, &status, &watts);
+            broadcast_channel_status_ex(ch, is_on, status, watts);
         }
         broadcast_unit_info();
         if (s_overview_enabled) {
@@ -241,6 +298,13 @@ void cmc_feature_channel_info_process(void) {
         if (s_overview_enabled_04_06) { broadcast_channel_overview_04_06(); }
         if (s_overview_enabled_07_09) { broadcast_channel_overview_07_09(); }
         if (s_overview_enabled_10_12) { broadcast_channel_overview_10_12(); }
+        // Reset window trackers for the next 1s reporting cycle. s_prev_is_on is NOT reset —
+        // it carries the last seen sample across window boundaries so a transition straddling
+        // the boundary is still detected in the next window.
+        for (uint8_t ch = 0U; ch < CMC_CONFIG_HW_OUT_COUNT; ch++) {
+            s_transitions_this_window[ch] = 0U;
+            s_peak_pcw_this_window[ch] = 0U;
+        }
     }
 
     // 5 s: re-broadcast channels with active faults so late-joining units stay informed

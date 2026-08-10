@@ -80,100 +80,100 @@ BO_ 207 FEATURE_OIL_PRESSURE_SENSOR: 1 CMC_UNIT
  SG_ oil_pressure_low_detected : 0|1@1+ (1,0) [0|1] "" Vector__XXX
 
 BO_ 208 CHANNEL_STATUS: 3 CMC_UNIT
- SG_ channel_number : 0|4@1+   (1,0)    [1|16]    ""  Vector__XXX
- SG_ is_on      : 4|1@1+   (1,0)    [0|1]     ""  Vector__XXX
- SG_ status     : 5|3@1+   (1,0)    [0|7]     ""  Vector__XXX
- SG_ watts      : 8|15@1+  (0.01,0) [0|200]   "W" Vector__XXX
+ SG_ channel_number : 0|4@1+ (1,0) [1|16] "" Vector__XXX
+ SG_ is_on : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ status : 6|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ watts : 9|15@1+ (0.01,0) [0|200] "W" Vector__XXX
 
 BO_ 209 CHANNEL_OVERVIEW: 32 CMC_UNIT
- SG_ ch01_is_on   : 0|1@1+    (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch01_status  : 1|3@1+    (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch01_watts   : 4|15@1+   (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch02_is_on   : 19|1@1+   (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch02_status  : 20|3@1+   (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch02_watts   : 23|15@1+  (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch03_is_on   : 38|1@1+   (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch03_status  : 39|3@1+   (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch03_watts   : 42|15@1+  (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch04_is_on   : 57|1@1+   (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch04_status  : 58|3@1+   (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch04_watts   : 61|15@1+  (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch05_is_on   : 76|1@1+   (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch05_status  : 77|3@1+   (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch05_watts   : 80|15@1+  (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch06_is_on   : 95|1@1+   (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch06_status  : 96|3@1+   (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch06_watts   : 99|15@1+  (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch07_is_on   : 114|1@1+  (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch07_status  : 115|3@1+  (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch07_watts   : 118|15@1+ (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch08_is_on   : 133|1@1+  (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch08_status  : 134|3@1+  (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch08_watts   : 137|15@1+ (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch09_is_on   : 152|1@1+  (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch09_status  : 153|3@1+  (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch09_watts   : 156|15@1+ (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch10_is_on  : 171|1@1+  (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch10_status : 172|3@1+  (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch10_watts  : 175|15@1+ (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch11_is_on  : 190|1@1+  (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch11_status : 191|3@1+  (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch11_watts  : 194|15@1+ (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch12_is_on  : 209|1@1+  (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch12_status : 210|3@1+  (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch12_watts  : 213|15@1+ (0.01,0) [0|200] "W" Vector__XXX
- SG_ supply_voltage : 228|10@1+ (0.1,0) [0|102.3] "V" Vector__XXX
+ SG_ ch01_is_on : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch01_status : 2|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch01_watts : 5|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch02_is_on : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch02_status : 22|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch02_watts : 25|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch03_is_on : 40|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch03_status : 42|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch03_watts : 45|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch04_is_on : 60|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch04_status : 62|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch04_watts : 65|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch05_is_on : 80|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch05_status : 82|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch05_watts : 85|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch06_is_on : 100|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch06_status : 102|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch06_watts : 105|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch07_is_on : 120|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch07_status : 122|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch07_watts : 125|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch08_is_on : 140|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch08_status : 142|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch08_watts : 145|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch09_is_on : 160|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch09_status : 162|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch09_watts : 165|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch10_is_on : 180|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch10_status : 182|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch10_watts : 185|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch11_is_on : 200|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch11_status : 202|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch11_watts : 205|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch12_is_on : 220|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch12_status : 222|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch12_watts : 225|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ supply_voltage : 240|10@1+ (0.1,0) [0|102.3] "V" Vector__XXX
 
 BO_ 210 UNIT_INFO: 6 CMC_UNIT
- SG_ supply_voltage          : 0|12@1+  (0.01,0)  [0|40.95]  "V"    Vector__XXX
- SG_ mcu_temp_c              : 12|11@1+ (0.1,-40) [-40|164.7] "degC" Vector__XXX
- SG_ total_watts             : 23|15@1+ (0.1,0)   [0|3276.7] "W"    Vector__XXX
- SG_ mcu_temp_out_of_range   : 38|1@1+  (1,0)     [0|1]      ""     Vector__XXX
- SG_ vfref                   : 39|9@1+  (0.01,0)  [0|5.11]   "V"    Vector__XXX
+ SG_ supply_voltage : 0|12@1+ (0.01,0) [0|40.95] "V" Vector__XXX
+ SG_ mcu_temp_c : 12|11@1+ (0.1,-40) [-40|164.7] "degC" Vector__XXX
+ SG_ total_watts : 23|15@1+ (0.1,0) [0|3276.7] "W" Vector__XXX
+ SG_ mcu_temp_out_of_range : 38|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ vfref : 39|9@1+ (0.01,0) [0|5.11] "V" Vector__XXX
 
 BO_ 211 CHANNEL_OVERVIEW_01_03: 8 CMC_UNIT
- SG_ ch01_is_on   : 0|1@1+   (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch01_status  : 1|3@1+   (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch01_watts   : 4|15@1+  (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch02_is_on   : 19|1@1+  (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch02_status  : 20|3@1+  (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch02_watts   : 23|15@1+ (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch03_is_on   : 38|1@1+  (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch03_status  : 39|3@1+  (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch03_watts   : 42|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch01_is_on : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch01_status : 2|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch01_watts : 5|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch02_is_on : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch02_status : 22|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch02_watts : 25|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch03_is_on : 40|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch03_status : 42|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch03_watts : 45|15@1+ (0.01,0) [0|200] "W" Vector__XXX
 
 BO_ 212 CHANNEL_OVERVIEW_04_06: 8 CMC_UNIT
- SG_ ch04_is_on   : 0|1@1+   (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch04_status  : 1|3@1+   (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch04_watts   : 4|15@1+  (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch05_is_on   : 19|1@1+  (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch05_status  : 20|3@1+  (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch05_watts   : 23|15@1+ (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch06_is_on   : 38|1@1+  (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch06_status  : 39|3@1+  (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch06_watts   : 42|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch04_is_on : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch04_status : 2|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch04_watts : 5|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch05_is_on : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch05_status : 22|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch05_watts : 25|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch06_is_on : 40|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch06_status : 42|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch06_watts : 45|15@1+ (0.01,0) [0|200] "W" Vector__XXX
 
 BO_ 213 CHANNEL_OVERVIEW_07_09: 8 CMC_UNIT
- SG_ ch07_is_on   : 0|1@1+   (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch07_status  : 1|3@1+   (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch07_watts   : 4|15@1+  (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch08_is_on   : 19|1@1+  (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch08_status  : 20|3@1+  (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch08_watts   : 23|15@1+ (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch09_is_on   : 38|1@1+  (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch09_status  : 39|3@1+  (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch09_watts   : 42|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch07_is_on : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch07_status : 2|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch07_watts : 5|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch08_is_on : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch08_status : 22|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch08_watts : 25|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch09_is_on : 40|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch09_status : 42|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch09_watts : 45|15@1+ (0.01,0) [0|200] "W" Vector__XXX
 
 BO_ 214 CHANNEL_OVERVIEW_10_12: 8 CMC_UNIT
- SG_ ch10_is_on   : 0|1@1+   (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch10_status  : 1|3@1+   (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch10_watts   : 4|15@1+  (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch11_is_on   : 19|1@1+  (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch11_status  : 20|3@1+  (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch11_watts   : 23|15@1+ (0.01,0) [0|200] "W" Vector__XXX
- SG_ ch12_is_on   : 38|1@1+  (1,0)    [0|1]   ""  Vector__XXX
- SG_ ch12_status  : 39|3@1+  (1,0)    [0|7]   ""  Vector__XXX
- SG_ ch12_watts   : 42|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch10_is_on : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch10_status : 2|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch10_watts : 5|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch11_is_on : 20|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch11_status : 22|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch11_watts : 25|15@1+ (0.01,0) [0|200] "W" Vector__XXX
+ SG_ ch12_is_on : 40|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ch12_status : 42|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ ch12_watts : 45|15@1+ (0.01,0) [0|200] "W" Vector__XXX
 
 
 
@@ -237,9 +237,9 @@ BA_DEF_DEF_  "VFrameFormat" "StandardCAN";
 BA_ "BusType" "CAN FD";
 BA_ "VFrameFormat" BO_ 100 14;
 BA_ "CANFD_BRS" BO_ 100 1;
+BA_ "GenMsgCycleTime" BO_ 208 1000;
 BA_ "VFrameFormat" BO_ 209 14;
 BA_ "CANFD_BRS" BO_ 209 1;
-BA_ "GenMsgCycleTime" BO_ 208 1000;
 BA_ "GenMsgCycleTime" BO_ 209 1000;
 BA_ "GenMsgCycleTime" BO_ 210 1000;
 BA_ "GenMsgCycleTime" BO_ 211 1000;
@@ -248,68 +248,68 @@ BA_ "GenMsgCycleTime" BO_ 213 1000;
 BA_ "GenMsgCycleTime" BO_ 214 1000;
 VAL_ 100 unit_type 0 "UNKNOWN" 1 "I/O UNIT" ;
 VAL_ 101 system_state 0 "UNKNOWN" 1 "OK" 2 "WARNING" 3 "FAULT" ;
-VAL_ 208 status       0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 209 ch01_status   0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 209 ch02_status   0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 209 ch03_status   0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 209 ch04_status   0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 209 ch05_status   0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 209 ch06_status   0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 209 ch07_status   0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 209 ch08_status   0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 209 ch09_status   0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 209 ch10_status  0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 209 ch11_status  0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 209 ch12_status  0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 211 ch01_status  0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 211 ch02_status  0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 211 ch03_status  0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 212 ch04_status  0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 212 ch05_status  0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 212 ch06_status  0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 213 ch07_status  0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 213 ch08_status  0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 213 ch09_status  0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 214 ch10_status  0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 214 ch11_status  0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 214 ch12_status  0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
-VAL_ 200 ignition_on 0 "OFF" 1 "ON" ;
-VAL_ 201 starter_on 0 "OFF" 1 "ENGAGED" ;
 VAL_ 202 horn_on 0 "OFF" 1 "ON" ;
-VAL_ 203 turn_signal_on 0 "OFF" 1 "ON" ;
 VAL_ 203 turn_signal_direction 0 "LEFT" 1 "RIGHT" 2 "BOTH" ;
+VAL_ 203 turn_signal_on 0 "OFF" 1 "ON" ;
 VAL_ 203 turn_signal_position 0 "FRONT" 1 "REAR" 2 "BOTH" ;
 VAL_ 203 dashboard_only 0 "NORMAL_OPERATION" 1 "DASHBOARD_ONLY" ;
+VAL_ 200 ignition_on 0 "OFF" 1 "ON" ;
+VAL_ 201 starter_on 0 "OFF" 1 "ENGAGED" ;
 VAL_ 204 park_on 0 "OFF" 1 "ON" ;
 VAL_ 204 low_beam_on 0 "OFF" 1 "ON" ;
 VAL_ 204 high_beam_on 0 "OFF" 1 "ON" ;
 VAL_ 205 brake_light_on 0 "OFF" 1 "ON" ;
 VAL_ 206 neutral_engaged 0 "OFF" 1 "ON" ;
 VAL_ 207 oil_pressure_low_detected 0 "NORMAL" 1 "LOW_PRESSURE" ;
-VAL_ 208 is_on 0 "OFF" 1 "ON" ;
-VAL_ 209 ch01_is_on 0 "OFF" 1 "ON" ;
-VAL_ 209 ch02_is_on 0 "OFF" 1 "ON" ;
-VAL_ 209 ch03_is_on 0 "OFF" 1 "ON" ;
-VAL_ 209 ch04_is_on 0 "OFF" 1 "ON" ;
-VAL_ 209 ch05_is_on 0 "OFF" 1 "ON" ;
-VAL_ 209 ch06_is_on 0 "OFF" 1 "ON" ;
-VAL_ 209 ch07_is_on 0 "OFF" 1 "ON" ;
-VAL_ 209 ch08_is_on 0 "OFF" 1 "ON" ;
-VAL_ 209 ch09_is_on 0 "OFF" 1 "ON" ;
-VAL_ 209 ch10_is_on 0 "OFF" 1 "ON" ;
-VAL_ 209 ch11_is_on 0 "OFF" 1 "ON" ;
-VAL_ 209 ch12_is_on 0 "OFF" 1 "ON" ;
+VAL_ 208 is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 208 status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 209 ch01_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 209 ch01_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 209 ch02_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 209 ch02_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 209 ch03_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 209 ch03_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 209 ch04_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 209 ch04_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 209 ch05_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 209 ch05_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 209 ch06_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 209 ch06_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 209 ch07_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 209 ch07_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 209 ch08_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 209 ch08_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 209 ch09_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 209 ch09_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 209 ch10_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 209 ch10_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 209 ch11_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 209 ch11_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 209 ch12_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 209 ch12_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
 VAL_ 210 mcu_temp_out_of_range 0 "VALID" 1 "OUT_OF_RANGE" ;
-VAL_ 211 ch01_is_on 0 "OFF" 1 "ON" ;
-VAL_ 211 ch02_is_on 0 "OFF" 1 "ON" ;
-VAL_ 211 ch03_is_on 0 "OFF" 1 "ON" ;
-VAL_ 212 ch04_is_on 0 "OFF" 1 "ON" ;
-VAL_ 212 ch05_is_on 0 "OFF" 1 "ON" ;
-VAL_ 212 ch06_is_on 0 "OFF" 1 "ON" ;
-VAL_ 213 ch07_is_on 0 "OFF" 1 "ON" ;
-VAL_ 213 ch08_is_on 0 "OFF" 1 "ON" ;
-VAL_ 213 ch09_is_on 0 "OFF" 1 "ON" ;
-VAL_ 214 ch10_is_on 0 "OFF" 1 "ON" ;
-VAL_ 214 ch11_is_on 0 "OFF" 1 "ON" ;
-VAL_ 214 ch12_is_on 0 "OFF" 1 "ON" ;
+VAL_ 211 ch01_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 211 ch01_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 211 ch02_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 211 ch02_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 211 ch03_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 211 ch03_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 212 ch04_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 212 ch04_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 212 ch05_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 212 ch05_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 212 ch06_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 212 ch06_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 213 ch07_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 213 ch07_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 213 ch08_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 213 ch08_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 213 ch09_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 213 ch09_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 214 ch10_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 214 ch10_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 214 ch11_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 214 ch11_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
+VAL_ 214 ch12_is_on 0 "OFF" 1 "ON" 2 "BLINKING" ;
+VAL_ 214 ch12_status 0 "POWER_GOOD" 1 "OPEN_LOAD" 2 "OVERCURRENT" 3 "OVERTEMP" 4 "WARNING_OVERLOAD" 5 "WARNING_MISC" ;
 

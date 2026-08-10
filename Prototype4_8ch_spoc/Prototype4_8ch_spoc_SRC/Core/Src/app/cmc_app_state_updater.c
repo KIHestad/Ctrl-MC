@@ -14,6 +14,7 @@
 #include "app/cmc_app_state.h"
 #include "can/cmc_can_manager.h"
 #include "can/cmc_can_message.h"
+#include "config/cmc_config_type_unit.h"
 
 /* ---- RX path: CAN → cmc_app_state -------------------------------------------------------- */
 
@@ -270,6 +271,12 @@ void cmc_app_state_update(const cmc_config_in_t *config_in, cmc_input_button_sta
                 cmc_app_state.feature.light.high_beam_on = new_high_beam;
                 cmc_app_state.feature.light.pending_broadcast = true;
             }
+            break;
+        }
+
+        case CMC_CONFIG_IN_DEVICE_KILL_SW: {
+            // TODO: Implement kill switch behaviour. For now, just log the state to app_state for CAN broadcast.
+            uint8_t kill_sw_pressed = 1U;
             break;
         }
 

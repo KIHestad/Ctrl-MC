@@ -26,6 +26,53 @@ extern ADC_HandleTypeDef hadc1;
 #define CMC_SPOC_CHIP_COUNT    2U
 #define CMC_SPOC_CH_PER_CHIP   4U
 #define CMC_SPOC_MUX_DISABLED  0x07U // DCR.MUX = 111B blanks the current-sense mux (Hi-Z on IS)
+#define CMC_SPOC_STALE_MS      5000U // max time a reading may go unrefreshed before forcing a sample anyway
+// tsIS(CC) datasheet max is 60us (small load), but that assumes the board's external IS-pin RC
+// filter (datasheet SS9.3.1) has only the bare-minimum 1us time constant; a filter chosen for
+// better noise rejection needs several time constants to settle to <1% error, so an early ADC
+// sample can land mid-transition and read a plausible-but-wrong partial value. Confirmed via live
+// testing (2026-08): occasional readings around half the expected wattage, on both incandescent
+// and LED loads, went away with this larger margin.
+#define CMC_SPOC_IS_SETTLE_US  200U
+// An incandescent bulb's cold filament draws several times its steady-state current for tens of
+// milliseconds after turn-on (confirmed live 2026-08: ~50W inrush settling to 19.5W steady-state
+// on a hi-beam bulb; 50ms still read ~25W, so the thermal tail is longer than first assumed) —
+// sampling immediately at turn-on captures that spike, not the representative operating wattage.
+// This is a much longer timescale than CMC_SPOC_IS_SETTLE_US (RC-filter settle, microseconds)
+// and can't be waited out with a blocking delay without stalling the main loop, so the first
+// sample after turn-on is deferred by this long instead.
+// NOTE: cmc_feature_direction_indicator.c clamps blink_interval_x10ms to 10-200 (100ms-2000ms
+// per phase) — this settle time must stay comfortably below the fastest configured blink phase,
+// or a channel blinking at/near that minimum would never get sampled at all. 500ms+ (the
+// realistic expected usage) leaves ample margin; a 100ms configured blink would not.
+#define CMC_SPOC_INRUSH_SETTLE_MS  250U
+// Rolling-average window for IS readings while a channel is ON, smoothing genuine sensor/load
+// noise (confirmed live 2026-08: an LED bulb's own switching driver made raw readings fluctuate
+// 1-8W even at steady state; averaging confirmed to help there). Deliberately NOT a plain moving
+// average across on/off history — that would dilute a blinking channel's reported wattage by its
+// duty cycle and could false-trigger the open-load fault check in cmc_feature_channel_info.c,
+// which compares the reported current against open_load_ma whenever is_on() is true. The average
+// is reset to empty on every OFF->ON transition instead, so it only ever blends samples from the
+// CURRENT on-period.
+#define CMC_SPOC_AVG_SAMPLES  8U
+// Minimum time between two IS samples of the SAME channel in the round-robin (not the
+// transition-triggered priority pass, which always fires once regardless). Without this, the
+// round-robin's independent ~800ms rotation could occasionally land on a channel again within
+// the remaining ~150-250ms of the SAME brief blink ON window right after its transition sample
+// already fired — blending in a second, less-settled reading and making blinker wattage swing
+// unpredictably (confirmed live 2026-08: sometimes 30W, varying 18-21W, for a steady 20W bulb).
+#define CMC_SPOC_MIN_RESAMPLE_MS  400U
+// The OUT-register reconciliation (see its comment in sample_all()) only overrides s_out_mask for
+// a chip that's gone at least this long without an explicit set() call. A channel under active
+// control (e.g. a blinker, whose feature calls set() every process() tick during both blink
+// phases) already self-corrects any real hardware-side change on its own very next set() call
+// (which unconditionally rewrites OUT via SPI) — so reconciling against a live readback there adds
+// no benefit but risks a misread (more likely amid a blinker's much higher SPI/bus activity,
+// worse under hazard's simultaneous higher current draw) wrongly clearing a bit that's actually
+// still commanded on. Confirmed live 2026-08: this was corrupting s_out_mask for blinkers, making
+// is_on() report OFF while genuinely blinking ON, which also fooled set()'s was_on edge-detection
+// into treating the next call as a fresh transition and resetting the wattage average.
+#define CMC_SPOC_RECONCILE_QUIET_MS  300U
 
 // Set to true if chip index 0 (global channels 0-3) is the chip whose SO drives MISO directly
 // (i.e. is "far" from the MCU in the daisy chain, so its command occupies the FIRST transmitted
@@ -41,6 +88,15 @@ static uint32_t s_is_raw[CMC_CONFIG_HW_OUT_COUNT];            // cached raw IS A
 static uint32_t s_vdda_mv = 3300U;                            // refreshed once per sample_all() call
 static bool     s_fault_latched[CMC_CONFIG_HW_OUT_COUNT];    // per-channel ERRDIAG latch, from last sample_all()
 static uint32_t s_csn_high_cycle;                             // DWT->CYCCNT snapshot from CSN's last rising edge
+static uint8_t  s_scan_index;                                 // next global channel for the current-sense round-robin
+static uint32_t s_last_update_ms[CMC_CONFIG_HW_OUT_COUNT];    // HAL_GetTick() of each channel's last real IS sample
+static bool     s_needs_sample[CMC_CONFIG_HW_OUT_COUNT];      // set on OFF->ON transition, sampled once due
+static uint32_t s_sample_due_ms[CMC_CONFIG_HW_OUT_COUNT];     // HAL_GetTick() a pending sample becomes due (inrush settle)
+static uint32_t s_is_raw_history[CMC_CONFIG_HW_OUT_COUNT][CMC_SPOC_AVG_SAMPLES]; // per-channel on-period sample ring buffer
+static uint8_t  s_is_raw_count[CMC_CONFIG_HW_OUT_COUNT];      // valid samples in the ring buffer so far (caps at CMC_SPOC_AVG_SAMPLES)
+static uint8_t  s_is_raw_idx[CMC_CONFIG_HW_OUT_COUNT];        // next ring buffer slot to write
+static uint8_t  s_out_readback_prev[CMC_SPOC_CHIP_COUNT];     // previous tick's OUT-register reconciliation read, per chip
+static uint32_t s_chip_last_set_ms[CMC_SPOC_CHIP_COUNT];      // HAL_GetTick() of the last cmc_util_switch_spoc_set() call touching this chip
 
 // Returns true if any output channel is configured as SPOC; mirrors the PROFET driver's
 // profet_max_rank()==0 guard so sample_all() is a no-op on a hypothetical SPOC-less board.
@@ -119,6 +175,57 @@ static int32_t spoc_raw_to_ma(uint32_t raw, uint16_t ilis_ratio, uint16_t ris_oh
     return (int32_t)(((uint64_t)raw * vdda_mv * ilis_ratio) / ((uint32_t)4095U * ris_ohms));
 }
 
+// DCR.MUX=111B blanks that chip's ENTIRE OUT register, not just the IS mux (datasheet SS6.1.5
+// Ready mode) — a chip with any channel commanded ON must park at a real channel select (0)
+// instead, so its outputs stay live between/after current-sense reads; only a fully-idle chip is
+// safe to leave at MUX_DISABLED.
+static uint8_t spoc_idle_mux(uint8_t chip) {
+    return (s_out_mask[chip] != 0U) ? 0U : CMC_SPOC_MUX_DISABLED;
+}
+
+// Physical OUTn bit position within a chip's nibble is mirrored (0<->3, 1<->2) versus the naive
+// channel-within-chip index on this board — confirmed by live hardware testing (2026-08); applies
+// equally to the OUT register bit and the DCR.MUX channel-select field (same "channel n" numbering).
+static uint8_t spoc_bit_of(uint8_t spoc_channel) {
+    return (uint8_t)(3U - (spoc_channel % CMC_SPOC_CH_PER_CHIP));
+}
+
+// Pushes a fresh raw IS sample into channel ch's ring buffer and recomputes s_is_raw[ch] as a
+// TRIMMED mean of the buffer: the highest 0-2 values are excluded first (scaled by how many
+// samples are actually available, so a short blink with only 1-2 samples still gets a plain
+// average rather than being left with nothing). An incandescent bulb's inrush decay only ever
+// taints the first sample or two of an on-period, so discarding the highest readings removes that
+// bias without needing to precisely time sampling around the decay curve. Only ever discards the
+// HIGHEST readings, so it can't mask a genuine open-load (LOW current) condition, and it has no
+// effect on overcurrent/short-circuit fault detection, which comes from the SPOC's own
+// hardware-latched ERRDIAG/WRNDIAG registers, not this software average — reporting-only fix.
+static void spoc_push_sample(uint8_t ch, uint32_t raw) {
+    s_is_raw_history[ch][s_is_raw_idx[ch]] = raw;
+    s_is_raw_idx[ch] = (uint8_t)((s_is_raw_idx[ch] + 1U) % CMC_SPOC_AVG_SAMPLES);
+    if (s_is_raw_count[ch] < CMC_SPOC_AVG_SAMPLES) { s_is_raw_count[ch]++; }
+    uint8_t count = s_is_raw_count[ch];
+
+    // Work on a scratch copy so trimming never corrupts the persistent ring buffer.
+    uint32_t scratch[CMC_SPOC_AVG_SAMPLES];
+    uint32_t sum = 0U;
+    for (uint8_t i = 0U; i < count; i++) {
+        scratch[i] = s_is_raw_history[ch][i];
+        sum += scratch[i];
+    }
+
+    uint8_t trim = (count >= 5U) ? 2U : (count >= 3U) ? 1U : 0U;
+    for (uint8_t t = 0U; t < trim; t++) {
+        uint32_t max_val = 0U;
+        uint8_t  max_idx  = 0U;
+        for (uint8_t i = 0U; i < count; i++) {
+            if (scratch[i] >= max_val) { max_val = scratch[i]; max_idx = i; }
+        }
+        sum -= max_val;
+        scratch[max_idx] = 0U; // exclude from the next round of trimming (values can tie)
+    }
+    s_is_raw[ch] = sum / (count - trim);
+}
+
 /* ---- Public API -------------------------------------------------------------------------- */
 
 void cmc_util_switch_spoc_init(void) {
@@ -129,6 +236,9 @@ void cmc_util_switch_spoc_init(void) {
 
     s_out_mask[0] = 0U;
     s_out_mask[1] = 0U;
+    s_scan_index  = 0U;
+    s_chip_last_set_ms[0] = HAL_GetTick();
+    s_chip_last_set_ms[1] = HAL_GetTick();
     uint8_t discard0, discard1;
     // Clear any restart-counter latch left over from a previous session (e.g. a channel that
     // tripped and latched OFF) before commanding outputs, mirroring the PROFET driver's
@@ -142,6 +252,10 @@ void cmc_util_switch_spoc_init(void) {
     for (uint8_t ch = 0U; ch < CMC_CONFIG_HW_OUT_COUNT; ch++) {
         s_is_raw[ch] = 0U;
         s_fault_latched[ch] = false;
+        s_last_update_ms[ch] = HAL_GetTick();
+        s_needs_sample[ch] = false;
+        s_is_raw_count[ch] = 0U;
+        s_is_raw_idx[ch] = 0U;
     }
 }
 
@@ -149,8 +263,17 @@ void cmc_util_switch_spoc_set(uint8_t ch, bool on) {
     if (ch >= CMC_CONFIG_HW_OUT_COUNT) { return; }
     const cmc_config_switch_t *sw = &cmc_config_hw_out_channel_mapping[ch];
     uint8_t chip = sw->spoc_channel / CMC_SPOC_CH_PER_CHIP;
-    uint8_t bit  = sw->spoc_channel % CMC_SPOC_CH_PER_CHIP;
+    uint8_t bit  = spoc_bit_of(sw->spoc_channel);
     uint8_t discard0, discard1;
+
+    s_chip_last_set_ms[chip] = HAL_GetTick(); // see CMC_SPOC_RECONCILE_QUIET_MS
+
+    // Callers like cmc_feature_direction_indicator.c call this every process() tick for the
+    // entire ON phase (not just once at the transition) — capture the PREVIOUS state here so the
+    // sample-timer arming below only fires on a genuine OFF->ON edge, not on every redundant
+    // "still on" call, which would otherwise keep pushing s_sample_due_ms into the future forever
+    // and the channel would never actually become due.
+    bool was_on = (s_out_mask[chip] & (uint8_t)(1U << bit)) != 0U;
 
     // Re-arm on every OFF->ON request for a channel last reported latched off (HWCR.CLC=1
     // resets restart counters/latches for all 4 channels on that chip, per datasheet, but only
@@ -170,6 +293,25 @@ void cmc_util_switch_spoc_set(uint8_t ch, bool on) {
     spoc_xfer(build_out_write(s_out_mask[0]), build_out_write(s_out_mask[1]), &discard0, &discard1);
     // Flush the pending STDDIAG/WRNDIAG ack so it doesn't leak into the next unrelated transfer
     spoc_xfer(build_read_wrndiag(), build_read_wrndiag(), &discard0, &discard1);
+
+    // Only a genuine OFF->ON EDGE (was_on captured above) needs a fresh current reading — many
+    // callers (e.g. cmc_feature_direction_indicator.c) call this every process() tick for the
+    // whole ON phase, not just once at the transition; arming on every such redundant call would
+    // keep resetting s_sample_due_ms into the future forever, so the channel would never actually
+    // become due (this was a real bug: confirmed live as the cause of persistent random 0W misses
+    // on blinkers). Not sampled RIGHT this instant either way — sampling immediately would
+    // capture a cold incandescent filament's inrush current, not its steady-state draw (confirmed
+    // live: ~50W inrush settling to 19.5W). Flag it for sample_all() to pick up once
+    // CMC_SPOC_INRUSH_SETTLE_MS has elapsed, which stays well within even a brief 500ms
+    // direction-indicator blink window.
+    if (on && !was_on) {
+        s_needs_sample[ch] = true;
+        s_sample_due_ms[ch] = HAL_GetTick() + CMC_SPOC_INRUSH_SETTLE_MS;
+        // Start a fresh average for this new on-period rather than blending in the previous
+        // (now-stale) on-period's samples.
+        s_is_raw_count[ch] = 0U;
+        s_is_raw_idx[ch] = 0U;
+    }
 }
 
 // Returns the last commanded on/off state, reconciled against real hardware once per
@@ -180,7 +322,7 @@ bool cmc_util_switch_spoc_is_on(uint8_t ch) {
     if (ch >= CMC_CONFIG_HW_OUT_COUNT) { return false; }
     const cmc_config_switch_t *sw = &cmc_config_hw_out_channel_mapping[ch];
     uint8_t chip = sw->spoc_channel / CMC_SPOC_CH_PER_CHIP;
-    uint8_t bit  = sw->spoc_channel % CMC_SPOC_CH_PER_CHIP;
+    uint8_t bit  = spoc_bit_of(sw->spoc_channel);
     return (s_out_mask[chip] & (uint8_t)(1U << bit)) != 0U;
 }
 
@@ -193,15 +335,17 @@ void cmc_util_switch_spoc_sample_all(cmc_switch_status_t *status) {
 
     // Fault registers are independent of DCR.MUX — one read pair covers all 4 channels per chip.
     // Response is one transaction behind, so the 3rd transfer below is what returns ERRDIAG.
+    // Uses spoc_idle_mux() rather than a hardcoded value so this never disturbs an active chip's
+    // outputs — it just re-asserts whatever the last park step already left in place.
     spoc_xfer(build_read_wrndiag(), build_read_wrndiag(), &discard0, &discard1); // discard stale ack
     spoc_xfer(build_read_errdiag(), build_read_errdiag(), &wrndiag[0], &wrndiag[1]);
-    spoc_xfer(build_dcr_write(0U), build_dcr_write(CMC_SPOC_MUX_DISABLED), &errdiag[0], &errdiag[1]);
+    spoc_xfer(build_dcr_write(spoc_idle_mux(0U)), build_dcr_write(spoc_idle_mux(1U)), &errdiag[0], &errdiag[1]);
 
     for (uint8_t ch = 0U; ch < CMC_CONFIG_HW_OUT_COUNT; ch++) {
         const cmc_config_switch_t *sw = &cmc_config_hw_out_channel_mapping[ch];
         if (sw->switch_type != CMC_CONFIG_SWITCH_TYPE_SPOC) { continue; }
         uint8_t chip = sw->spoc_channel / CMC_SPOC_CH_PER_CHIP;
-        uint8_t bit  = sw->spoc_channel % CMC_SPOC_CH_PER_CHIP;
+        uint8_t bit  = spoc_bit_of(sw->spoc_channel);
         bool err_latched = (errdiag[chip] & (uint8_t)(1U << bit)) != 0U;
         bool warn_set    = (wrndiag[chip] & (uint8_t)(1U << bit)) != 0U;
         s_fault_latched[ch] = err_latched;
@@ -212,30 +356,90 @@ void cmc_util_switch_spoc_sample_all(cmc_switch_status_t *status) {
                    :               CMC_SWITCH_POWER_GOOD;
     }
 
-    // Round-robin all 8 channels' current-sense mux; each chip gets its target channel or
-    // CMC_SPOC_MUX_DISABLED (blanked) so only one channel drives the shared IS pin at a time.
-    for (uint8_t g = 0U; g < CMC_CONFIG_HW_OUT_COUNT; g++) {
-        uint8_t target_chip = g / CMC_SPOC_CH_PER_CHIP;
-        uint8_t target_bit  = g % CMC_SPOC_CH_PER_CHIP;
-        uint8_t chip0_mux = (target_chip == 0U) ? target_bit : CMC_SPOC_MUX_DISABLED;
-        uint8_t chip1_mux = (target_chip == 1U) ? target_bit : CMC_SPOC_MUX_DISABLED;
+    // Priority pass: a channel flagged by cmc_util_switch_spoc_set() on a fresh OFF->ON
+    // transition is serviced once its inrush-settle deadline (s_sample_due_ms) has passed —
+    // gating on ELAPSED TIME rather than rotation position or bus-safety conditions, so it's not
+    // subject to the earlier failure modes (competing channels stealing a single per-tick slot,
+    // main-loop jitter pushing past a brief ON window). ALL due channels are serviced in the same
+    // tick; a channel that's turned back off before becoming due just has its flag cleared with
+    // no SPI transaction, since read_current_ma() already reports 0 for it regardless.
+    for (uint8_t i = 0U; i < CMC_CONFIG_HW_OUT_COUNT; i++) {
+        if (!s_needs_sample[i]) { continue; }
+        uint8_t chip_i = i / CMC_SPOC_CH_PER_CHIP;
+        uint8_t bit_i  = spoc_bit_of(i);
+        bool i_is_on = (s_out_mask[chip_i] & (uint8_t)(1U << bit_i)) != 0U;
+        if (!i_is_on) { s_needs_sample[i] = false; continue; } // off again already, nothing to sample
+        if ((int32_t)(HAL_GetTick() - s_sample_due_ms[i]) < 0) { continue; } // still settling, check again next tick
+        s_needs_sample[i] = false;
+        uint8_t chip0_mux = (chip_i == 0U) ? bit_i : CMC_SPOC_MUX_DISABLED;
+        uint8_t chip1_mux = (chip_i == 1U) ? bit_i : CMC_SPOC_MUX_DISABLED;
         spoc_xfer(build_dcr_write(chip0_mux), build_dcr_write(chip1_mux), &discard0, &discard1);
-        spoc_delay_us(60U); // tsIS(CC) max settle time after a mux channel change
-        s_is_raw[g] = spoc_read_is_raw();
+        spoc_delay_us(CMC_SPOC_IS_SETTLE_US); // let the IS-pin RC filter fully settle before sampling
+        spoc_push_sample(i, spoc_read_is_raw());
+        s_last_update_ms[i] = HAL_GetTick();
     }
 
-    // Park the mux disabled (both chips) until the next sample_all() call
-    spoc_xfer(build_dcr_write(CMC_SPOC_MUX_DISABLED), build_dcr_write(CMC_SPOC_MUX_DISABLED), &discard0, &discard1);
+    // Sample ONE global channel's current-sense per call, but ONLY when it's safe to do so: a
+    // chip only contaminates the shared IS pin if it has an ACTIVE channel selected via its own
+    // DCR.MUX at that moment (datasheet SS9.3.2) — if the other chip currently has zero channels
+    // commanded on, its mux value is irrelevant (nothing to contribute), so no blanking is needed
+    // and its (already-off) outputs are never disturbed. If the other chip DOES have something on
+    // AND this channel's reading is still fresh enough, it's simply left stale rather than forcing
+    // that chip into Ready mode (datasheet SS6.1.5) to blank its outputs. If it's been stale for
+    // too long (CMC_SPOC_STALE_MS), sample anyway despite the disruption — at that rate (at most
+    // once per several seconds per channel) the repetition is far below the perceptible-flicker
+    // range confirmed during bring-up, so this bounds staleness without reintroducing visible
+    // flicker. ERRDIAG/WRNDIAG-based fault detection above is unaffected either way.
+    // A channel that's currently OFF is skipped entirely: read_current_ma() already reports 0
+    // for an off channel regardless of s_is_raw, and sampling it anyway would risk overwriting a
+    // good cached ON reading with a meaningless near-zero one.
+    {
+        uint8_t g = s_scan_index;
+        uint8_t target_chip = g / CMC_SPOC_CH_PER_CHIP;
+        uint8_t target_bit  = spoc_bit_of(g);
+        bool channel_is_on = (s_out_mask[target_chip] & (uint8_t)(1U << target_bit)) != 0U;
+        if (channel_is_on) {
+            uint8_t other_chip = (uint8_t)(1U - target_chip);
+            uint32_t now = HAL_GetTick();
+            bool safe   = (s_out_mask[other_chip] == 0U);
+            bool stale  = (now - s_last_update_ms[g]) >= CMC_SPOC_STALE_MS;
+            bool cooled = (now - s_last_update_ms[g]) >= CMC_SPOC_MIN_RESAMPLE_MS;
+            if (cooled && (safe || stale)) {
+                uint8_t chip0_mux = (target_chip == 0U) ? target_bit : 0U;
+                uint8_t chip1_mux = (target_chip == 1U) ? target_bit : 0U;
+                spoc_xfer(build_dcr_write(chip0_mux), build_dcr_write(chip1_mux), &discard0, &discard1);
+                spoc_delay_us(CMC_SPOC_IS_SETTLE_US); // let the IS-pin RC filter fully settle before sampling
+                spoc_push_sample(g, spoc_read_is_raw());
+                s_last_update_ms[g] = now;
+            }
+        }
+        s_scan_index = (uint8_t)((g + 1U) % CMC_CONFIG_HW_OUT_COUNT);
+    }
+
+    // Park each chip's mux until the next sample_all() call — spoc_idle_mux() avoids leaving an
+    // active chip blanked for the ~100ms until the next cycle (see its comment).
+    spoc_xfer(build_dcr_write(spoc_idle_mux(0U)), build_dcr_write(spoc_idle_mux(1U)), &discard0, &discard1);
 
     // Reconcile our commanded shadow against the actual OUT register: a chip-side reset (e.g. a
     // brief VDD undervoltage event, STDDIAG.VSMON) reverts OUT to defaults without telling the
     // MCU directly, so without this is_on() would keep reporting a channel as "on" after such
-    // an event until the next explicit set() call.
+    // an event until the next explicit set() call. Only accepted if CONFIRMED by two consecutive
+    // identical reads (~200ms apart): a single one-off mismatch is more likely SPI noise/timing
+    // (e.g. hazard mode's higher simultaneous current draw increasing bus noise) than a genuine
+    // hardware-side change, and blindly trusting a single noisy read was clobbering s_out_mask
+    // mid-blink — confirmed live 2026-08 as a cause of persistent random 0W misses, worst on hazard.
     uint8_t out_resp0, out_resp1;
     spoc_xfer(build_read_out(), build_read_out(), &discard0, &discard1);   // discard park's ack
     spoc_xfer(build_read_out(), build_read_out(), &out_resp0, &out_resp1); // = actual OUT register content
-    s_out_mask[0] = out_resp0 & 0x0FU;
-    s_out_mask[1] = out_resp1 & 0x0FU;
+    uint8_t new0 = out_resp0 & 0x0FU;
+    uint8_t new1 = out_resp1 & 0x0FU;
+    uint32_t reconcile_now = HAL_GetTick();
+    bool quiet0 = (reconcile_now - s_chip_last_set_ms[0]) >= CMC_SPOC_RECONCILE_QUIET_MS;
+    bool quiet1 = (reconcile_now - s_chip_last_set_ms[1]) >= CMC_SPOC_RECONCILE_QUIET_MS;
+    if (quiet0 && new0 == s_out_readback_prev[0]) { s_out_mask[0] = new0; }
+    if (quiet1 && new1 == s_out_readback_prev[1]) { s_out_mask[1] = new1; }
+    s_out_readback_prev[0] = new0;
+    s_out_readback_prev[1] = new1;
 
     s_vdda_mv = cmc_util_mcu_read_vdda_mv();
 }

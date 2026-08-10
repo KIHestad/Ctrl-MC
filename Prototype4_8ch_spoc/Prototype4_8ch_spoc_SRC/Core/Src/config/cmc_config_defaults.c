@@ -26,7 +26,7 @@ const cmc_config_t cmc_config_default_for_demo = {
         .unit_id         = 1,
         .unit_name_id    = CMC_CONFIG_UNIT_NAME_FRONT, 
         .in_used         = 8, // Number of input connectors used on this unit
-        .out_used        = 3, // Number of output channels used on this unit
+        .out_used        = 7, // Number of output channels used on this unit
         
         // Input buttons and sensors
         .in[0] = {       // Input button 1
@@ -61,8 +61,8 @@ const cmc_config_t cmc_config_default_for_demo = {
         },
         .in[6] = {       // Input button 7
             .enabled     = 1,
-            .device_id   = CMC_CONFIG_IN_DEVICE_STARTER,
-            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_DIRECT
+            .device_id   = CMC_CONFIG_IN_DEVICE_NEUTRAL_SENSOR,
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE
         },
         .in[7] = {       // Input button 8
             .enabled     = 1,
@@ -83,15 +83,35 @@ const cmc_config_t cmc_config_default_for_demo = {
         // Output Channel Mapping
         .out[0] = {      // Output channel 1
             .enabled     = 1,
-            .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_PARK
+            .device_id   = CMC_CONFIG_OUT_DEVICE_HORN
         },
         .out[1] = {      // Output channel 2
             .enabled     = 1,
-            .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_LOW_BEAM
+            .device_id   = CMC_CONFIG_OUT_DEVICE_TURN_LEFT_ALL
         },
         .out[2] = {      // Output channel 3
             .enabled     = 1,
+            .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_PARK
+        },
+        .out[3] = {      // Output channel 4
+            .enabled     = 1,
+            .device_id   = CMC_CONFIG_OUT_DEVICE_TURN_RIGHT_ALL
+        },
+        .out[4] = {      // Output channel 5
+            .enabled     = 1,
+            .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_LOW_BEAM
+        },
+        .out[5] = {      // Output channel 6
+            .enabled     = 1,
             .device_id   = CMC_CONFIG_OUT_DEVICE_LIGHT_HIGH_BEAM
+        },
+        .out[6] = {      // Output channel 7
+            .enabled     = 1,
+            .device_id   = CMC_CONFIG_OUT_DEVICE_INSTR_NEUTRAL
+        },
+        .out[7] = {      // Output channel 8
+            .enabled     = 0,
+            .device_id   = CMC_CONFIG_OUT_DEVICE_NONE
         }
     },
 
@@ -132,14 +152,14 @@ const cmc_config_t cmc_config_default_for_demo = {
         .enabled = 0, // 0 = disabled: ignition always on (no sensor required, safe default for bench testing)
     },
     .feature_starter = {
-        .enabled = 0, // 0 = disabled: starter output never activates; set to 1 to enable input-driven starter control
+        .enabled = 1, // 0 = disabled: starter output never activates; set to 1 to enable input-driven starter control
     },
     .feature_horn = {
-        .enabled = 0, // Set to 1 to enable the horn feature, set to 0 to disable it and the system will ignore any horn-related logic
+        .enabled = 1, // Set to 1 to enable the horn feature, set to 0 to disable it and the system will ignore any horn-related logic
         .auto_shut_off_sec = 3, // Automatically turn off the horn after this many seconds if the button is held continuously, set to 0 to disable auto shut-off
     },
     .feature_direction_indicator = {
-        .enabled = 0,              // Set to 1 to enable the direction indicator feature
+        .enabled = 1,              // Set to 1 to enable the direction indicator feature
         .blink_interval_x10ms = 50, // Blink on/off interval (100 = 1 second, 50 = half a second - number in 1/100 of a second)
         .auto_shut_off_sec = 30,    // Duration in seconds after which the direction indicator should automatically shut off, not applicable if hazard mode
     },
@@ -163,14 +183,14 @@ const cmc_config_t cmc_config_default_for_demo = {
         // Per-channel power, supply voltage, and fault reporting over CAN, needed for display units to show channel status and power consumption
         .enabled                = 1,
         .temp_unit              = CMC_TEMP_UNIT_CELSIUS,
-        .compensation_enabled   = 1, // set 0 to report raw current-sense values, eg. when calibrating a new switch
+        .compensation_enabled   = 0, // set 0 to report raw current-sense values, eg. when calibrating a new switch
         
         // The following overview_enabled flags control the periodic broadcast of channel overview messages over CAN
         // These messages are not read by the Ctrl MC system, only for reporting when using a CAN bus analyzer like Savvycan
         .overview_enabled       = 0,   // requires CAN FD capable adapter; set 1 only when hardware supports it
         .overview_enabled_01_03 = 1, // classic CAN, ch1-3; matches this board's 3 physical output channels
-        .overview_enabled_04_06 = 0, // classic CAN, ch4-6; enable only if the unit has these channels
-        .overview_enabled_07_09 = 0, // classic CAN, ch7-9; enable only if the unit has these channels
+        .overview_enabled_04_06 = 1, // classic CAN, ch4-6; enable only if the unit has these channels
+        .overview_enabled_07_09 = 1, // classic CAN, ch7-9; enable only if the unit has these channels
         .overview_enabled_10_12 = 0, // classic CAN, ch10-12; enable only if the unit has these channels
     }
         

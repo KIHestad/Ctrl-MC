@@ -16,6 +16,14 @@
 #define CMC_TEMP_UNIT_CELSIUS     0
 #define CMC_TEMP_UNIT_FAHRENHEIT  1
 
+// Reported per-channel operational state on the CAN bus (chXX_is_on signal, 2 bits).
+// BLINKING is inferred at this reporting layer only — the switch drivers never return it.
+typedef enum {
+    CMC_CHANNEL_REPORT_OFF      = 0,
+    CMC_CHANNEL_REPORT_ON       = 1,
+    CMC_CHANNEL_REPORT_BLINKING = 2, // channel observed toggling within the last 1s broadcast window
+} cmc_channel_report_state_t;
+
 typedef struct {
     uint8_t  enabled;
     uint8_t  overview_enabled;        // 1 = also broadcast CHANNEL_OVERVIEW every 1 s (requires CAN FD)

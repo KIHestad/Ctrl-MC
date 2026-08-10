@@ -14,6 +14,8 @@
 #include "app/cmc_app_logic.h"
 #include <string.h>
 
+#define CMC_CAN_TX_RETRY_TIMEOUT_MS  5U // Max time to retry a full Tx FIFO/Queue before giving up
+
 /* ---- Private state ------------------------------------------------------------------------ */
 
 extern FDCAN_HandleTypeDef hfdcan1; // FDCAN peripheral handle, defined in main.c
@@ -86,8 +88,17 @@ cmc_can_status_t cmc_can_manager_send(uint32_t frame_id, const uint8_t *data, ui
     tx_header.FDFormat            = (length > 8u) ? FDCAN_FD_CAN : FDCAN_CLASSIC_CAN; // Auto switch to FD format for payloads > 8 bytes
     tx_header.TxEventFifoControl  = FDCAN_NO_TX_EVENTS;
     tx_header.MessageMarker       = 0;
-    if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &tx_header, (uint8_t *)data) != HAL_OK) {
-        return CMC_CAN_ERROR_TX;
+
+    // The Tx FIFO/Queue on this MCU is small and fixed-depth (not software-configurable like
+    // larger STM32 families). Callers fire several frames back-to-back (e.g. the 1s periodic
+    // broadcast sends ~12 messages in a tight loop) faster than the bus can drain them, so a
+    // single failed attempt here previously meant the frame was silently dropped. Retry briefly
+    // instead of giving up immediately.
+    uint32_t attempt_start_ms = HAL_GetTick();
+    while (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &tx_header, (uint8_t *)data) != HAL_OK) {
+        if ((HAL_GetTick() - attempt_start_ms) >= CMC_CAN_TX_RETRY_TIMEOUT_MS) {
+            return CMC_CAN_ERROR_TX; // Bus stuck/disconnected — give up rather than hang forever
+        }
     }
     return CMC_CAN_OK;
 }
