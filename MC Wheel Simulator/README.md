@@ -1,5 +1,7 @@
 # Motorcycle Wheel Simulator
 
+Contribution: @internetscooter
+
 The is a wheel simulator is to enable bench testing wheel hall effect sensors and their input to the motorcycle/scooter system.
 
 The basic concept is to simulate a rotating magnet that would sit on a wheel and drives a hall effect sensor. Why is this useful? The signal from a hall effect (or reed switch) can be noisy or not fit for purpose, trying to debug problems on a motorcycle/scooter while riding, takes insane circus skills and although fun, may put your electronic test equipment in danger :)
