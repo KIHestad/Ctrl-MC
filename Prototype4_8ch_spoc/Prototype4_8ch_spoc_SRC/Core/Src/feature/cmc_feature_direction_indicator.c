@@ -18,6 +18,7 @@
 #include "feature/cmc_features_output.h"
 #include "input/cmc_input.h"
 #include <stdint.h>
+#include "feature/cmc_feature_test_channels.h"
 #include "feature/cmc_feature_direction_indicator.h"
 
 // Locals
@@ -92,7 +93,8 @@ static void cmc_feature_direction_indicator_broadcast()
 void cmc_feature_direction_indicator_init(void)
 {
     // if not this feature is active, do nothing
-    if (cmc_config.feature_direction_indicator.enabled != 1) {
+    if (cmc_config.feature_direction_indicator.enabled != 1 ||
+        cmc_feature_test_channels_suppresses(cmc_config.feature_direction_indicator.enabled_on_test)) {
        return;
     }
     

@@ -22,6 +22,7 @@
 #include "feature/cmc_features_output.h"
 #include "can/cmc_can_manager.h"
 #include "can/cmc_can_message.h"
+#include "feature/cmc_feature_test_channels.h"
 #include "feature/cmc_feature_starter.h"
 
 static bool this_unit_feature_active = false; // Set true in init if this unit has the starter output and feature is enabled
@@ -39,7 +40,9 @@ static void cmc_feature_starter_broadcast(void)
 
 void cmc_feature_starter_init(void) {
     // Feature is active only if enabled in config AND this unit has the starter output configured
-    this_unit_feature_active = (cmc_config.feature_starter.enabled == 1) && cmc_features_out_is_device_enabled(CMC_CONFIG_OUT_DEVICE_STARTER);
+    this_unit_feature_active = (cmc_config.feature_starter.enabled == 1) &&
+        !cmc_feature_test_channels_suppresses(cmc_config.feature_starter.enabled_on_test) &&
+        cmc_features_out_is_device_enabled(CMC_CONFIG_OUT_DEVICE_STARTER);
     if (this_unit_feature_active) {
         switch_id = cmc_features_out_get_device_id(CMC_CONFIG_OUT_DEVICE_STARTER);
         // Ensure starter output is off at startup

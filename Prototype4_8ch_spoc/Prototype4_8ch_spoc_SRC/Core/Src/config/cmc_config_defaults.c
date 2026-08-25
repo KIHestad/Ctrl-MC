@@ -148,20 +148,28 @@ const cmc_config_t cmc_config_default_for_demo = {
             .device_id    = CMC_CONFIG_OUT_DEVICE_LIGHT_HIGH_BEAM
         }
     },
+    .feature_test_channels = {
+        .enabled = 0, // Set to 1 to enable the test channel feature, set to 0 to disable it and the system will ignore any test channel-related logic
+    },
     .feature_ignition = {
         .enabled = 0, // 0 = disabled: ignition always on (no sensor required, safe default for bench testing)
+        .enabled_on_test = 0 // Set to 1 to enable when test feature are enabled, set to 0 to disable it while test feature are running 
     },
     .feature_starter = {
         .enabled = 1, // 0 = disabled: starter output never activates; set to 1 to enable input-driven starter control
+        .enabled_on_test = 0 // Set to 1 to enable when test feature are enabled, set to 0 to disable it while test feature are running
     },
     .feature_horn = {
         .enabled = 1, // Set to 1 to enable the horn feature, set to 0 to disable it and the system will ignore any horn-related logic
         .auto_shut_off_sec = 3, // Automatically turn off the horn after this many seconds if the button is held continuously, set to 0 to disable auto shut-off
+        .enabled_on_test = 0 // Set to 1 to enable when test feature are enabled, set to 0 to disable it while test feature are running
+
     },
     .feature_direction_indicator = {
         .enabled = 1,              // Set to 1 to enable the direction indicator feature
         .blink_interval_x10ms = 50, // Blink on/off interval (100 = 1 second, 50 = half a second - number in 1/100 of a second)
         .auto_shut_off_sec = 30,    // Duration in seconds after which the direction indicator should automatically shut off, not applicable if hazard mode
+        .enabled_on_test = 0 // Set to 1 to enable when test feature are enabled, set to 0 to disable it while test feature are running
     },
     .feature_light = {
         .enabled                  = 1,  // Set to 1 to enable the lighting feature
@@ -169,25 +177,32 @@ const cmc_config_t cmc_config_default_for_demo = {
         .high_beam_keeps_low_beam = 1,  // 0 = low beam off when high beam on; 1 = both beams on simultaneously
         .main_light_input_mode    = CMC_FEATURE_LIGHT_MAIN_MODE_MULTIFUNCTION_TOGGLE, // Use a single multifunction toggle button
         .hi_lo_beam_input_mode    = CMC_FEATURE_LIGHT_HIBEAM_MODE_TOGGLE,             // Use a single hi/lo toggle switch
+        .enabled_on_test = 0 // Set to 1 to enable when test feature are enabled, set to 0 to disable it while test feature are running
     },
     .feature_brake_light = {
         .enabled = 1,  // Set to 1 to enable the brake light feature
+        .enabled_on_test = 0 // Set to 1 to enable when test feature are enabled, set to 0 to disable it while test feature are running
+
     },
     .feature_neutral = {
         .enabled = 1,  // Set to 1 to enable the neutral indicator feature
+        .enabled_on_test = 0 // Set to 1 to enable when test feature are enabled, set to 0 to disable it while test feature are running
     },
     .feature_oil_pressure = {
         .enabled = 0,  // Set to 1 to enable the oil pressure warning feature
+        .enabled_on_test = 0 // Set to 1 to enable when test feature are enabled, set to 0 to disable it while test feature are running
+
     },
     .feature_channel_info = {
         // Per-channel power, supply voltage, and fault reporting over CAN, needed for display units to show channel status and power consumption
         .enabled                = 1,
+        .enabled_on_test        = 1, // Set to 1 to enable when test feature are enabled, set to 0 to disable it while test feature are running
         .temp_unit              = CMC_TEMP_UNIT_CELSIUS,
         .compensation_enabled   = 0, // set 0 to report raw current-sense values, eg. when calibrating a new switch
         
         // The following overview_enabled flags control the periodic broadcast of channel overview messages over CAN
         // These messages are not read by the Ctrl MC system, only for reporting when using a CAN bus analyzer like Savvycan
-        .overview_enabled       = 0,   // requires CAN FD capable adapter; set 1 only when hardware supports it
+        .overview_enabled       = 0,  // requires CAN FD capable adapter; set 1 only when hardware supports it
         .overview_enabled_01_03 = 1, // classic CAN, ch1-3; matches this board's 3 physical output channels
         .overview_enabled_04_06 = 1, // classic CAN, ch4-6; enable only if the unit has these channels
         .overview_enabled_07_09 = 1, // classic CAN, ch7-9; enable only if the unit has these channels

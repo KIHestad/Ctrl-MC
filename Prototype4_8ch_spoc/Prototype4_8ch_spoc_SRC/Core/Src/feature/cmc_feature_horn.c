@@ -20,6 +20,7 @@
 #include "feature/cmc_features_output.h"
 #include "can/cmc_can_manager.h"
 #include "can/cmc_can_message.h"
+#include "feature/cmc_feature_test_channels.h"
 #include "feature/cmc_feature_horn.h"
 
 // Locals
@@ -43,6 +44,7 @@ static void cmc_feature_horn_broadcast(void)
 void cmc_feature_horn_init(void) {
   // Check if the horn feature is enabled in the configuration and if this unit has the horn output device enabled, if not, this feature will be inactive and do nothing
   this_unit_feature_active = (cmc_config.feature_horn.enabled == 1) && 
+    !cmc_feature_test_channels_suppresses(cmc_config.feature_horn.enabled_on_test) &&
     cmc_features_out_is_device_enabled(CMC_CONFIG_OUT_DEVICE_HORN);
   if (this_unit_feature_active) {
       // Get the output index for the horn switch on this unit, used for controlling the horn output channel when needed

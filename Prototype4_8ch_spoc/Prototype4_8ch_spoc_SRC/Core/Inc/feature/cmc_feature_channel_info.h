@@ -26,6 +26,7 @@ typedef enum {
 
 typedef struct {
     uint8_t  enabled;
+    uint8_t  enabled_on_test; // Set to 1 to enable when test feature are enabled, set to 0 to disable it while test feature are running
     uint8_t  overview_enabled;        // 1 = also broadcast CHANNEL_OVERVIEW every 1 s (requires CAN FD)
     uint8_t  overview_enabled_01_03;  // 1 = broadcast CHANNEL_OVERVIEW_01_03 every 1 s (classic CAN, ch1-3)
     uint8_t  overview_enabled_04_06;  // 1 = broadcast CHANNEL_OVERVIEW_04_06 every 1 s (classic CAN, ch4-6)

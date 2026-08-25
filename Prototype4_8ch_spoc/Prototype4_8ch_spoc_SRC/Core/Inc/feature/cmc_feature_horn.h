@@ -16,7 +16,8 @@
 
 typedef struct {
     uint8_t enabled;            // Set 1 if to be used, set 0 if not to be used and the system will ignore it
-    uint8_t auto_shut_off_sec;  // Max duration in seconds the horn should stay on when activated, set to 0 for no auto shut-off    
+    uint8_t enabled_on_test;    // Set to 1 to enable when test feature are enabled, set to 0 to disable it while test feature are running
+    uint8_t auto_shut_off_sec;  // Max duration in seconds the horn should stay on when activated, set to 0 for no auto shut-off
 } cmc_feature_horn_t;
 
 void cmc_feature_horn_init(void); // Call this in the main initialization to set up the feature state based on the configuration

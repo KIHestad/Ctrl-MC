@@ -16,6 +16,7 @@
 
 typedef struct {
     uint8_t enabled; // 0 = disabled (ignition always on, no sensor required), 1 = enabled (follows CMC_CONFIG_IN_DEVICE_IGNITION input pin)
+    uint8_t enabled_on_test; // Set to 1 to enable when test feature are enabled, set to 0 to disable it while test feature are running
 } cmc_feature_ignition_t;
 
 void cmc_feature_ignition_init(void);    // Call from cmc_features_init to set up the feature state based on the configuration

@@ -51,6 +51,7 @@ typedef enum {
     CMC_CONFIG_IN_DEVICE_MENU_DOWN = 43,
     CMC_CONFIG_IN_DEVICE_MENU_SELECT = 44,
     CMC_CONFIG_IN_DEVICE_MENU_BACK = 45,
+    
 } cmc_config_in_device_t;
 
 // button and sensor types, for digital inputs set how to interpret the button presses: direct or toggle

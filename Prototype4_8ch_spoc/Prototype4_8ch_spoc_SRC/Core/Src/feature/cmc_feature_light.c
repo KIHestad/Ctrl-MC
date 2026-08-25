@@ -26,6 +26,7 @@
 #include "feature/cmc_features_output.h"
 #include "can/cmc_can_manager.h"
 #include "can/cmc_can_message.h"
+#include "feature/cmc_feature_test_channels.h"
 #include "feature/cmc_feature_light.h"
 
 #define CMC_FEATURE_LIGHT_STARTER_RESTORE_MS  2000U  // Delay (ms) after starter release before beams are restored 
@@ -79,7 +80,8 @@ static void cmc_feature_light_broadcast(void)
 
 void cmc_feature_light_init(void)
 {
-    if (cmc_config.feature_light.enabled != 1) {
+    if (cmc_config.feature_light.enabled != 1 ||
+        cmc_feature_test_channels_suppresses(cmc_config.feature_light.enabled_on_test)) {
         return;
     }
 

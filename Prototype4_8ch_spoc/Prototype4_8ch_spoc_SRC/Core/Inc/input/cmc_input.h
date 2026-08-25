@@ -39,4 +39,10 @@ void cmc_input_scanner_execute(void);
 // shut-off) so the scanner's toggle stays in sync and the next physical press acts as "turn on".
 void cmc_input_scanner_reset_toggle_by_device(cmc_config_in_device_t device_id);
 
+// Returns the resolved logical pressed state (post usage_id resolution: digital_direct follows
+// the debounced pin directly, digital_toggle flips per press) for the button at the given
+// hardware input index (0-based, matches cmc_config_this_unit->in[index]). Returns false for an
+// out-of-range index. Used by cmc_feature_test_channels to drive outputs directly by index.
+bool cmc_input_scanner_is_pressed(uint8_t index);
+
 #endif /* CMC_INPUT_SCANNER_H_ */

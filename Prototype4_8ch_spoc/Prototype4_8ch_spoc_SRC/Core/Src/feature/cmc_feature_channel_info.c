@@ -22,6 +22,7 @@
 #include "util/cmc_util_mcu_driver.h"
 #include "can/cmc_can_manager.h"
 #include "can/cmc_can_message.h"
+#include "feature/cmc_feature_test_channels.h"
 #include "feature/cmc_feature_channel_info.h"
 
 #define SAMPLE_INTERVAL_MS        100U
@@ -211,7 +212,8 @@ static void broadcast_channel_overview_10_12(void) {
 /* ---- Init / Process --------------------------------------------------------------------- */
 
 void cmc_feature_channel_info_init(void) {
-    s_enabled          = (cmc_config.feature_channel_info.enabled == 1U);
+    s_enabled          = (cmc_config.feature_channel_info.enabled == 1U) &&
+        !cmc_feature_test_channels_suppresses(cmc_config.feature_channel_info.enabled_on_test);
     s_overview_enabled = (cmc_config.feature_channel_info.overview_enabled == 1U);
     s_overview_enabled_01_03 = (cmc_config.feature_channel_info.overview_enabled_01_03 == 1U);
     s_overview_enabled_04_06 = (cmc_config.feature_channel_info.overview_enabled_04_06 == 1U);

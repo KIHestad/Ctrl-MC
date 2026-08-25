@@ -24,6 +24,7 @@
 
 typedef struct {
     uint8_t enabled;                    // 1 = feature enabled, 0 = disabled
+    uint8_t enabled_on_test;            // Set to 1 to enable when test feature are enabled, set to 0 to disable it while test feature are running
     uint8_t park_light_enabled;         // 1 = motorcycle has a park/side light output; 0 = no park light
     uint8_t high_beam_keeps_low_beam;   // 1 = low beam stays on when high beam is active; 0 = low beam off when high beam is on
     uint8_t main_light_input_mode;      // CMC_FEATURE_LIGHT_MAIN_MODE_* — how the park/main input is wired

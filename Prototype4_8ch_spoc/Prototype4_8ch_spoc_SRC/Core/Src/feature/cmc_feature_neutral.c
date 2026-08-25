@@ -18,6 +18,7 @@
 #include "feature/cmc_features_output.h"
 #include "can/cmc_can_manager.h"
 #include "can/cmc_can_message.h"
+#include "feature/cmc_feature_test_channels.h"
 #include "feature/cmc_feature_neutral.h"
 
 // Whether this unit has an INSTR_NEUTRAL output configured
@@ -53,7 +54,8 @@ static void cmc_feature_neutral_broadcast(void)
 
 void cmc_feature_neutral_init(void)
 {
-    if (cmc_config.feature_neutral.enabled != 1) {
+    if (cmc_config.feature_neutral.enabled != 1 ||
+        cmc_feature_test_channels_suppresses(cmc_config.feature_neutral.enabled_on_test)) {
         return;
     }
 
