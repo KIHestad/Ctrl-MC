@@ -47,17 +47,17 @@ const cmc_config_t cmc_config_default_for_demo = {
         .in[3] = {       // Input button 4
             .enabled     = 1,
             .device_id   = CMC_CONFIG_IN_DEVICE_HORN,
-            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_DIRECT
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE //CMC_CONFIG_IN_USAGE_DIGITAL_DIRECT
         },
         .in[4] = {       // Input button 5
             .enabled     = 1,
             .device_id   = CMC_CONFIG_IN_DEVICE_CLUTCH_LEVER,
-            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_DIRECT
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE //CMC_CONFIG_IN_USAGE_DIGITAL_DIRECT
         },
         .in[5] = {       // Input button 6
             .enabled     = 1,
             .device_id   = CMC_CONFIG_IN_DEVICE_BRAKE_LEVER,
-            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_DIRECT
+            .usage_id     = CMC_CONFIG_IN_USAGE_DIGITAL_TOGGLE //CMC_CONFIG_IN_USAGE_DIGITAL_DIRECT
         },
         .in[6] = {       // Input button 7
             .enabled     = 1,
@@ -149,7 +149,7 @@ const cmc_config_t cmc_config_default_for_demo = {
         }
     },
     .feature_test_channels = {
-        .enabled = 0, // Set to 1 to enable the test channel feature, set to 0 to disable it and the system will ignore any test channel-related logic
+        .enabled = 1, // Set to 1 to enable the test channel feature, set to 0 to disable it and the system will ignore any test channel-related logic
     },
     .feature_ignition = {
         .enabled = 0, // 0 = disabled: ignition always on (no sensor required, safe default for bench testing)

@@ -150,6 +150,13 @@ void cmc_feature_direction_indicator_init(void)
 
 void cmc_feature_direction_indicator_process(void)
 {
+    // Must be checked here too, not just in init(): the hazard/cancel-other state machine below
+    // runs unconditionally otherwise, resetting the scanner's raw button toggle state (via
+    // cancel_left/cancel_right) even when this feature is disabled or test-mode-suppressed.
+    if (cmc_config.feature_direction_indicator.enabled != 1 ||
+        cmc_feature_test_channels_suppresses(cmc_config.feature_direction_indicator.enabled_on_test)) {
+        return;
+    }
 
     // Get current app state for the directional indicator inputs (buttons), and track if we're in hazard mode (both on)
     bool cur_left  = cmc_app_state.feature.directional_indicator.left_on;
