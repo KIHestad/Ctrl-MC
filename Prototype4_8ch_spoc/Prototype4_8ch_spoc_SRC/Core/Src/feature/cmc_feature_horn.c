@@ -25,7 +25,7 @@
 
 // Locals
 // Static variables to track the horn state and configuration on this unit
-static bool this_unit_feature_active = false;   // Set true if relevant in initialization, if false the horn logic will be inactive and do nothing
+static bool this_unit_feature_out_enabled = false;   // Set true if relevant in initialization, if false the horn logic will be inactive and do nothing
 static uint8_t switch_id             = 0xFF;    // The output index for the horn switch on this unit
 // Active state tracking for the horn
 static bool this_unit_horn_active    = false;   // True if the horn is currently active (powered on)
@@ -43,10 +43,10 @@ static void cmc_feature_horn_broadcast(void)
 
 void cmc_feature_horn_init(void) {
   // Check if the horn feature is enabled in the configuration and if this unit has the horn output device enabled, if not, this feature will be inactive and do nothing
-  this_unit_feature_active = (cmc_config.feature_horn.enabled == 1) && 
+  this_unit_feature_out_enabled = (cmc_config.feature_horn.enabled == 1) && 
     !cmc_feature_test_channels_suppresses(cmc_config.feature_horn.enabled_on_test) &&
     cmc_features_out_is_device_enabled(CMC_CONFIG_OUT_DEVICE_HORN);
-  if (this_unit_feature_active) {
+  if (this_unit_feature_out_enabled) {
       // Get the output index for the horn switch on this unit, used for controlling the horn output channel when needed
       switch_id = cmc_features_out_get_device_id(CMC_CONFIG_OUT_DEVICE_HORN);
       // Ensure the horn starts in the off state on initialization
@@ -63,7 +63,7 @@ void cmc_feature_horn_process(void) {
   }
 
   // Feature is not configured or enabled on this unit, do nothing
-  if (!this_unit_feature_active) {
+  if (!this_unit_feature_out_enabled) {
       return;
   }
 

@@ -22,7 +22,7 @@
 #include "feature/cmc_feature_neutral.h"
 
 // Whether this unit has an INSTR_NEUTRAL output configured
-static bool    this_unit_feature_active = false;
+static bool    this_unit_feature_out_enabled = false;
 
 // Output switch ID for the neutral indicator; 0xFF = not present on this unit
 static uint8_t switch_id                = 0xFF;
@@ -54,18 +54,16 @@ static void cmc_feature_neutral_broadcast(void)
 
 void cmc_feature_neutral_init(void)
 {
-    if (cmc_config.feature_neutral.enabled != 1 ||
-        cmc_feature_test_channels_suppresses(cmc_config.feature_neutral.enabled_on_test)) {
-        return;
-    }
-
     if (cmc_features_out_is_device_enabled(CMC_CONFIG_OUT_DEVICE_INSTR_NEUTRAL)) {
         switch_id = cmc_features_out_get_device_id(CMC_CONFIG_OUT_DEVICE_INSTR_NEUTRAL);
     }
 
-    this_unit_feature_active = (switch_id != 0xFF);
+    // Explicit single source of truth: enabled, not test-suppressed, AND this unit has the output
+    this_unit_feature_out_enabled = (cmc_config.feature_neutral.enabled == 1) &&
+        !cmc_feature_test_channels_suppresses(cmc_config.feature_neutral.enabled_on_test) &&
+        (switch_id != 0xFF);
 
-    if (this_unit_feature_active) {
+    if (this_unit_feature_out_enabled) {
         cmc_features_out_set_switch(switch_id, false);
     }
 }
@@ -80,7 +78,8 @@ void cmc_feature_neutral_process(void)
         cmc_feature_neutral_broadcast();
     }
 
-    if (!this_unit_feature_active) {
+    // If feature is not configured or enabled on this unit, do nothing for the output
+    if (!this_unit_feature_out_enabled) {
         return;
     }
 

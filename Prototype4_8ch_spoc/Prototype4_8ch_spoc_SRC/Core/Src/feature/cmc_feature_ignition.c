@@ -22,7 +22,7 @@
 #include "feature/cmc_feature_test_channels.h"
 #include "feature/cmc_feature_ignition.h"
 
-static bool cmc_feature_ignition_enabled = false; // Cached from config in init to avoid repeated reads
+static bool feature_enabled = false; // Cached from config in init to avoid repeated reads
 
 static void cmc_feature_ignition_broadcast(void)
 {
@@ -34,9 +34,9 @@ static void cmc_feature_ignition_broadcast(void)
 }
 
 void cmc_feature_ignition_init(void) {
-    cmc_feature_ignition_enabled = (cmc_config.feature_ignition.enabled == 1) &&
+    feature_enabled = (cmc_config.feature_ignition.enabled == 1) &&
         !cmc_feature_test_channels_suppresses(cmc_config.feature_ignition.enabled_on_test);
-    if (!cmc_feature_ignition_enabled) {
+    if (!feature_enabled) {
         // Disabled: force ignition on — no hardware dependency required
         cmc_app_state.vehicle.ignition_on = true;
     } else {
@@ -47,7 +47,7 @@ void cmc_feature_ignition_init(void) {
 }
 
 void cmc_feature_ignition_process(void) {
-    if (!cmc_feature_ignition_enabled) {
+    if (!feature_enabled) {
         // Disabled: keep forcing ignition on each loop so no other source can override
         cmc_app_state.vehicle.ignition_on = true;
     }

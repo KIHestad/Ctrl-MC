@@ -23,27 +23,31 @@
 
 // Locals
 // Static variables to track the horn state and configuration on this unit
-static bool this_unit_feature_active    = false;   // True if the feature is enabled and at least one relevant output exists on this unit
-static uint8_t switches_left_count      = 0;             // The number of output channels for the left direction indicator on this unit
-static uint8_t switches_right_count     = 0;            // The number of output channels for the right direction indicator on this unit
-static uint8_t switch_left_id[5]        = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF};    // The output indexes for the left direction indicator on this unit
-static uint8_t switch_right_id[5]       = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF};    // The output indexes for the right direction indicator on this unit
+static bool feature_enabled               = false;   // Cached in init(): enabled config-wide AND not test-mode-suppressed; gates state resolution (hazard/cancel-other), regardless of local outputs
+static bool this_unit_feature_out_enabled = false;   // True if the feature is enabled and at least one relevant output exists on this unit
+static uint8_t switches_left_count        = 0;       // The number of output channels for the left direction indicator on this unit
+static uint8_t switches_right_count       = 0;       // The number of output channels for the right direction indicator on this unit
+static uint8_t switch_left_id[5]          = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF};    // The output indexes for the left direction indicator on this unit
+static uint8_t switch_right_id[5]         = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF};    // The output indexes for the right direction indicator on this unit
+
 // Active state tracking for the direction indicator
-static bool this_unit_left_active       = false;   // True if the left direction indicator is currently active (output on)
-static bool this_unit_right_active      = false;   // True if the right direction indicator is currently active (output on)
-static uint32_t interval_speed_ms       = 500;     // Blinking interval in milliseconds, not configurable for now
-static uint32_t on_since_ms             = 0;       // Tick at which the direction indicator was last turned on, used for auto shut-off timeout
+static bool this_unit_left_active         = false;   // True if the left direction indicator is currently active (output on)
+static bool this_unit_right_active        = false;   // True if the right direction indicator is currently active (output on)
+static uint32_t interval_speed_ms         = 500;     // Blinking interval in milliseconds, not configurable for now
+static uint32_t on_since_ms               = 0;       // Tick at which the direction indicator was last turned on, used for auto shut-off timeout
+
 // Blink phase sync
-static uint32_t blink_epoch_ms          = 0U;      // Tick captured at activation; phase is relative to this so all units start aligned
-static bool     is_originator           = false;   // True when the active indication was started by the local button on this unit
-static uint32_t last_resync_ms          = 0U;      // Last tick at which the originator sent a periodic resync broadcast
-#define CMC_FEATURE_DI_RESYNC_INTERVAL_MS 3600000U // Re-broadcast every 1 hour to correct long-term crystal drift on slave units
+static uint32_t blink_epoch_ms            = 0U;      // Tick captured at activation; phase is relative to this so all units start aligned
+static bool     is_originator             = false;   // True when the active indication was started by the local button on this unit
+static uint32_t last_resync_ms            = 0U;      // Last tick at which the originator sent a periodic resync broadcast
+#define CMC_FEATURE_DI_RESYNC_INTERVAL_MS 3600000U   // Re-broadcast every 1 hour to correct long-term crystal drift on slave units
+
 // State machine edge tracking — prev_app tracks the last seen app_state values for self-detecting change detection
-static bool     prev_app_left         = false;  // last seen app_state left_on
-static bool     prev_app_right        = false;  // last seen app_state right_on
-static uint32_t left_activated_ms     = 0U;     // tick when left was last activated (hazard window)
-static uint32_t right_activated_ms    = 0U;     // tick when right was last activated (hazard window)
-#define CMC_FEATURE_DI_HAZARD_WINDOW_MS 400U    // both buttons within this window → hazard
+static bool     prev_app_left           = false;     // last seen app_state left_on
+static bool     prev_app_right          = false;     // last seen app_state right_on
+static uint32_t left_activated_ms       = 0U;        // tick when left was last activated (hazard window)
+static uint32_t right_activated_ms      = 0U;        // tick when right was last activated (hazard window)
+#define CMC_FEATURE_DI_HAZARD_WINDOW_MS 400U         // both buttons within this window → hazard
 
 // Sync the cancelled side: write false back to app_state, update prev_app, and reset the scanner
 // toggle so the very next physical press acts as "turn on" (no dead press required).
@@ -93,8 +97,9 @@ static void cmc_feature_direction_indicator_broadcast()
 void cmc_feature_direction_indicator_init(void)
 {
     // if not this feature is active, do nothing
-    if (cmc_config.feature_direction_indicator.enabled != 1 ||
-        cmc_feature_test_channels_suppresses(cmc_config.feature_direction_indicator.enabled_on_test)) {
+    feature_enabled = (cmc_config.feature_direction_indicator.enabled == 1) &&
+        !cmc_feature_test_channels_suppresses(cmc_config.feature_direction_indicator.enabled_on_test);
+    if (!feature_enabled) {
        return;
     }
     
@@ -131,9 +136,9 @@ void cmc_feature_direction_indicator_init(void)
         switch_right_id[switches_right_count++] = cmc_features_out_get_device_id(CMC_CONFIG_OUT_DEVICE_INSTR_TURN_COMMON);
     }
     // If at least one output is enabled, the feature is active
-    this_unit_feature_active = (switches_left_count > 0) || (switches_right_count > 0);
+    this_unit_feature_out_enabled = (switches_left_count > 0) || (switches_right_count > 0);
     // Continue if still active    
-    if (this_unit_feature_active) {
+    if (this_unit_feature_out_enabled) {
         // Ensure the direction indicators start in the off state on initialization
         set_switch_left(false, true);
         set_switch_right(false, true);
@@ -153,8 +158,8 @@ void cmc_feature_direction_indicator_process(void)
     // Must be checked here too, not just in init(): the hazard/cancel-other state machine below
     // runs unconditionally otherwise, resetting the scanner's raw button toggle state (via
     // cancel_left/cancel_right) even when this feature is disabled or test-mode-suppressed.
-    if (cmc_config.feature_direction_indicator.enabled != 1 ||
-        cmc_feature_test_channels_suppresses(cmc_config.feature_direction_indicator.enabled_on_test)) {
+    // Uses the cached flag from init() rather than re-reading config every tick.
+    if (!feature_enabled) {
         return;
     }
 
@@ -239,7 +244,7 @@ void cmc_feature_direction_indicator_process(void)
     }
 
     // ---- Output: only runs on units that have physical turn signal outputs ----
-    if (!this_unit_feature_active) { return; }
+    if (!this_unit_feature_out_enabled) { return; }
     if (!this_unit_left_active && !this_unit_right_active) { return; }
 
     // Re-anchor blink epoch when a resync signal arrives from the originator via CAN (slave path)

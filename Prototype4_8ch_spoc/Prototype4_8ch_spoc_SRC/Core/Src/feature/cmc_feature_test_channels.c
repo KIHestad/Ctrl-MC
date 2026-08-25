@@ -20,7 +20,7 @@
 #include "feature/cmc_feature_test_channels.h"
 
 // Whether the test feature is enabled (cached from config in init to avoid repeated reads)
-static bool this_unit_feature_active           = false;
+static bool feature_enabled           = false;
 
 // Resolved output state from the last process() call — used to only drive a switch on change
 static bool prev_out[CMC_CONFIG_HW_OUT_COUNT];
@@ -34,7 +34,7 @@ bool cmc_feature_test_channels_suppresses(uint8_t enabled_on_test) {
 }
 
 void cmc_feature_test_channels_init(void) {
-    this_unit_feature_active = cmc_feature_test_channels_is_active();
+    feature_enabled = cmc_feature_test_channels_is_active();
     // Reset to match the all-off state set by cmc_features_out_init_all(), so the first
     // genuinely-pressed button is still seen as a change and actually drives its output.
     for (uint8_t ch = 0U; ch < CMC_CONFIG_HW_OUT_COUNT; ch++) {
@@ -43,7 +43,7 @@ void cmc_feature_test_channels_init(void) {
 }
 
 void cmc_feature_test_channels_process(void) {
-    if (!this_unit_feature_active) {
+    if (!feature_enabled) {
         return;
     }
 

@@ -32,7 +32,7 @@
 #define CMC_FEATURE_LIGHT_STARTER_RESTORE_MS  2000U  // Delay (ms) after starter release before beams are restored 
 
 // Whether this unit has any light output configured (init sets this)
-static bool     this_unit_feature_active    = false;
+static bool     this_unit_feature_out_enabled    = false;
 
 // Output switch IDs for each light type; 0xFF = not present on this unit
 static uint8_t  switch_park_id              = 0xFF;
@@ -80,11 +80,6 @@ static void cmc_feature_light_broadcast(void)
 
 void cmc_feature_light_init(void)
 {
-    if (cmc_config.feature_light.enabled != 1 ||
-        cmc_feature_test_channels_suppresses(cmc_config.feature_light.enabled_on_test)) {
-        return;
-    }
-
     // Discover which output devices are wired on this unit
     if (cmc_features_out_is_device_enabled(CMC_CONFIG_OUT_DEVICE_LIGHT_PARK)) {
         switch_park_id     = cmc_features_out_get_device_id(CMC_CONFIG_OUT_DEVICE_LIGHT_PARK);
@@ -105,14 +100,18 @@ void cmc_feature_light_init(void)
         switch_instr_hi_id = cmc_features_out_get_device_id(CMC_CONFIG_OUT_DEVICE_INSTR_HI);
     }
 
-    this_unit_feature_active = (switch_park_id     != 0xFF) ||
-                               (switch_low_beam_id  != 0xFF) ||
-                               (switch_high_beam_id != 0xFF) ||
-                               (switch_tail_id      != 0xFF) ||
-                               (switch_instr_lo_id  != 0xFF) ||
-                               (switch_instr_hi_id  != 0xFF);
+    // Explicit single source of truth: enabled, not test-suppressed, AND this unit has an output
+    bool has_any_output = (switch_park_id     != 0xFF) ||
+                          (switch_low_beam_id  != 0xFF) ||
+                          (switch_high_beam_id != 0xFF) ||
+                          (switch_tail_id      != 0xFF) ||
+                          (switch_instr_lo_id  != 0xFF) ||
+                          (switch_instr_hi_id  != 0xFF);
+    this_unit_feature_out_enabled = (cmc_config.feature_light.enabled == 1) &&
+        !cmc_feature_test_channels_suppresses(cmc_config.feature_light.enabled_on_test) &&
+        has_any_output;
 
-    if (this_unit_feature_active) {
+    if (this_unit_feature_out_enabled) {
         // Ensure all lights start in the off state
         if (switch_park_id      != 0xFF) { cmc_features_out_set_switch(switch_park_id,      false); }
         if (switch_low_beam_id  != 0xFF) { cmc_features_out_set_switch(switch_low_beam_id,  false); }
@@ -133,7 +132,7 @@ void cmc_feature_light_process(void)
         cmc_feature_light_broadcast();
     }
 
-    if (!this_unit_feature_active) {
+    if (!this_unit_feature_out_enabled) {
         return;
     }
 
