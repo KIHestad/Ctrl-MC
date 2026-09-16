@@ -17,11 +17,14 @@
 #include "feature/cmc_feature_neutral.h"
 #include "feature/cmc_feature_oil_pressure.h"
 #include "feature/cmc_feature_channel_info.h"
+#include "feature/cmc_feature_test_channels.h"
 #include "feature/cmc_features_output.h"
 
 void cmc_features_init(void) {
     // Clear any latched PROFET fault states before feature inits run
     cmc_features_out_init_all();
+    // Test-channels feature is initialized first so other features can query its active state
+    cmc_feature_test_channels_init();
     // Initialize all features based on the configuration, call the init function for each feature module
     cmc_feature_direction_indicator_init();
     cmc_feature_horn_init();
@@ -45,4 +48,5 @@ void cmc_features_process(void) {
     cmc_feature_neutral_process();
     cmc_feature_oil_pressure_process();
     cmc_feature_channel_info_process();
+    cmc_feature_test_channels_process();
 }

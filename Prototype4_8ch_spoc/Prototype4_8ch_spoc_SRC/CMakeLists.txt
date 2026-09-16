@@ -51,6 +51,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ./Core/Src/feature/cmc_feature_oil_pressure.c
     ./Core/Src/feature/cmc_feature_starter.c
     ./Core/Src/feature/cmc_feature_channel_info.c
+    ./Core/Src/feature/cmc_feature_test_channels.c
     # features manager and output
     ./Core/Src/feature/cmc_features_manager.c
     ./Core/Src/feature/cmc_features_output.c

@@ -15,7 +15,8 @@
 #include <stdbool.h>
 
 typedef struct {
-    uint8_t enabled;  // 1 = feature enabled, 0 = disabled
+    uint8_t enabled;        // 1 = feature enabled, 0 = disabled
+    uint8_t enabled_on_test; // Set to 1 to enable when test feature are enabled, set to 0 to disable it while test feature are running
 } cmc_feature_neutral_t;
 
 // Call from cmc_features_init to set up the feature state based on the configuration

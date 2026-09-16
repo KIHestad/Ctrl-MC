@@ -22,9 +22,10 @@
 #include "feature/cmc_features_output.h"
 #include "can/cmc_can_manager.h"
 #include "can/cmc_can_message.h"
+#include "feature/cmc_feature_test_channels.h"
 #include "feature/cmc_feature_starter.h"
 
-static bool this_unit_feature_active = false; // Set true in init if this unit has the starter output and feature is enabled
+static bool this_unit_feature_out_enabled = false; // Set true in init if this unit has the starter output and feature is enabled
 static uint8_t switch_id             = 0xFF;  // Output index for the starter switch on this unit
 static bool this_unit_starter_active = false; // True if the starter is currently engaged (output on)
 
@@ -39,8 +40,10 @@ static void cmc_feature_starter_broadcast(void)
 
 void cmc_feature_starter_init(void) {
     // Feature is active only if enabled in config AND this unit has the starter output configured
-    this_unit_feature_active = (cmc_config.feature_starter.enabled == 1) && cmc_features_out_is_device_enabled(CMC_CONFIG_OUT_DEVICE_STARTER);
-    if (this_unit_feature_active) {
+    this_unit_feature_out_enabled = (cmc_config.feature_starter.enabled == 1) &&
+        !cmc_feature_test_channels_suppresses(cmc_config.feature_starter.enabled_on_test) &&
+        cmc_features_out_is_device_enabled(CMC_CONFIG_OUT_DEVICE_STARTER);
+    if (this_unit_feature_out_enabled) {
         switch_id = cmc_features_out_get_device_id(CMC_CONFIG_OUT_DEVICE_STARTER);
         // Ensure starter output is off at startup
         cmc_features_out_set_switch(switch_id, false);
@@ -56,7 +59,7 @@ void cmc_feature_starter_process(void) {
     }
 
     // Feature is not configured or enabled on this unit, do nothing
-    if (!this_unit_feature_active) {
+    if (!this_unit_feature_out_enabled) {
         return;
     }
 

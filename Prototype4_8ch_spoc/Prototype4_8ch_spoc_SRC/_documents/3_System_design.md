@@ -13,5 +13,5 @@ The enabled features are responsible for reading the app state and driving outpu
 # System Logic Processing Flow
 The following illustration shows the high-level system logic processing flows.
 
-![System Logic Processing Flow](.\img\Ctrl_MC-System_Logic_Processing_Flow.png)
+![System Logic Processing Flow](./img/Ctrl_MC-System_Logic_Processing_Flow.png)
 

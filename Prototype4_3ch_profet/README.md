@@ -1,16 +1,14 @@
 ![Ctrl MC logo](https://hestad.no/img/ctrl-mc/Ctrl-MC-LogoText-White_Blue-BG_ver1.png)
 
-# PROTOTYPE 4 - STM32 with Infineon Profet +12V Smart Switch modules
+# PROTOTYPE 4B: 3 CHANNEL PROFET SWITCHES - STM32 with Infineon Profet +12V Smart Switch modules
 
-The prototype 4 is the first complete software for the Ctrl MC system that uses Infineon Profet +12V Smart Switches. This code is the basis for further development, but it is not the final system. 
+The prototype 4B is the second complete software for the Ctrl MC system that uses Infineon Profet +12V Smart Switches. This code is the basis for further development, but it is not the final system. 
 
-The software is made to be used on a WeAct Studio STM32G431 dev board, and two custom PCB modules with each a 15Amp switch and 2 x 5Amp swithc. Input GPIO's are also configuret to be able to test turning the switches on and off. It's tested with the MC Wiring Simulator.
+The software is made to be used on a WeAct Studio STM32G431 dev board, and one custom PCB module with one 15Amp switch and one 2 x 5Amp swithc. Input GPIO's are also configuret to be able to test turning the switches on and off. It's tested with the MC Wiring Simulator.
 
 The code is built using VS Code with the STM32 extensions. The setup is explained in the document:
 
 *  [Ctrl MC Software Stack Setup.pdf](https://github.com/KIHestad/Ctrl-MC/blob/main/Documents/Ctrl-MC%20Software%20Stack%20Setup.pdf)
-
-The schematics and PCB layout for the custom PCB module can be found in the zipped file `KiCad_Schematics_SmartSwitchesModule.zip`, this is a achived KiCad project (version 9.0.5).
 
 Here is the link to the YouTube video demoing this system:
 

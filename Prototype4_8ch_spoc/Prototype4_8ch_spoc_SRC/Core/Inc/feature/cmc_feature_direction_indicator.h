@@ -17,6 +17,7 @@
 // Configuration for the direction indicator feature
 typedef struct {
     uint8_t enabled;              // 1 = enabled, 0 = disabled
+    uint8_t enabled_on_test;      // Set to 1 to enable when test feature are enabled, set to 0 to disable it while test feature are running
     uint8_t blink_interval_x10ms; // Blink on/off interval in 1/100 second (e.g. 100 = 1 second, 50 = 0.5 second)
     uint8_t auto_shut_off_sec;    // Duration in seconds after which the direction indicator should automatically shut off if left on, set to 0 for no auto shut-off
 } cmc_feature_direction_indicator_t;
